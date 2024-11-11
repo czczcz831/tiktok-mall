@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    ports:
+      - "8500:8500"       # Consul UI和HTTP API的默认端口
+      - "8600:8600/udp"   # DNS查询端口
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0  # 指定绑定接口
+    command: "agent -dev -client=0.0.0.0"
+    volumes:
+      - consul_data:/consul/data
+
+volumes:
+  consul_data:
