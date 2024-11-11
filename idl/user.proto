@@ -16,7 +16,7 @@ message RegisterReq {
 }
 
 message RegisterResp {
-    int32 user_id = 1;
+    string user_uuid = 1;
 }
 
 message LoginReq {
@@ -25,5 +25,5 @@ message LoginReq {
 }
 
 message LoginResp {
-    int32 user_id = 1;
+    string user_uuid = 1;
 }

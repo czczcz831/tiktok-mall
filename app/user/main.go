@@ -7,9 +7,11 @@ import (
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
-	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
+	"github.com/czczcz831/tiktok-mall/app/user/biz/dal"
 	"github.com/czczcz831/tiktok-mall/app/user/conf"
 	"github.com/czczcz831/tiktok-mall/app/user/kitex_gen/user/userservice"
+	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
+	consul "github.com/kitex-contrib/registry-consul"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -37,6 +39,16 @@ func kitexInit() (opts []server.Option) {
 	opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
 		ServiceName: conf.GetConf().Kitex.Service,
 	}))
+
+	//server registry
+	r, err := consul.NewConsulRegister(net.JoinHostPort(conf.GetConf().OsConf.ConsulConf.ConsulHost, conf.GetConf().OsConf.ConsulConf.ConsulPort))
+	if err != nil {
+		klog.Fatalf("new consul register failed: %v", err)
+	}
+	opts = append(opts, server.WithRegistry(r))
+
+	//dal init
+	dal.Init()
 
 	// klog
 	logger := kitexlogrus.NewLogger()

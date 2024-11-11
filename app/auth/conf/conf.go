@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"net"
 	"os"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/spf13/viper"
@@ -15,9 +17,8 @@ import (
 )
 
 var (
-	conf   *Config
-	OsConf *OsEnvConf
-	once   sync.Once
+	conf *Config
+	once sync.Once
 )
 
 type ConsulConfig struct {
@@ -36,6 +37,9 @@ type Config struct {
 	MySQL    MySQL    `yaml:"mysql"`
 	Redis    Redis    `yaml:"redis"`
 	Registry Registry `yaml:"registry"`
+	Secret   string   `yaml:"secret"` //用于JWT加盐加密
+	OsConf   *OsEnvConf
+	NodeID   int64
 }
 
 type MySQL struct {
@@ -73,19 +77,19 @@ func GetConf() *Config {
 
 func initConf() {
 
-	OsConf = GetOsEnvConf()
 	conf = new(Config)
+	conf.OsConf = initOsConf()
 
 	consulCfg := capi.DefaultConfig()
-	consulCfg.Address = net.JoinHostPort(OsConf.ConsulConf.ConsulHost, OsConf.ConsulConf.ConsulPort)
+	consulCfg.Address = net.JoinHostPort(conf.OsConf.ConsulConf.ConsulHost, conf.OsConf.ConsulConf.ConsulPort)
 	consulClient, err := capi.NewClient(consulCfg)
 
 	if err != nil {
 		klog.Error("create consul client error - %v", err)
 		panic(err)
 	}
-	klog.Infof("consul client created: %v", OsConf.ConsulConf.ConsulConfigKey)
-	content, _, err := consulClient.KV().Get(OsConf.ConsulConf.ConsulConfigKey, nil)
+	klog.Infof("consul client created: %v", conf.OsConf.ConsulConf.ConsulConfigKey)
+	content, _, err := consulClient.KV().Get(conf.OsConf.ConsulConf.ConsulConfigKey, nil)
 	if err != nil {
 		klog.Fatalf("consul kv failed: %s", err.Error())
 		panic(err)
@@ -93,6 +97,24 @@ func initConf() {
 	if content == nil {
 		klog.Fatalf("consul kv failed: %s", "content is nil")
 		panic("consul key does not exist")
+	}
+
+	selfInfo, err := consulClient.Agent().Self()
+	if err != nil {
+		klog.Fatalf("consul get self info failed.")
+	}
+
+	// 从 Consul 中获取 NodeID
+	if nodeID, ok := selfInfo["Config"]["NodeID"].(string); ok {
+		// 移除 UUID 中的分隔符并取前几个字符
+		cleanedID := strings.ReplaceAll(nodeID, "-", "")
+		nodeIntID, err := strconv.ParseInt(cleanedID[:5], 16, 64) // 取前5个字符并转为整数
+		if err != nil {
+			klog.Fatalf("Error parsing Node ID: %v", err)
+		}
+		conf.NodeID = nodeIntID
+	} else {
+		klog.Fatalf("consul get self info failed.")
 	}
 
 	v := viper.New()
@@ -113,10 +135,11 @@ func initConf() {
 		klog.Error("validate config error - %v", err)
 		panic(err)
 	}
+
 	pretty.Printf("%+v\n", conf)
 }
 
-func GetOsEnvConf() *OsEnvConf {
+func initOsConf() *OsEnvConf {
 	osConf := new(OsEnvConf)
 	osConf.ConsulConf = new(ConsulConfig)
 	osConf.Env = os.Getenv("GO_ENV")

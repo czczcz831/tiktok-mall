@@ -40,7 +40,7 @@ func kitexInit() (opts []server.Option) {
 	}))
 
 	//server registry
-	r, err := consul.NewConsulRegister(net.JoinHostPort(conf.OsConf.ConsulConf.ConsulHost, conf.OsConf.ConsulConf.ConsulPort))
+	r, err := consul.NewConsulRegister(net.JoinHostPort(conf.GetConf().OsConf.ConsulConf.ConsulHost, conf.GetConf().OsConf.ConsulConf.ConsulPort))
 	if err != nil {
 		klog.Fatalf("new consul register failed: %v", err)
 	}

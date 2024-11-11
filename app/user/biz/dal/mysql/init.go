@@ -1,6 +1,8 @@
 package mysql
 
 import (
+	"github.com/cloudwego/kitex/pkg/klog"
+	"github.com/czczcz831/tiktok-mall/app/user/biz/model"
 	"github.com/czczcz831/tiktok-mall/app/user/conf"
 
 	"gorm.io/driver/mysql"
@@ -19,6 +21,11 @@ func Init() {
 			SkipDefaultTransaction: true,
 		},
 	)
+
+	DB.AutoMigrate(&model.User{})
+
+	klog.Info("mysql init success")
+
 	if err != nil {
 		panic(err)
 	}

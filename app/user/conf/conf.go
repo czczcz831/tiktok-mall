@@ -1,15 +1,19 @@
 package conf
 
 import (
-	"io/ioutil"
+	"bytes"
+	"net"
 	"os"
-	"path/filepath"
+	"strconv"
+	"strings"
 	"sync"
 
+	"github.com/spf13/viper"
+
 	"github.com/cloudwego/kitex/pkg/klog"
+	capi "github.com/hashicorp/consul/api"
 	"github.com/kr/pretty"
 	"gopkg.in/validator.v2"
-	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -17,12 +21,25 @@ var (
 	once sync.Once
 )
 
+type ConsulConfig struct {
+	ConsulHost      string `yaml:"consul_host"`
+	ConsulPort      string `yaml:"consul_port"`
+	ConsulConfigKey string `yaml:"consul_config_key"`
+}
+
+type OsEnvConf struct {
+	Env        string
+	ConsulConf *ConsulConfig
+}
+
 type Config struct {
-	Env      string
 	Kitex    Kitex    `yaml:"kitex"`
 	MySQL    MySQL    `yaml:"mysql"`
 	Redis    Redis    `yaml:"redis"`
 	Registry Registry `yaml:"registry"`
+	Secret   string   `yaml:"secret"` //用于MD5加盐加密
+	OsConf   *OsEnvConf
+	NodeID   int64
 }
 
 type MySQL struct {
@@ -59,32 +76,77 @@ func GetConf() *Config {
 }
 
 func initConf() {
-	prefix := "conf"
-	confFileRelPath := filepath.Join(prefix, filepath.Join(GetEnv(), "conf.yaml"))
-	content, err := ioutil.ReadFile(confFileRelPath)
+
+	conf = new(Config)
+	conf.OsConf = initOsConf()
+
+	consulCfg := capi.DefaultConfig()
+	consulCfg.Address = net.JoinHostPort(conf.OsConf.ConsulConf.ConsulHost, conf.OsConf.ConsulConf.ConsulPort)
+	consulClient, err := capi.NewClient(consulCfg)
+
 	if err != nil {
+		klog.Error("create consul client error - %v", err)
 		panic(err)
 	}
-	conf = new(Config)
-	err = yaml.Unmarshal(content, conf)
+	klog.Infof("consul client created: %v", conf.OsConf.ConsulConf.ConsulConfigKey)
+	content, _, err := consulClient.KV().Get(conf.OsConf.ConsulConf.ConsulConfigKey, nil)
 	if err != nil {
-		klog.Error("parse yaml error - %v", err)
+		klog.Fatalf("consul kv failed: %s", err.Error())
+		panic(err)
+	}
+	if content == nil {
+		klog.Fatalf("consul kv failed: %s", "content is nil")
+		panic("consul key does not exist")
+	}
+
+	selfInfo, err := consulClient.Agent().Self()
+	if err != nil {
+		klog.Fatalf("consul get self info failed.")
+	}
+
+	// 从 Consul 中获取 NodeID
+	if nodeID, ok := selfInfo["Config"]["NodeID"].(string); ok {
+		// 移除 UUID 中的分隔符并取前几个字符
+		cleanedID := strings.ReplaceAll(nodeID, "-", "")
+		nodeIntID, err := strconv.ParseInt(cleanedID[:5], 16, 64) // 取前5个字符并转为整数
+		if err != nil {
+			klog.Fatalf("Error parsing Node ID: %v", err)
+		}
+		conf.NodeID = nodeIntID
+	} else {
+		klog.Fatalf("consul get self info failed.")
+	}
+
+	v := viper.New()
+	v.SetConfigType("yaml")
+	err = v.ReadConfig(bytes.NewBuffer(content.Value))
+
+	if err != nil {
+		klog.Errorf("parse yaml error - %v", err)
+		panic(err)
+	}
+
+	err = v.Unmarshal(conf)
+	if err != nil {
+		klog.Errorf("unmarshal config error - %v", err)
 		panic(err)
 	}
 	if err := validator.Validate(conf); err != nil {
 		klog.Error("validate config error - %v", err)
 		panic(err)
 	}
-	conf.Env = GetEnv()
+
 	pretty.Printf("%+v\n", conf)
 }
 
-func GetEnv() string {
-	e := os.Getenv("GO_ENV")
-	if len(e) == 0 {
-		return "test"
-	}
-	return e
+func initOsConf() *OsEnvConf {
+	osConf := new(OsEnvConf)
+	osConf.ConsulConf = new(ConsulConfig)
+	osConf.Env = os.Getenv("GO_ENV")
+	osConf.ConsulConf.ConsulHost = os.Getenv("CONSUL_HOST")
+	osConf.ConsulConf.ConsulPort = os.Getenv("CONSUL_PORT")
+	osConf.ConsulConf.ConsulConfigKey = os.Getenv("CONSUL_CONFIG_KEY")
+	return osConf
 }
 
 func LogLevel() klog.Level {
