@@ -9,6 +9,7 @@ import (
 	"github.com/cloudwego/kitex/server"
 	"github.com/czczcz831/tiktok-mall/app/auth/conf"
 	"github.com/czczcz831/tiktok-mall/app/auth/kitex_gen/auth/authservice"
+	_ "github.com/joho/godotenv/autoload"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
 	consul "github.com/kitex-contrib/registry-consul"
 	"go.uber.org/zap/zapcore"

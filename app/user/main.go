@@ -10,6 +10,7 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/user/biz/dal"
 	"github.com/czczcz831/tiktok-mall/app/user/conf"
 	"github.com/czczcz831/tiktok-mall/app/user/kitex_gen/user/userservice"
+	_ "github.com/joho/godotenv/autoload"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
 	consul "github.com/kitex-contrib/registry-consul"
 	"go.uber.org/zap/zapcore"

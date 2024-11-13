@@ -22,9 +22,9 @@ var (
 )
 
 type ConsulConfig struct {
-	ConsulHost      string `yaml:"consul_host"`
-	ConsulPort      string `yaml:"consul_port"`
-	ConsulConfigKey string `yaml:"consul_config_key"`
+	ConsulHost      string `mapstructure:"consul_host"`
+	ConsulPort      string `mapstructure:"consul_port"`
+	ConsulConfigKey string `mapstructure:"consul_config_key"`
 }
 
 type OsEnvConf struct {
@@ -33,40 +33,48 @@ type OsEnvConf struct {
 }
 
 type Config struct {
-	Kitex    Kitex    `yaml:"kitex"`
-	MySQL    MySQL    `yaml:"mysql"`
-	Redis    Redis    `yaml:"redis"`
-	Registry Registry `yaml:"registry"`
-	Secret   string   `yaml:"secret"` //用于MD5加盐加密
-	OsConf   *OsEnvConf
-	NodeID   int64
+	Kitex    Kitex    `mapstructure:"kitex"`
+	MySQL    MySQL    `mapstructure:"mysql"`
+	Redis    Redis    `mapstructure:"redis"`
+	Registry Registry `mapstructure:"registry"`
+	JWT      JWT      `mapstructure:"jwt"`
+
+	OsConf *OsEnvConf
+	NodeID int64
+}
+
+type JWT struct {
+	PublicSecret       string `mapstructure:"public_secret"`
+	PrivateSecret      string `mapstructure:"private_secret"`
+	TokenExpire        int    `mapstructure:"token_expire"`
+	RefreshTokenExpire int    `mapstructure:"refresh_token_expire"`
 }
 
 type MySQL struct {
-	DSN string `yaml:"dsn"`
+	DSN string `mapstructure:"dsn"`
 }
 
 type Redis struct {
-	Address  string `yaml:"address"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	DB       int    `yaml:"db"`
+	Address  string `mapstructure:"address"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+	DB       int    `mapstructure:"db"`
 }
 
 type Kitex struct {
-	Service       string `yaml:"service"`
-	Address       string `yaml:"address"`
-	LogLevel      string `yaml:"log_level"`
-	LogFileName   string `yaml:"log_file_name"`
-	LogMaxSize    int    `yaml:"log_max_size"`
-	LogMaxBackups int    `yaml:"log_max_backups"`
-	LogMaxAge     int    `yaml:"log_max_age"`
+	Service       string `mapstructure:"service"`
+	Address       string `mapstructure:"address"`
+	LogLevel      string `mapstructure:"log_level"`
+	LogFileName   string `mapstructure:"log_file_name"`
+	LogMaxSize    int    `mapstructure:"log_max_size"`
+	LogMaxBackups int    `mapstructure:"log_max_backups"`
+	LogMaxAge     int    `mapstructure:"log_max_age"`
 }
 
 type Registry struct {
-	RegistryAddress []string `yaml:"registry_address"`
-	Username        string   `yaml:"username"`
-	Password        string   `yaml:"password"`
+	RegistryAddress []string `mapstructure:"registry_address"`
+	Username        string   `mapstructure:"username"`
+	Password        string   `mapstructure:"password"`
 }
 
 // GetConf gets configuration instance
@@ -82,14 +90,14 @@ func initConf() {
 
 	consulCfg := capi.DefaultConfig()
 	consulCfg.Address = net.JoinHostPort(conf.OsConf.ConsulConf.ConsulHost, conf.OsConf.ConsulConf.ConsulPort)
-	consulClient, err := capi.NewClient(consulCfg)
+	consulApi, err := capi.NewClient(consulCfg)
 
 	if err != nil {
 		klog.Error("create consul client error - %v", err)
 		panic(err)
 	}
 	klog.Infof("consul client created: %v", conf.OsConf.ConsulConf.ConsulConfigKey)
-	content, _, err := consulClient.KV().Get(conf.OsConf.ConsulConf.ConsulConfigKey, nil)
+	content, _, err := consulApi.KV().Get(conf.OsConf.ConsulConf.ConsulConfigKey, nil)
 	if err != nil {
 		klog.Fatalf("consul kv failed: %s", err.Error())
 		panic(err)
@@ -99,7 +107,7 @@ func initConf() {
 		panic("consul key does not exist")
 	}
 
-	selfInfo, err := consulClient.Agent().Self()
+	selfInfo, err := consulApi.Agent().Self()
 	if err != nil {
 		klog.Fatalf("consul get self info failed.")
 	}

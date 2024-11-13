@@ -16,10 +16,10 @@ func DeliverTokenByRPC(ctx context.Context, req *auth.DeliverTokenReq, callOptio
 	return resp, nil
 }
 
-func VerifyTokenByRPC(ctx context.Context, req *auth.VerifyTokenReq, callOptions ...callopt.Option) (resp *auth.VerifyResp, err error) {
-	resp, err = defaultClient.VerifyTokenByRPC(ctx, req, callOptions...)
+func RefeshTokenByRPC(ctx context.Context, req *auth.RefeshTokenReq, callOptions ...callopt.Option) (resp *auth.DeliveryResp, err error) {
+	resp, err = defaultClient.RefeshTokenByRPC(ctx, req, callOptions...)
 	if err != nil {
-		klog.CtxErrorf(ctx, "VerifyTokenByRPC call failed,err =%+v", err)
+		klog.CtxErrorf(ctx, "RefeshTokenByRPC call failed,err =%+v", err)
 		return nil, err
 	}
 	return resp, nil

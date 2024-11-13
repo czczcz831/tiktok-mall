@@ -17,9 +17,9 @@ func (s *AuthServiceImpl) DeliverTokenByRPC(ctx context.Context, req *auth.Deliv
 	return resp, err
 }
 
-// VerifyTokenByRPC implements the AuthServiceImpl interface.
-func (s *AuthServiceImpl) VerifyTokenByRPC(ctx context.Context, req *auth.VerifyTokenReq) (resp *auth.VerifyResp, err error) {
-	resp, err = service.NewVerifyTokenByRPCService(ctx).Run(req)
+// RefeshTokenByRPC implements the AuthServiceImpl interface.
+func (s *AuthServiceImpl) RefeshTokenByRPC(ctx context.Context, req *auth.RefeshTokenReq) (resp *auth.DeliveryResp, err error) {
+	resp, err = service.NewRefeshTokenByRPCService(ctx).Run(req)
 
 	return resp, err
 }

@@ -95,6 +95,7 @@ require (
 	github.com/cloudwego/kitex v0.11.3
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/hashicorp/consul/api v1.30.0
+	github.com/joho/godotenv v1.5.1
 	github.com/kitex-contrib/obs-opentelemetry/logging/logrus v0.0.0-20241010093641-c58c6426d043
 	github.com/kr/pretty v0.3.1
 	github.com/redis/go-redis/v9 v9.7.0

@@ -12,7 +12,9 @@ func TestDeliverTokenByRPC_Run(t *testing.T) {
 	s := NewDeliverTokenByRPCService(ctx)
 	// init req and assert value
 
-	req := &auth.DeliverTokenReq{}
+	req := &auth.DeliverTokenReq{
+		UserUuid: "1855968708639035392",
+	}
 	resp, err := s.Run(req)
 	t.Logf("err: %v", err)
 	t.Logf("resp: %v", resp)

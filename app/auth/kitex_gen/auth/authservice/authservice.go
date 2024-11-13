@@ -22,10 +22,10 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
-	"VerifyTokenByRPC": kitex.NewMethodInfo(
-		verifyTokenByRPCHandler,
-		newVerifyTokenByRPCArgs,
-		newVerifyTokenByRPCResult,
+	"RefeshTokenByRPC": kitex.NewMethodInfo(
+		refeshTokenByRPCHandler,
+		newRefeshTokenByRPCArgs,
+		newRefeshTokenByRPCResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingUnary),
 	),
@@ -248,73 +248,73 @@ func (p *DeliverTokenByRPCResult) GetResult() interface{} {
 	return p.Success
 }
 
-func verifyTokenByRPCHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+func refeshTokenByRPCHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	switch s := arg.(type) {
 	case *streaming.Args:
 		st := s.Stream
-		req := new(auth.VerifyTokenReq)
+		req := new(auth.RefeshTokenReq)
 		if err := st.RecvMsg(req); err != nil {
 			return err
 		}
-		resp, err := handler.(auth.AuthService).VerifyTokenByRPC(ctx, req)
+		resp, err := handler.(auth.AuthService).RefeshTokenByRPC(ctx, req)
 		if err != nil {
 			return err
 		}
 		return st.SendMsg(resp)
-	case *VerifyTokenByRPCArgs:
-		success, err := handler.(auth.AuthService).VerifyTokenByRPC(ctx, s.Req)
+	case *RefeshTokenByRPCArgs:
+		success, err := handler.(auth.AuthService).RefeshTokenByRPC(ctx, s.Req)
 		if err != nil {
 			return err
 		}
-		realResult := result.(*VerifyTokenByRPCResult)
+		realResult := result.(*RefeshTokenByRPCResult)
 		realResult.Success = success
 		return nil
 	default:
 		return errInvalidMessageType
 	}
 }
-func newVerifyTokenByRPCArgs() interface{} {
-	return &VerifyTokenByRPCArgs{}
+func newRefeshTokenByRPCArgs() interface{} {
+	return &RefeshTokenByRPCArgs{}
 }
 
-func newVerifyTokenByRPCResult() interface{} {
-	return &VerifyTokenByRPCResult{}
+func newRefeshTokenByRPCResult() interface{} {
+	return &RefeshTokenByRPCResult{}
 }
 
-type VerifyTokenByRPCArgs struct {
-	Req *auth.VerifyTokenReq
+type RefeshTokenByRPCArgs struct {
+	Req *auth.RefeshTokenReq
 }
 
-func (p *VerifyTokenByRPCArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *RefeshTokenByRPCArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetReq() {
-		p.Req = new(auth.VerifyTokenReq)
+		p.Req = new(auth.RefeshTokenReq)
 	}
 	return p.Req.FastRead(buf, _type, number)
 }
 
-func (p *VerifyTokenByRPCArgs) FastWrite(buf []byte) (n int) {
+func (p *RefeshTokenByRPCArgs) FastWrite(buf []byte) (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.FastWrite(buf)
 }
 
-func (p *VerifyTokenByRPCArgs) Size() (n int) {
+func (p *RefeshTokenByRPCArgs) Size() (n int) {
 	if !p.IsSetReq() {
 		return 0
 	}
 	return p.Req.Size()
 }
 
-func (p *VerifyTokenByRPCArgs) Marshal(out []byte) ([]byte, error) {
+func (p *RefeshTokenByRPCArgs) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetReq() {
 		return out, nil
 	}
 	return proto.Marshal(p.Req)
 }
 
-func (p *VerifyTokenByRPCArgs) Unmarshal(in []byte) error {
-	msg := new(auth.VerifyTokenReq)
+func (p *RefeshTokenByRPCArgs) Unmarshal(in []byte) error {
+	msg := new(auth.RefeshTokenReq)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -322,59 +322,59 @@ func (p *VerifyTokenByRPCArgs) Unmarshal(in []byte) error {
 	return nil
 }
 
-var VerifyTokenByRPCArgs_Req_DEFAULT *auth.VerifyTokenReq
+var RefeshTokenByRPCArgs_Req_DEFAULT *auth.RefeshTokenReq
 
-func (p *VerifyTokenByRPCArgs) GetReq() *auth.VerifyTokenReq {
+func (p *RefeshTokenByRPCArgs) GetReq() *auth.RefeshTokenReq {
 	if !p.IsSetReq() {
-		return VerifyTokenByRPCArgs_Req_DEFAULT
+		return RefeshTokenByRPCArgs_Req_DEFAULT
 	}
 	return p.Req
 }
 
-func (p *VerifyTokenByRPCArgs) IsSetReq() bool {
+func (p *RefeshTokenByRPCArgs) IsSetReq() bool {
 	return p.Req != nil
 }
 
-func (p *VerifyTokenByRPCArgs) GetFirstArgument() interface{} {
+func (p *RefeshTokenByRPCArgs) GetFirstArgument() interface{} {
 	return p.Req
 }
 
-type VerifyTokenByRPCResult struct {
-	Success *auth.VerifyResp
+type RefeshTokenByRPCResult struct {
+	Success *auth.DeliveryResp
 }
 
-var VerifyTokenByRPCResult_Success_DEFAULT *auth.VerifyResp
+var RefeshTokenByRPCResult_Success_DEFAULT *auth.DeliveryResp
 
-func (p *VerifyTokenByRPCResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
+func (p *RefeshTokenByRPCResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
 	if !p.IsSetSuccess() {
-		p.Success = new(auth.VerifyResp)
+		p.Success = new(auth.DeliveryResp)
 	}
 	return p.Success.FastRead(buf, _type, number)
 }
 
-func (p *VerifyTokenByRPCResult) FastWrite(buf []byte) (n int) {
+func (p *RefeshTokenByRPCResult) FastWrite(buf []byte) (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.FastWrite(buf)
 }
 
-func (p *VerifyTokenByRPCResult) Size() (n int) {
+func (p *RefeshTokenByRPCResult) Size() (n int) {
 	if !p.IsSetSuccess() {
 		return 0
 	}
 	return p.Success.Size()
 }
 
-func (p *VerifyTokenByRPCResult) Marshal(out []byte) ([]byte, error) {
+func (p *RefeshTokenByRPCResult) Marshal(out []byte) ([]byte, error) {
 	if !p.IsSetSuccess() {
 		return out, nil
 	}
 	return proto.Marshal(p.Success)
 }
 
-func (p *VerifyTokenByRPCResult) Unmarshal(in []byte) error {
-	msg := new(auth.VerifyResp)
+func (p *RefeshTokenByRPCResult) Unmarshal(in []byte) error {
+	msg := new(auth.DeliveryResp)
 	if err := proto.Unmarshal(in, msg); err != nil {
 		return err
 	}
@@ -382,22 +382,22 @@ func (p *VerifyTokenByRPCResult) Unmarshal(in []byte) error {
 	return nil
 }
 
-func (p *VerifyTokenByRPCResult) GetSuccess() *auth.VerifyResp {
+func (p *RefeshTokenByRPCResult) GetSuccess() *auth.DeliveryResp {
 	if !p.IsSetSuccess() {
-		return VerifyTokenByRPCResult_Success_DEFAULT
+		return RefeshTokenByRPCResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-func (p *VerifyTokenByRPCResult) SetSuccess(x interface{}) {
-	p.Success = x.(*auth.VerifyResp)
+func (p *RefeshTokenByRPCResult) SetSuccess(x interface{}) {
+	p.Success = x.(*auth.DeliveryResp)
 }
 
-func (p *VerifyTokenByRPCResult) IsSetSuccess() bool {
+func (p *RefeshTokenByRPCResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *VerifyTokenByRPCResult) GetResult() interface{} {
+func (p *RefeshTokenByRPCResult) GetResult() interface{} {
 	return p.Success
 }
 
@@ -421,11 +421,11 @@ func (p *kClient) DeliverTokenByRPC(ctx context.Context, Req *auth.DeliverTokenR
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) VerifyTokenByRPC(ctx context.Context, Req *auth.VerifyTokenReq) (r *auth.VerifyResp, err error) {
-	var _args VerifyTokenByRPCArgs
+func (p *kClient) RefeshTokenByRPC(ctx context.Context, Req *auth.RefeshTokenReq) (r *auth.DeliveryResp, err error) {
+	var _args RefeshTokenByRPCArgs
 	_args.Req = Req
-	var _result VerifyTokenByRPCResult
-	if err = p.c.Call(ctx, "VerifyTokenByRPC", &_args, &_result); err != nil {
+	var _result RefeshTokenByRPCResult
+	if err = p.c.Call(ctx, "RefeshTokenByRPC", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
