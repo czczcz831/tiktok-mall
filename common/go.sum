@@ -1,0 +1,4 @@
+github.com/cloudwego/kitex v0.11.3 h1:Qy1GtyuNbygMpwnMw+Aj1iS7fSd0IO7CzxtpZrRJ+Jc=
+github.com/cloudwego/kitex v0.11.3/go.mod h1:RHT9ERKFVppJjBfGvwJAPxCIzf4oN1yASW5S4pPZNu4=
+github.com/golang-jwt/jwt/v5 v5.2.1 h1:OuVbFODueb089Lh128TAcimifWaLhJwVflnrgM17wHk=
+github.com/golang-jwt/jwt/v5 v5.2.1/go.mod h1:pqrtFR0X4osieyHYxtmOUWsAWrfe1Q5UVIyoH402zdk=
