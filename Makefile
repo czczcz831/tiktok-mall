@@ -5,6 +5,10 @@ auth:
 .PHONY: gen
 gen: ## gen client code of {svc}. example: make gen svc=product
 	@scripts/gen.sh ${svc}
+
+.PHONY: api-gen
+api-gen: ## gen client code of {svc}. example: make gen svc=product
+	@scripts/api_gen.sh 
 	
 .PHONY: run
 run: ## run {svc} server. example: make run svc=product

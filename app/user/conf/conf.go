@@ -39,8 +39,9 @@ type Config struct {
 	Registry Registry `mapstructure:"registry"`
 	JWT      JWT      `mapstructure:"jwt"`
 
-	OsConf *OsEnvConf
-	NodeID int64
+	OsConf    *OsEnvConf
+	MD5Secret string `mapstructure:"md5_secret"`
+	NodeID    int64
 }
 
 type JWT struct {

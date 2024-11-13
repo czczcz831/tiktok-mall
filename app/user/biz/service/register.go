@@ -8,7 +8,7 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/user/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/user/biz/model"
 	"github.com/czczcz831/tiktok-mall/app/user/conf"
-	"github.com/czczcz831/tiktok-mall/app/user/utils"
+	"github.com/czczcz831/tiktok-mall/common/utils"
 
 	user "github.com/czczcz831/tiktok-mall/app/user/kitex_gen/user"
 )
@@ -38,7 +38,7 @@ func (s *RegisterService) Run(req *user.RegisterReq) (resp *user.RegisterResp, e
 	newUser := &model.User{
 		Base:     model.Base{UUID: uuid},
 		Email:    req.Email,
-		Password: (utils.MD5Crypto(req.Password, conf.GetConf().Secret)),
+		Password: (utils.MD5Crypto(req.Password, conf.GetConf().MD5Secret)),
 	}
 
 	// 保存用户对象到数据库

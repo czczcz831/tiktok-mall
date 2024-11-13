@@ -3,4 +3,6 @@ go 1.23.0
 use (
 	./app/auth
 	./app/user
+	./app/api
+	./common
 )

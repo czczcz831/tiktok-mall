@@ -7,9 +7,7 @@ import (
 	"errors"
 	client "github.com/cloudwego/kitex/client"
 	kitex "github.com/cloudwego/kitex/pkg/serviceinfo"
-	streaming "github.com/cloudwego/kitex/pkg/streaming"
 	auth "github.com/czczcz831/tiktok-mall/app/auth/kitex_gen/auth"
-	proto "google.golang.org/protobuf/proto"
 )
 
 var errInvalidMessageType = errors.New("invalid message type for service method handler")
@@ -17,17 +15,17 @@ var errInvalidMessageType = errors.New("invalid message type for service method 
 var serviceMethods = map[string]kitex.MethodInfo{
 	"DeliverTokenByRPC": kitex.NewMethodInfo(
 		deliverTokenByRPCHandler,
-		newDeliverTokenByRPCArgs,
-		newDeliverTokenByRPCResult,
+		newAuthServiceDeliverTokenByRPCArgs,
+		newAuthServiceDeliverTokenByRPCResult,
 		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
+		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
 	"RefeshTokenByRPC": kitex.NewMethodInfo(
 		refeshTokenByRPCHandler,
-		newRefeshTokenByRPCArgs,
-		newRefeshTokenByRPCResult,
+		newAuthServiceRefeshTokenByRPCArgs,
+		newAuthServiceRefeshTokenByRPCResult,
 		false,
-		kitex.WithStreamingMode(kitex.StreamingUnary),
+		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
 }
 
@@ -88,7 +86,7 @@ func newServiceInfo(hasStreaming bool, keepStreamingMethods bool, keepNonStreami
 		ServiceName:     serviceName,
 		HandlerType:     handlerType,
 		Methods:         methods,
-		PayloadCodec:    kitex.Protobuf,
+		PayloadCodec:    kitex.Thrift,
 		KiteXGenVersion: "v0.9.1",
 		Extra:           extra,
 	}
@@ -96,309 +94,39 @@ func newServiceInfo(hasStreaming bool, keepStreamingMethods bool, keepNonStreami
 }
 
 func deliverTokenByRPCHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(auth.DeliverTokenReq)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(auth.AuthService).DeliverTokenByRPC(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *DeliverTokenByRPCArgs:
-		success, err := handler.(auth.AuthService).DeliverTokenByRPC(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*DeliverTokenByRPCResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newDeliverTokenByRPCArgs() interface{} {
-	return &DeliverTokenByRPCArgs{}
-}
-
-func newDeliverTokenByRPCResult() interface{} {
-	return &DeliverTokenByRPCResult{}
-}
-
-type DeliverTokenByRPCArgs struct {
-	Req *auth.DeliverTokenReq
-}
-
-func (p *DeliverTokenByRPCArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
-	if !p.IsSetReq() {
-		p.Req = new(auth.DeliverTokenReq)
-	}
-	return p.Req.FastRead(buf, _type, number)
-}
-
-func (p *DeliverTokenByRPCArgs) FastWrite(buf []byte) (n int) {
-	if !p.IsSetReq() {
-		return 0
-	}
-	return p.Req.FastWrite(buf)
-}
-
-func (p *DeliverTokenByRPCArgs) Size() (n int) {
-	if !p.IsSetReq() {
-		return 0
-	}
-	return p.Req.Size()
-}
-
-func (p *DeliverTokenByRPCArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *DeliverTokenByRPCArgs) Unmarshal(in []byte) error {
-	msg := new(auth.DeliverTokenReq)
-	if err := proto.Unmarshal(in, msg); err != nil {
+	realArg := arg.(*auth.AuthServiceDeliverTokenByRPCArgs)
+	realResult := result.(*auth.AuthServiceDeliverTokenByRPCResult)
+	success, err := handler.(auth.AuthService).DeliverTokenByRPC(ctx, realArg.Req)
+	if err != nil {
 		return err
 	}
-	p.Req = msg
+	realResult.Success = success
 	return nil
 }
-
-var DeliverTokenByRPCArgs_Req_DEFAULT *auth.DeliverTokenReq
-
-func (p *DeliverTokenByRPCArgs) GetReq() *auth.DeliverTokenReq {
-	if !p.IsSetReq() {
-		return DeliverTokenByRPCArgs_Req_DEFAULT
-	}
-	return p.Req
+func newAuthServiceDeliverTokenByRPCArgs() interface{} {
+	return auth.NewAuthServiceDeliverTokenByRPCArgs()
 }
 
-func (p *DeliverTokenByRPCArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *DeliverTokenByRPCArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type DeliverTokenByRPCResult struct {
-	Success *auth.DeliveryResp
-}
-
-var DeliverTokenByRPCResult_Success_DEFAULT *auth.DeliveryResp
-
-func (p *DeliverTokenByRPCResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
-	if !p.IsSetSuccess() {
-		p.Success = new(auth.DeliveryResp)
-	}
-	return p.Success.FastRead(buf, _type, number)
-}
-
-func (p *DeliverTokenByRPCResult) FastWrite(buf []byte) (n int) {
-	if !p.IsSetSuccess() {
-		return 0
-	}
-	return p.Success.FastWrite(buf)
-}
-
-func (p *DeliverTokenByRPCResult) Size() (n int) {
-	if !p.IsSetSuccess() {
-		return 0
-	}
-	return p.Success.Size()
-}
-
-func (p *DeliverTokenByRPCResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *DeliverTokenByRPCResult) Unmarshal(in []byte) error {
-	msg := new(auth.DeliveryResp)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *DeliverTokenByRPCResult) GetSuccess() *auth.DeliveryResp {
-	if !p.IsSetSuccess() {
-		return DeliverTokenByRPCResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *DeliverTokenByRPCResult) SetSuccess(x interface{}) {
-	p.Success = x.(*auth.DeliveryResp)
-}
-
-func (p *DeliverTokenByRPCResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *DeliverTokenByRPCResult) GetResult() interface{} {
-	return p.Success
+func newAuthServiceDeliverTokenByRPCResult() interface{} {
+	return auth.NewAuthServiceDeliverTokenByRPCResult()
 }
 
 func refeshTokenByRPCHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	switch s := arg.(type) {
-	case *streaming.Args:
-		st := s.Stream
-		req := new(auth.RefeshTokenReq)
-		if err := st.RecvMsg(req); err != nil {
-			return err
-		}
-		resp, err := handler.(auth.AuthService).RefeshTokenByRPC(ctx, req)
-		if err != nil {
-			return err
-		}
-		return st.SendMsg(resp)
-	case *RefeshTokenByRPCArgs:
-		success, err := handler.(auth.AuthService).RefeshTokenByRPC(ctx, s.Req)
-		if err != nil {
-			return err
-		}
-		realResult := result.(*RefeshTokenByRPCResult)
-		realResult.Success = success
-		return nil
-	default:
-		return errInvalidMessageType
-	}
-}
-func newRefeshTokenByRPCArgs() interface{} {
-	return &RefeshTokenByRPCArgs{}
-}
-
-func newRefeshTokenByRPCResult() interface{} {
-	return &RefeshTokenByRPCResult{}
-}
-
-type RefeshTokenByRPCArgs struct {
-	Req *auth.RefeshTokenReq
-}
-
-func (p *RefeshTokenByRPCArgs) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
-	if !p.IsSetReq() {
-		p.Req = new(auth.RefeshTokenReq)
-	}
-	return p.Req.FastRead(buf, _type, number)
-}
-
-func (p *RefeshTokenByRPCArgs) FastWrite(buf []byte) (n int) {
-	if !p.IsSetReq() {
-		return 0
-	}
-	return p.Req.FastWrite(buf)
-}
-
-func (p *RefeshTokenByRPCArgs) Size() (n int) {
-	if !p.IsSetReq() {
-		return 0
-	}
-	return p.Req.Size()
-}
-
-func (p *RefeshTokenByRPCArgs) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetReq() {
-		return out, nil
-	}
-	return proto.Marshal(p.Req)
-}
-
-func (p *RefeshTokenByRPCArgs) Unmarshal(in []byte) error {
-	msg := new(auth.RefeshTokenReq)
-	if err := proto.Unmarshal(in, msg); err != nil {
+	realArg := arg.(*auth.AuthServiceRefeshTokenByRPCArgs)
+	realResult := result.(*auth.AuthServiceRefeshTokenByRPCResult)
+	success, err := handler.(auth.AuthService).RefeshTokenByRPC(ctx, realArg.Req)
+	if err != nil {
 		return err
 	}
-	p.Req = msg
+	realResult.Success = success
 	return nil
 }
-
-var RefeshTokenByRPCArgs_Req_DEFAULT *auth.RefeshTokenReq
-
-func (p *RefeshTokenByRPCArgs) GetReq() *auth.RefeshTokenReq {
-	if !p.IsSetReq() {
-		return RefeshTokenByRPCArgs_Req_DEFAULT
-	}
-	return p.Req
+func newAuthServiceRefeshTokenByRPCArgs() interface{} {
+	return auth.NewAuthServiceRefeshTokenByRPCArgs()
 }
 
-func (p *RefeshTokenByRPCArgs) IsSetReq() bool {
-	return p.Req != nil
-}
-
-func (p *RefeshTokenByRPCArgs) GetFirstArgument() interface{} {
-	return p.Req
-}
-
-type RefeshTokenByRPCResult struct {
-	Success *auth.DeliveryResp
-}
-
-var RefeshTokenByRPCResult_Success_DEFAULT *auth.DeliveryResp
-
-func (p *RefeshTokenByRPCResult) FastRead(buf []byte, _type int8, number int32) (n int, err error) {
-	if !p.IsSetSuccess() {
-		p.Success = new(auth.DeliveryResp)
-	}
-	return p.Success.FastRead(buf, _type, number)
-}
-
-func (p *RefeshTokenByRPCResult) FastWrite(buf []byte) (n int) {
-	if !p.IsSetSuccess() {
-		return 0
-	}
-	return p.Success.FastWrite(buf)
-}
-
-func (p *RefeshTokenByRPCResult) Size() (n int) {
-	if !p.IsSetSuccess() {
-		return 0
-	}
-	return p.Success.Size()
-}
-
-func (p *RefeshTokenByRPCResult) Marshal(out []byte) ([]byte, error) {
-	if !p.IsSetSuccess() {
-		return out, nil
-	}
-	return proto.Marshal(p.Success)
-}
-
-func (p *RefeshTokenByRPCResult) Unmarshal(in []byte) error {
-	msg := new(auth.DeliveryResp)
-	if err := proto.Unmarshal(in, msg); err != nil {
-		return err
-	}
-	p.Success = msg
-	return nil
-}
-
-func (p *RefeshTokenByRPCResult) GetSuccess() *auth.DeliveryResp {
-	if !p.IsSetSuccess() {
-		return RefeshTokenByRPCResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-func (p *RefeshTokenByRPCResult) SetSuccess(x interface{}) {
-	p.Success = x.(*auth.DeliveryResp)
-}
-
-func (p *RefeshTokenByRPCResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *RefeshTokenByRPCResult) GetResult() interface{} {
-	return p.Success
+func newAuthServiceRefeshTokenByRPCResult() interface{} {
+	return auth.NewAuthServiceRefeshTokenByRPCResult()
 }
 
 type kClient struct {
@@ -411,20 +139,20 @@ func newServiceClient(c client.Client) *kClient {
 	}
 }
 
-func (p *kClient) DeliverTokenByRPC(ctx context.Context, Req *auth.DeliverTokenReq) (r *auth.DeliveryResp, err error) {
-	var _args DeliverTokenByRPCArgs
-	_args.Req = Req
-	var _result DeliverTokenByRPCResult
+func (p *kClient) DeliverTokenByRPC(ctx context.Context, req *auth.DeliverTokenReq) (r *auth.DeliveryResp, err error) {
+	var _args auth.AuthServiceDeliverTokenByRPCArgs
+	_args.Req = req
+	var _result auth.AuthServiceDeliverTokenByRPCResult
 	if err = p.c.Call(ctx, "DeliverTokenByRPC", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) RefeshTokenByRPC(ctx context.Context, Req *auth.RefeshTokenReq) (r *auth.DeliveryResp, err error) {
-	var _args RefeshTokenByRPCArgs
-	_args.Req = Req
-	var _result RefeshTokenByRPCResult
+func (p *kClient) RefeshTokenByRPC(ctx context.Context, req *auth.RefeshTokenReq) (r *auth.DeliveryResp, err error) {
+	var _args auth.AuthServiceRefeshTokenByRPCArgs
+	_args.Req = req
+	var _result auth.AuthServiceRefeshTokenByRPCResult
 	if err = p.c.Call(ctx, "RefeshTokenByRPC", &_args, &_result); err != nil {
 		return
 	}
