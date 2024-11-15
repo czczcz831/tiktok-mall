@@ -3,8 +3,29 @@
 package api
 
 import (
+	"context"
+
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/czczcz831/tiktok-mall/app/api/conf"
+	"github.com/czczcz831/tiktok-mall/common/utils"
 )
+
+func SubjectFromToken(ctx context.Context, c *app.RequestContext) string {
+	token := c.GetRequest().Header.Get("Authorization")
+	if token == "" {
+		return ""
+	}
+
+	publicKeyHexString := conf.GetConf().JWT.PublicSecret
+
+	uuid, _, err := utils.VerifyToken(token, publicKeyHexString)
+
+	if err != nil {
+		return ""
+	}
+
+	return uuid
+}
 
 func rootMw() []app.HandlerFunc {
 	// your code...
@@ -17,6 +38,16 @@ func _userMw() []app.HandlerFunc {
 }
 
 func _loginMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _refreshtokenMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _registerMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

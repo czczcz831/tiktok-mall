@@ -6,19 +6,25 @@ import (
 	"context"
 	"time"
 
+	"net"
+
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/cloudwego/hertz/pkg/app/server/registry"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/router"
 	"github.com/czczcz831/tiktok-mall/app/api/conf"
+	consulapi "github.com/hashicorp/consul/api"
 	"github.com/hertz-contrib/cors"
 	"github.com/hertz-contrib/gzip"
 	"github.com/hertz-contrib/logger/accesslog"
 	hertzlogrus "github.com/hertz-contrib/logger/logrus"
 	"github.com/hertz-contrib/pprof"
+	consul "github.com/hertz-contrib/registry/consul"
+	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -27,7 +33,28 @@ func main() {
 	// init dal
 	// dal.Init()
 	address := conf.GetConf().Hertz.Address
-	h := server.New(server.WithHostPorts(address))
+	//server registry
+
+	consulCfg := consulapi.DefaultConfig()
+	consulCfg.Address = net.JoinHostPort(conf.GetConf().OsConf.ConsulConf.ConsulHost, conf.GetConf().OsConf.ConsulConf.ConsulPort)
+	consulClient, err := consulapi.NewClient(consulCfg)
+	if err != nil {
+		hlog.Fatalf("new consul client failed: %v", err)
+	}
+
+	r := consul.NewConsulRegister(consulClient)
+	if err != nil {
+		hlog.Fatalf("new consul register failed: %v", err)
+	}
+	h := server.New(
+		server.WithHostPorts(address),
+		server.WithRegistry(r, &registry.Info{
+			ServiceName: conf.GetConf().Hertz.Service,
+			Addr:        utils.NewNetAddr("tcp", address),
+			Weight:      10,
+			Tags:        nil,
+		}),
+	)
 
 	registerMiddleware(h)
 
@@ -55,7 +82,7 @@ func registerMiddleware(h *server.Hertz) {
 		}),
 		FlushInterval: time.Minute,
 	}
-	hlog.SetOutput(asyncWriter)
+	// hlog.SetOutput(asyncWriter)
 	h.OnShutdown = append(h.OnShutdown, func(ctx context.Context) {
 		asyncWriter.Sync()
 	})
