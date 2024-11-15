@@ -8,7 +8,6 @@ service UserService {
 struct RegisterReq {
     1: string email
     2: string password
-    3: string confirm_password
 }
 
 struct RegisterResp {

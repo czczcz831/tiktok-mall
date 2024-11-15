@@ -4,5 +4,7 @@ use (
 	./app/auth
 	./app/user
 	./app/api
+	./client/user
+	./client/auth
 	./common
 )

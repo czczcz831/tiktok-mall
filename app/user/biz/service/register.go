@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 
 	"github.com/bwmarrin/snowflake"
 	"github.com/czczcz831/tiktok-mall/app/user/biz/dal/mysql"
@@ -23,10 +22,6 @@ func NewRegisterService(ctx context.Context) *RegisterService {
 // Run create note info
 func (s *RegisterService) Run(req *user.RegisterReq) (resp *user.RegisterResp, err error) {
 	// Finish your business logic.
-
-	if req.Password != req.ConfirmPassword {
-		return nil, errors.New("password not match")
-	}
 
 	nodeId := conf.GetConf().NodeID
 	node, err := snowflake.NewNode(nodeId % 1024)

@@ -2,11 +2,14 @@ package service
 
 import (
 	"context"
-	"errors"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/utils/packer"
 	api "github.com/czczcz831/tiktok-mall/app/api/hertz_gen/api"
-	"github.com/czczcz831/tiktok-mall/app/user/rpc/user"
+	auth "github.com/czczcz831/tiktok-mall/client/auth/kitex_gen/auth"
+	authAgent "github.com/czczcz831/tiktok-mall/client/auth/rpc/auth"
+	user "github.com/czczcz831/tiktok-mall/client/user/kitex_gen/user"
+	userAgent "github.com/czczcz831/tiktok-mall/client/user/rpc/user"
 )
 
 type LoginService struct {
@@ -24,14 +27,35 @@ func (h *LoginService) Run(req *api.LoginReq) (resp *api.LoginResp, err error) {
 	// hlog.CtxInfof(h.Context, "resp = %+v", resp)
 	//}()
 	// todo edit your code
-	if req.Password != req.ConfirmPassword {
-		return nil, errors.New("password and confirm password are not the same")
+
+	loginResp, err := userAgent.DefaultClient().Login(h.Context, &user.LoginReq{
+		Email:    req.Email,
+		Password: req.Password,
+	})
+
+	if err != nil {
+		return nil, &packer.MyError{
+			Code: packer.INVALID_ACCOUNT_PASSWORD_ERROR,
+			Err:  err,
+		}
 	}
 
-	user.DefaultClient()
+	uuid := loginResp.UserUuid
+
+	deliveryTokenResp, err := authAgent.DefaultClient().DeliverTokenByRPC(h.Context, &auth.DeliverTokenReq{
+		UserUuid: uuid,
+	})
+
+	if err != nil {
+		return nil, &packer.MyError{
+			Code: packer.AUTH_DELIBER_TOKEN_ERROR,
+			Err:  err,
+		}
+	}
 
 	return &api.LoginResp{
-		Token:        "",
-		RefreshToken: "",
+		Token:        deliveryTokenResp.Token,
+		RefreshToken: deliveryTokenResp.RefreshToken,
 	}, nil
+
 }

@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"errors"
 
+	"github.com/cloudwego/kitex/pkg/klog"
 	auth "github.com/czczcz831/tiktok-mall/app/auth/kitex_gen/auth"
 	"github.com/czczcz831/tiktok-mall/app/user/conf"
 	"github.com/czczcz831/tiktok-mall/common/utils"
@@ -23,9 +25,13 @@ func (s *RefeshTokenByRPCService) Run(req *auth.RefeshTokenReq) (resp *auth.Deli
 	refreshTokenExpire := conf.GetConf().JWT.RefreshTokenExpire
 	privateKeyString := conf.GetConf().JWT.PrivateSecret
 
-	uuid, err := utils.VerifyToken(req.RefreshToken, publicKeyString)
+	uuid, isRt, err := utils.VerifyToken(req.RefreshToken, publicKeyString)
 	if err != nil {
 		return nil, err
+	}
+	klog.Info("isRt: ", isRt)
+	if !isRt {
+		return nil, errors.New("not a refresh token")
 	}
 
 	token, refreshToken, err := utils.SignToken(uuid, privateKeyString, tokenExpire, refreshTokenExpire)

@@ -7,6 +7,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/service"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/utils"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/utils/packer"
 	api "github.com/czczcz831/tiktok-mall/app/api/hertz_gen/api"
 )
 
@@ -17,11 +18,52 @@ func Login(ctx context.Context, c *app.RequestContext) {
 	var req api.LoginReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
+		err := packer.NewMyError(packer.INVALID_PARAMS_ERROR, err)
 		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
 		return
 	}
 
 	resp, err := service.NewLoginService(ctx, c).Run(&req)
+
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
+}
+
+// RefreshToken .
+// @router /user/refresh_token [POST]
+func RefreshToken(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req api.RefreshTokenReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+
+	resp, err := service.NewRefreshTokenService(ctx, c).Run(&req)
+
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
+}
+
+// Register .
+// @router /user/register [POST]
+func Register(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req api.RegisterReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+
+	resp, err := service.NewRegisterService(ctx, c).Run(&req)
 
 	if err != nil {
 		utils.SendErrResponse(ctx, c, consts.StatusOK, err)

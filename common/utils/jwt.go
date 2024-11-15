@@ -28,12 +28,14 @@ func SignToken(userUuid string, privateKeyString string, tokenExpire int, refres
 		jwt.MapClaims{
 			"uuid": userUuid,
 			"exp":  tokenExpireAt.Unix(),
+			"rt":   false,
 		},
 	)
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodEdDSA,
 		jwt.MapClaims{
 			"uuid": userUuid,
 			"exp":  refreshTokenExpireAt.Unix(),
+			"rt":   true,
 		},
 	)
 
@@ -56,11 +58,11 @@ func SignToken(userUuid string, privateKeyString string, tokenExpire int, refres
 
 }
 
-func VerifyToken(tokenString string, publicKeyStirng string) (string, error) {
+func VerifyToken(tokenString string, publicKeyHexString string) (string, bool, error) {
 
-	publicKeyBytes, err := String2Hex(publicKeyStirng)
+	publicKeyBytes, err := String2Hex(publicKeyHexString)
 	if err != nil {
-		return "", err
+		return "", false, err
 	}
 
 	publicKey := ed25519.PublicKey(publicKeyBytes)
@@ -75,17 +77,19 @@ func VerifyToken(tokenString string, publicKeyStirng string) (string, error) {
 	})
 
 	if err != nil {
-		return "", err
+		return "", false, err
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", err
+		return "", false, err
 	}
 	expireAt := claims["exp"].(float64)
 	if time.Now().Unix() > int64(expireAt) {
 		klog.Errorf("token expired")
-		return "", errors.New("token expired")
+		return "", false, errors.New("token expired")
 	}
 
-	return claims["uuid"].(string), nil
+	isRefreshToken := claims["rt"].(bool)
+
+	return claims["uuid"].(string), isRefreshToken, nil
 }
