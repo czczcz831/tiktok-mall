@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"github.com/czczcz831/tiktok-mall/app/cart/biz/model"
 	"github.com/czczcz831/tiktok-mall/app/cart/conf"
 
 	"gorm.io/driver/mysql"
@@ -19,6 +20,13 @@ func Init() {
 			SkipDefaultTransaction: true,
 		},
 	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = DB.AutoMigrate(&model.Cart{})
+
 	if err != nil {
 		panic(err)
 	}

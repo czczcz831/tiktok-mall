@@ -8,14 +8,17 @@ import (
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/server"
+	"github.com/czczcz831/tiktok-mall/app/cart/biz/dal"
 	"github.com/czczcz831/tiktok-mall/app/cart/conf"
 	"github.com/czczcz831/tiktok-mall/app/cart/kitex_gen/cart/cartservice"
+	_ "github.com/joho/godotenv/autoload"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func main() {
+	dal.Init()
 	opts := kitexInit()
 
 	svr := cartservice.NewServer(new(CartServiceImpl), opts...)
@@ -54,7 +57,7 @@ func kitexInit() (opts []server.Option) {
 		}),
 		FlushInterval: time.Minute,
 	}
-	klog.SetOutput(asyncWriter)
+	// klog.SetOutput(asyncWriter)
 	server.RegisterShutdownHook(func() {
 		asyncWriter.Sync()
 	})
