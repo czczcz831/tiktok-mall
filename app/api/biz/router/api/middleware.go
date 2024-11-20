@@ -2,30 +2,7 @@
 
 package api
 
-import (
-	"context"
-
-	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/czczcz831/tiktok-mall/app/api/conf"
-	"github.com/czczcz831/tiktok-mall/common/utils"
-)
-
-func SubjectFromToken(ctx context.Context, c *app.RequestContext) string {
-	token := c.GetRequest().Header.Get("Authorization")
-	if token == "" {
-		return ""
-	}
-
-	publicKeyHexString := conf.GetConf().JWT.PublicSecret
-
-	uuid, _, err := utils.VerifyToken(token, publicKeyHexString)
-
-	if err != nil {
-		return ""
-	}
-
-	return uuid
-}
+import "github.com/cloudwego/hertz/pkg/app"
 
 func rootMw() []app.HandlerFunc {
 	// your code...
@@ -48,6 +25,36 @@ func _refreshtokenMw() []app.HandlerFunc {
 }
 
 func _registerMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updateproductMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getproductlistMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _productMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _createproductMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deleteproductMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getproductMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

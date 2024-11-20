@@ -5,12 +5,14 @@ struct Product{
     string name
     string description
     i64 price
+    i64 stock
 }
 
 struct CreateProductReq{
     string name
     string description
     i64 price
+    i64 stock
 }
 
 struct CreateProductResp{

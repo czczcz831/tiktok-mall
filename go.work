@@ -4,7 +4,11 @@ use (
 	./app/auth
 	./app/user
 	./app/api
+	./app/product
+	./app/cart
 	./client/user
 	./client/auth
+	./client/product
+	./client/cart
 	./common
 )

@@ -8,6 +8,7 @@ import (
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/server"
+	"github.com/czczcz831/tiktok-mall/app/product/biz/dal"
 	"github.com/czczcz831/tiktok-mall/app/product/conf"
 	"github.com/czczcz831/tiktok-mall/app/product/kitex_gen/product/productservice"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
@@ -17,6 +18,7 @@ import (
 )
 
 func main() {
+	dal.Init()
 	opts := kitexInit()
 
 	svr := productservice.NewServer(new(ProductServiceImpl), opts...)
@@ -62,7 +64,7 @@ func kitexInit() (opts []server.Option) {
 		}),
 		FlushInterval: time.Minute,
 	}
-	klog.SetOutput(asyncWriter)
+	// klog.SetOutput(asyncWriter)
 	server.RegisterShutdownHook(func() {
 		asyncWriter.Sync()
 	})

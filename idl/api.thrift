@@ -1,5 +1,4 @@
-namespace go api
-
+#*********User*********#
 struct LoginReq {
     string email (api.body = "email")
     string password (api.body = "password")
@@ -30,4 +29,70 @@ service UserService {
     LoginResp Login(1: LoginReq req) (api.post="/user/login", api.body="json")
     LoginResp RefreshToken(1: RefreshTokenReq req) (api.post="/user/refresh_token", api.body="json")
     RegisterResp Register(1: RegisterReq req) (api.post="/user/register", api.body="json")
+}
+
+#*********Product*********#
+
+struct Product{
+    string uuid (api.body = "uuid")
+    string name (api.body = "name")
+    string description (api.body = "description")
+    i64 price (api.body = "price")
+    i64 stock (api.body = "stock")
+}
+
+struct CreateProductReq{
+    string name (api.body = "name")
+    string description (api.body = "description")
+    i64 price (api.body = "price")
+    i64 stock (api.body = "stock")
+}
+
+struct CreateProductResp{
+    Product product 
+}
+
+struct UpdateProductReq{
+    Product product  
+}
+
+struct UpdateProductResp{
+    Product product 
+}
+
+struct DeleteProductReq{
+    string uuid (api.path = "uuid")
+}
+
+struct DeleteProductResp{
+    string uuid
+}
+
+struct GetProductReq{
+    string uuid (api.path = "uuid")
+}
+
+struct GetProductResp{
+    Product product
+}
+
+struct GetProductListReq{
+    i32 page (api.query = "page")
+    i32 limit (api.query = "limit")
+    optional string name (api.query = "name")
+    optional i64 min_price (api.query = "min_price")
+    optional i64 max_price (api.query = "max_price")
+}
+
+struct GetProductListResp{
+    i64 total
+    list<Product> products
+}
+
+service ProductService {
+    CreateProductResp CreateProduct(1: CreateProductReq req) (api.post="/product", api.body="json")
+    UpdateProductResp UpdateProduct(1: UpdateProductReq req) (api.put="/product", api.body="json")
+    DeleteProductResp DeleteProduct(1: DeleteProductReq req) (api.delete="/product/:uuid" ,)
+    GetProductResp GetProduct(1: GetProductReq req) (api.get="/product/:uuid")
+    GetProductListResp GetProductList(1: GetProductListReq req) (api.get="/product")
 }

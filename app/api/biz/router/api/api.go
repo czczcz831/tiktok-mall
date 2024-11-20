@@ -17,6 +17,12 @@ import (
 func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
+	root.PUT("/product", append(_updateproductMw(), api.UpdateProduct)...)
+	root.GET("/product", append(_getproductlistMw(), api.GetProductList)...)
+	root.POST("/product", append(_createproductMw(), api.CreateProduct)...)
+	_product := root.Group("/product", _productMw()...)
+	_product.DELETE("/:uuid", append(_deleteproductMw(), api.DeleteProduct)...)
+	_product.GET("/:uuid", append(_getproductMw(), api.GetProduct)...)
 	{
 		_user := root.Group("/user", _userMw()...)
 		_user.POST("/login", append(_loginMw(), api.Login)...)
