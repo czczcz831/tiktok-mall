@@ -2,7 +2,10 @@
 
 package api
 
-import "github.com/cloudwego/hertz/pkg/app"
+import (
+	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/casbin"
+)
 
 func rootMw() []app.HandlerFunc {
 	// your code...
@@ -55,6 +58,26 @@ func _deleteproductMw() []app.HandlerFunc {
 }
 
 func _getproductMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _cartMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _clearcartMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getcartMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _addproducttocartMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

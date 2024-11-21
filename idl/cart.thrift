@@ -1,10 +1,12 @@
 namespace go cart
 
+###########Export#####################
 struct CartItem {
     string user_uuid
     string product_uuid
     i32 quantity
 }
+######################################
 
 struct AddProductToCartReq {
     CartItem item

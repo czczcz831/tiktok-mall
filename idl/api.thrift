@@ -96,3 +96,42 @@ service ProductService {
     GetProductResp GetProduct(1: GetProductReq req) (api.get="/product/:uuid")
     GetProductListResp GetProductList(1: GetProductListReq req) (api.get="/product")
 }
+
+#*********Cart*********#
+
+struct CartItem {
+    string user_uuid (api.body = "user_uuid")
+    string product_uuid (api.body = "product_uuid")
+    i64 quantity (api.body = "quantity")
+}
+
+struct AddProductToCartReq {
+    CartItem item
+}
+
+struct AddProductToCartResp {
+    CartItem item
+}
+
+struct ClearCartReq {
+    string user_uuid (api.path = "user_uuid")
+}
+
+struct ClearCartResp {
+    string user_uuid
+}
+
+struct GetCartReq {
+    string user_uuid (api.path = "user_uuid")
+}
+
+struct GetCartResp {
+    i64 total
+    list<CartItem> items
+}
+
+service CartService {
+    AddProductToCartResp AddProductToCart(1: AddProductToCartReq req) (api.post="/cart/add_product", api.body="json")
+    ClearCartResp ClearCart(1: ClearCartReq req) (api.delete="/cart/:user_uuid")
+    GetCartResp GetCart(1: GetCartReq req) (api.get="/cart/:user_uuid")
+}

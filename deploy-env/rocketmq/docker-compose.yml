@@ -31,12 +31,26 @@ services:
       - broker
       - namesrv
     ports:
-      - 8080:8080
-      - 8081:8081
+      - 7070:8080
+      - 7071:8081
     restart: on-failure
     environment:
       - NAMESRV_ADDR=rmqnamesrv:9876
     command: sh mqproxy
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: rmqdashboard
+    networks:
+        - rocketmq
+    depends_on:
+      - broker
+      - namesrv
+      - proxy
+    ports:
+      - 7069:8080
+    restart: on-failure
+    environment:
+      - JAVA_OPTS=-Drocketmq.namesrv.addr=rmqnamesrv:9876
 networks:
   rocketmq:
     driver: bridge
