@@ -6,9 +6,15 @@ use (
 	./app/api
 	./app/product
 	./app/cart
+	./app/checkout
+	./app/order
+	./app/payment
 	./client/user
 	./client/auth
 	./client/product
 	./client/cart
+	./client/order
+	./client/payment
+	./client/checkout
 	./common
 )

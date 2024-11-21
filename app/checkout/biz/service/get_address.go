@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+
+	"github.com/czczcz831/tiktok-mall/app/checkout/biz/dal/model"
+	"github.com/czczcz831/tiktok-mall/app/checkout/biz/dal/mysql"
 	checkout "github.com/czczcz831/tiktok-mall/app/checkout/kitex_gen/checkout"
 )
 
@@ -16,5 +19,23 @@ func NewGetAddressService(ctx context.Context) *GetAddressService {
 func (s *GetAddressService) Run(req *checkout.GetAddressReq) (resp *checkout.GetAddressResp, err error) {
 	// Finish your business logic.
 
-	return
+	addresses := []*model.Address{}
+
+	res := mysql.DB.Find(&addresses, "user_uuid = ?", req.UserUuid)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	addressResp := []*checkout.Address{}
+
+	for _, address := range addresses {
+		addressResp = append(addressResp, &checkout.Address{
+			Uuid: address.UUID,
+		})
+	}
+
+	return &checkout.GetAddressResp{
+		Addresses: addressResp,
+	}, nil
 }

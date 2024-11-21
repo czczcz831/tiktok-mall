@@ -28,6 +28,7 @@ struct OrderItem{
 
 #Address#
 struct CreateAddressReq{
+    string user_uuid
     string street_address
     string city
     string state

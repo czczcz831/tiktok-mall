@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+
+	"github.com/czczcz831/tiktok-mall/app/checkout/biz/dal/model"
+	"github.com/czczcz831/tiktok-mall/app/checkout/biz/dal/mysql"
 	checkout "github.com/czczcz831/tiktok-mall/app/checkout/kitex_gen/checkout"
 )
 
@@ -16,5 +19,13 @@ func NewDeleteCreditCardService(ctx context.Context) *DeleteCreditCardService {
 func (s *DeleteCreditCardService) Run(req *checkout.DeleteCreditCardReq) (resp *checkout.DeleteCreditCardResp, err error) {
 	// Finish your business logic.
 
-	return
+	res := mysql.DB.Delete(&model.CreditCard{}, "uuid = ?", req.Uuid)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &checkout.DeleteCreditCardResp{
+		Uuid: req.Uuid,
+	}, nil
 }

@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"github.com/czczcz831/tiktok-mall/app/checkout/biz/dal/model"
 	"github.com/czczcz831/tiktok-mall/app/checkout/conf"
 
 	"gorm.io/driver/mysql"
@@ -19,6 +20,9 @@ func Init() {
 			SkipDefaultTransaction: true,
 		},
 	)
+
+	DB.AutoMigrate(&model.Address{}, &model.CreditCard{}, &model.Checkout{})
+
 	if err != nil {
 		panic(err)
 	}

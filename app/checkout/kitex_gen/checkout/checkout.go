@@ -1210,11 +1210,12 @@ func (p *OrderItem) Field2DeepEqual(src int64) bool {
 }
 
 type CreateAddressReq struct {
-	StreetAddress string `thrift:"street_address,1" frugal:"1,default,string" json:"street_address"`
-	City          string `thrift:"city,2" frugal:"2,default,string" json:"city"`
-	State         string `thrift:"state,3" frugal:"3,default,string" json:"state"`
-	Country       string `thrift:"country,4" frugal:"4,default,string" json:"country"`
-	ZipCode       int64  `thrift:"zip_code,5" frugal:"5,default,i64" json:"zip_code"`
+	UserUuid      string `thrift:"user_uuid,1" frugal:"1,default,string" json:"user_uuid"`
+	StreetAddress string `thrift:"street_address,2" frugal:"2,default,string" json:"street_address"`
+	City          string `thrift:"city,3" frugal:"3,default,string" json:"city"`
+	State         string `thrift:"state,4" frugal:"4,default,string" json:"state"`
+	Country       string `thrift:"country,5" frugal:"5,default,string" json:"country"`
+	ZipCode       int64  `thrift:"zip_code,6" frugal:"6,default,i64" json:"zip_code"`
 }
 
 func NewCreateAddressReq() *CreateAddressReq {
@@ -1222,6 +1223,10 @@ func NewCreateAddressReq() *CreateAddressReq {
 }
 
 func (p *CreateAddressReq) InitDefault() {
+}
+
+func (p *CreateAddressReq) GetUserUuid() (v string) {
+	return p.UserUuid
 }
 
 func (p *CreateAddressReq) GetStreetAddress() (v string) {
@@ -1243,6 +1248,9 @@ func (p *CreateAddressReq) GetCountry() (v string) {
 func (p *CreateAddressReq) GetZipCode() (v int64) {
 	return p.ZipCode
 }
+func (p *CreateAddressReq) SetUserUuid(val string) {
+	p.UserUuid = val
+}
 func (p *CreateAddressReq) SetStreetAddress(val string) {
 	p.StreetAddress = val
 }
@@ -1260,11 +1268,12 @@ func (p *CreateAddressReq) SetZipCode(val int64) {
 }
 
 var fieldIDToName_CreateAddressReq = map[int16]string{
-	1: "street_address",
-	2: "city",
-	3: "state",
-	4: "country",
-	5: "zip_code",
+	1: "user_uuid",
+	2: "street_address",
+	3: "city",
+	4: "state",
+	5: "country",
+	6: "zip_code",
 }
 
 func (p *CreateAddressReq) Read(iprot thrift.TProtocol) (err error) {
@@ -1319,8 +1328,16 @@ func (p *CreateAddressReq) Read(iprot thrift.TProtocol) (err error) {
 				goto SkipFieldError
 			}
 		case 5:
-			if fieldTypeId == thrift.I64 {
+			if fieldTypeId == thrift.STRING {
 				if err = p.ReadField5(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		case 6:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField6(iprot); err != nil {
 					goto ReadFieldError
 				}
 			} else if err = iprot.Skip(fieldTypeId); err != nil {
@@ -1363,7 +1380,7 @@ func (p *CreateAddressReq) ReadField1(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.StreetAddress = _field
+	p.UserUuid = _field
 	return nil
 }
 func (p *CreateAddressReq) ReadField2(iprot thrift.TProtocol) error {
@@ -1374,7 +1391,7 @@ func (p *CreateAddressReq) ReadField2(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.City = _field
+	p.StreetAddress = _field
 	return nil
 }
 func (p *CreateAddressReq) ReadField3(iprot thrift.TProtocol) error {
@@ -1385,7 +1402,7 @@ func (p *CreateAddressReq) ReadField3(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.State = _field
+	p.City = _field
 	return nil
 }
 func (p *CreateAddressReq) ReadField4(iprot thrift.TProtocol) error {
@@ -1396,10 +1413,21 @@ func (p *CreateAddressReq) ReadField4(iprot thrift.TProtocol) error {
 	} else {
 		_field = v
 	}
-	p.Country = _field
+	p.State = _field
 	return nil
 }
 func (p *CreateAddressReq) ReadField5(iprot thrift.TProtocol) error {
+
+	var _field string
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		_field = v
+	}
+	p.Country = _field
+	return nil
+}
+func (p *CreateAddressReq) ReadField6(iprot thrift.TProtocol) error {
 
 	var _field int64
 	if v, err := iprot.ReadI64(); err != nil {
@@ -1438,6 +1466,10 @@ func (p *CreateAddressReq) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 5
 			goto WriteFieldError
 		}
+		if err = p.writeField6(oprot); err != nil {
+			fieldId = 6
+			goto WriteFieldError
+		}
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
 		goto WriteFieldStopError
@@ -1457,10 +1489,10 @@ WriteStructEndError:
 }
 
 func (p *CreateAddressReq) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("street_address", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("user_uuid", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.StreetAddress); err != nil {
+	if err := oprot.WriteString(p.UserUuid); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1474,10 +1506,10 @@ WriteFieldEndError:
 }
 
 func (p *CreateAddressReq) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("city", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("street_address", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.City); err != nil {
+	if err := oprot.WriteString(p.StreetAddress); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1491,10 +1523,10 @@ WriteFieldEndError:
 }
 
 func (p *CreateAddressReq) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("state", thrift.STRING, 3); err != nil {
+	if err = oprot.WriteFieldBegin("city", thrift.STRING, 3); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.State); err != nil {
+	if err := oprot.WriteString(p.City); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1508,10 +1540,10 @@ WriteFieldEndError:
 }
 
 func (p *CreateAddressReq) writeField4(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("country", thrift.STRING, 4); err != nil {
+	if err = oprot.WriteFieldBegin("state", thrift.STRING, 4); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Country); err != nil {
+	if err := oprot.WriteString(p.State); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1525,10 +1557,10 @@ WriteFieldEndError:
 }
 
 func (p *CreateAddressReq) writeField5(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("zip_code", thrift.I64, 5); err != nil {
+	if err = oprot.WriteFieldBegin("country", thrift.STRING, 5); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI64(p.ZipCode); err != nil {
+	if err := oprot.WriteString(p.Country); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -1539,6 +1571,23 @@ WriteFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 5 begin error: ", p), err)
 WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
+}
+
+func (p *CreateAddressReq) writeField6(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("zip_code", thrift.I64, 6); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI64(p.ZipCode); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
 }
 
 func (p *CreateAddressReq) String() string {
@@ -1555,19 +1604,22 @@ func (p *CreateAddressReq) DeepEqual(ano *CreateAddressReq) bool {
 	} else if p == nil || ano == nil {
 		return false
 	}
-	if !p.Field1DeepEqual(ano.StreetAddress) {
+	if !p.Field1DeepEqual(ano.UserUuid) {
 		return false
 	}
-	if !p.Field2DeepEqual(ano.City) {
+	if !p.Field2DeepEqual(ano.StreetAddress) {
 		return false
 	}
-	if !p.Field3DeepEqual(ano.State) {
+	if !p.Field3DeepEqual(ano.City) {
 		return false
 	}
-	if !p.Field4DeepEqual(ano.Country) {
+	if !p.Field4DeepEqual(ano.State) {
 		return false
 	}
-	if !p.Field5DeepEqual(ano.ZipCode) {
+	if !p.Field5DeepEqual(ano.Country) {
+		return false
+	}
+	if !p.Field6DeepEqual(ano.ZipCode) {
 		return false
 	}
 	return true
@@ -1575,33 +1627,40 @@ func (p *CreateAddressReq) DeepEqual(ano *CreateAddressReq) bool {
 
 func (p *CreateAddressReq) Field1DeepEqual(src string) bool {
 
-	if strings.Compare(p.StreetAddress, src) != 0 {
+	if strings.Compare(p.UserUuid, src) != 0 {
 		return false
 	}
 	return true
 }
 func (p *CreateAddressReq) Field2DeepEqual(src string) bool {
 
-	if strings.Compare(p.City, src) != 0 {
+	if strings.Compare(p.StreetAddress, src) != 0 {
 		return false
 	}
 	return true
 }
 func (p *CreateAddressReq) Field3DeepEqual(src string) bool {
 
-	if strings.Compare(p.State, src) != 0 {
+	if strings.Compare(p.City, src) != 0 {
 		return false
 	}
 	return true
 }
 func (p *CreateAddressReq) Field4DeepEqual(src string) bool {
 
+	if strings.Compare(p.State, src) != 0 {
+		return false
+	}
+	return true
+}
+func (p *CreateAddressReq) Field5DeepEqual(src string) bool {
+
 	if strings.Compare(p.Country, src) != 0 {
 		return false
 	}
 	return true
 }
-func (p *CreateAddressReq) Field5DeepEqual(src int64) bool {
+func (p *CreateAddressReq) Field6DeepEqual(src int64) bool {
 
 	if p.ZipCode != src {
 		return false

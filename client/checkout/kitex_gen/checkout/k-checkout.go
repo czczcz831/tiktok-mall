@@ -1068,8 +1068,22 @@ func (p *CreateAddressReq) FastRead(buf []byte) (int, error) {
 				}
 			}
 		case 5:
-			if fieldTypeId == thrift.I64 {
+			if fieldTypeId == thrift.STRING {
 				l, err = p.FastReadField5(buf[offset:])
+				offset += l
+				if err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				l, err = bthrift.Binary.Skip(buf[offset:], fieldTypeId)
+				offset += l
+				if err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 6:
+			if fieldTypeId == thrift.I64 {
+				l, err = p.FastReadField6(buf[offset:])
 				offset += l
 				if err != nil {
 					goto ReadFieldError
@@ -1124,7 +1138,7 @@ func (p *CreateAddressReq) FastReadField1(buf []byte) (int, error) {
 	} else {
 		offset += l
 
-		p.StreetAddress = v
+		p.UserUuid = v
 
 	}
 	return offset, nil
@@ -1138,7 +1152,7 @@ func (p *CreateAddressReq) FastReadField2(buf []byte) (int, error) {
 	} else {
 		offset += l
 
-		p.City = v
+		p.StreetAddress = v
 
 	}
 	return offset, nil
@@ -1152,7 +1166,7 @@ func (p *CreateAddressReq) FastReadField3(buf []byte) (int, error) {
 	} else {
 		offset += l
 
-		p.State = v
+		p.City = v
 
 	}
 	return offset, nil
@@ -1166,13 +1180,27 @@ func (p *CreateAddressReq) FastReadField4(buf []byte) (int, error) {
 	} else {
 		offset += l
 
-		p.Country = v
+		p.State = v
 
 	}
 	return offset, nil
 }
 
 func (p *CreateAddressReq) FastReadField5(buf []byte) (int, error) {
+	offset := 0
+
+	if v, l, err := bthrift.Binary.ReadString(buf[offset:]); err != nil {
+		return offset, err
+	} else {
+		offset += l
+
+		p.Country = v
+
+	}
+	return offset, nil
+}
+
+func (p *CreateAddressReq) FastReadField6(buf []byte) (int, error) {
 	offset := 0
 
 	if v, l, err := bthrift.Binary.ReadI64(buf[offset:]); err != nil {
@@ -1195,11 +1223,12 @@ func (p *CreateAddressReq) FastWriteNocopy(buf []byte, binaryWriter bthrift.Bina
 	offset := 0
 	offset += bthrift.Binary.WriteStructBegin(buf[offset:], "CreateAddressReq")
 	if p != nil {
-		offset += p.fastWriteField5(buf[offset:], binaryWriter)
+		offset += p.fastWriteField6(buf[offset:], binaryWriter)
 		offset += p.fastWriteField1(buf[offset:], binaryWriter)
 		offset += p.fastWriteField2(buf[offset:], binaryWriter)
 		offset += p.fastWriteField3(buf[offset:], binaryWriter)
 		offset += p.fastWriteField4(buf[offset:], binaryWriter)
+		offset += p.fastWriteField5(buf[offset:], binaryWriter)
 	}
 	offset += bthrift.Binary.WriteFieldStop(buf[offset:])
 	offset += bthrift.Binary.WriteStructEnd(buf[offset:])
@@ -1215,6 +1244,7 @@ func (p *CreateAddressReq) BLength() int {
 		l += p.field3Length()
 		l += p.field4Length()
 		l += p.field5Length()
+		l += p.field6Length()
 	}
 	l += bthrift.Binary.FieldStopLength()
 	l += bthrift.Binary.StructEndLength()
@@ -1223,8 +1253,8 @@ func (p *CreateAddressReq) BLength() int {
 
 func (p *CreateAddressReq) fastWriteField1(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "street_address", thrift.STRING, 1)
-	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.StreetAddress)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "user_uuid", thrift.STRING, 1)
+	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.UserUuid)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
 	return offset
@@ -1232,8 +1262,8 @@ func (p *CreateAddressReq) fastWriteField1(buf []byte, binaryWriter bthrift.Bina
 
 func (p *CreateAddressReq) fastWriteField2(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "city", thrift.STRING, 2)
-	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.City)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "street_address", thrift.STRING, 2)
+	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.StreetAddress)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
 	return offset
@@ -1241,8 +1271,8 @@ func (p *CreateAddressReq) fastWriteField2(buf []byte, binaryWriter bthrift.Bina
 
 func (p *CreateAddressReq) fastWriteField3(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "state", thrift.STRING, 3)
-	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.State)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "city", thrift.STRING, 3)
+	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.City)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
 	return offset
@@ -1250,8 +1280,8 @@ func (p *CreateAddressReq) fastWriteField3(buf []byte, binaryWriter bthrift.Bina
 
 func (p *CreateAddressReq) fastWriteField4(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "country", thrift.STRING, 4)
-	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.Country)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "state", thrift.STRING, 4)
+	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.State)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
 	return offset
@@ -1259,7 +1289,16 @@ func (p *CreateAddressReq) fastWriteField4(buf []byte, binaryWriter bthrift.Bina
 
 func (p *CreateAddressReq) fastWriteField5(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "zip_code", thrift.I64, 5)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "country", thrift.STRING, 5)
+	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.Country)
+
+	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
+	return offset
+}
+
+func (p *CreateAddressReq) fastWriteField6(buf []byte, binaryWriter bthrift.BinaryWriter) int {
+	offset := 0
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "zip_code", thrift.I64, 6)
 	offset += bthrift.Binary.WriteI64(buf[offset:], p.ZipCode)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
@@ -1268,8 +1307,8 @@ func (p *CreateAddressReq) fastWriteField5(buf []byte, binaryWriter bthrift.Bina
 
 func (p *CreateAddressReq) field1Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("street_address", thrift.STRING, 1)
-	l += bthrift.Binary.StringLengthNocopy(p.StreetAddress)
+	l += bthrift.Binary.FieldBeginLength("user_uuid", thrift.STRING, 1)
+	l += bthrift.Binary.StringLengthNocopy(p.UserUuid)
 
 	l += bthrift.Binary.FieldEndLength()
 	return l
@@ -1277,8 +1316,8 @@ func (p *CreateAddressReq) field1Length() int {
 
 func (p *CreateAddressReq) field2Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("city", thrift.STRING, 2)
-	l += bthrift.Binary.StringLengthNocopy(p.City)
+	l += bthrift.Binary.FieldBeginLength("street_address", thrift.STRING, 2)
+	l += bthrift.Binary.StringLengthNocopy(p.StreetAddress)
 
 	l += bthrift.Binary.FieldEndLength()
 	return l
@@ -1286,8 +1325,8 @@ func (p *CreateAddressReq) field2Length() int {
 
 func (p *CreateAddressReq) field3Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("state", thrift.STRING, 3)
-	l += bthrift.Binary.StringLengthNocopy(p.State)
+	l += bthrift.Binary.FieldBeginLength("city", thrift.STRING, 3)
+	l += bthrift.Binary.StringLengthNocopy(p.City)
 
 	l += bthrift.Binary.FieldEndLength()
 	return l
@@ -1295,8 +1334,8 @@ func (p *CreateAddressReq) field3Length() int {
 
 func (p *CreateAddressReq) field4Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("country", thrift.STRING, 4)
-	l += bthrift.Binary.StringLengthNocopy(p.Country)
+	l += bthrift.Binary.FieldBeginLength("state", thrift.STRING, 4)
+	l += bthrift.Binary.StringLengthNocopy(p.State)
 
 	l += bthrift.Binary.FieldEndLength()
 	return l
@@ -1304,7 +1343,16 @@ func (p *CreateAddressReq) field4Length() int {
 
 func (p *CreateAddressReq) field5Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("zip_code", thrift.I64, 5)
+	l += bthrift.Binary.FieldBeginLength("country", thrift.STRING, 5)
+	l += bthrift.Binary.StringLengthNocopy(p.Country)
+
+	l += bthrift.Binary.FieldEndLength()
+	return l
+}
+
+func (p *CreateAddressReq) field6Length() int {
+	l := 0
+	l += bthrift.Binary.FieldBeginLength("zip_code", thrift.I64, 6)
 	l += bthrift.Binary.I64Length(p.ZipCode)
 
 	l += bthrift.Binary.FieldEndLength()
