@@ -71,3 +71,10 @@ func (s *CheckoutServiceImpl) Checkout(ctx context.Context, req *checkout.Checko
 
 	return resp, err
 }
+
+// Charge implements the CheckoutServiceImpl interface.
+func (s *CheckoutServiceImpl) Charge(ctx context.Context, req *checkout.ChargeReq) (resp *checkout.ChargeResp, err error) {
+	resp, err = service.NewChargeService(ctx).Run(req)
+
+	return resp, err
+}

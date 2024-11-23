@@ -1,6 +1,5 @@
 namespace go checkout
 
-# **********Export**********#
 struct Address{
     string uuid
     string user_uuid
@@ -22,9 +21,9 @@ struct CreditCard{
 
 struct OrderItem{
     string product_uuid
+    i64 price
     i64 quantity
 }
-############################
 
 #Address#
 struct CreateAddressReq{
@@ -116,6 +115,14 @@ struct CheckoutReq{
 
 struct CheckoutResp{
     string order_uuid
+}
+
+struct ChargeReq{
+    string order_uuid
+    string payment_uuid
+}
+
+struct ChargeResp{
     string transaction_uuid
 }
 
@@ -134,4 +141,7 @@ service CheckoutService {
 
     #Checkout
     CheckoutResp Checkout(1: CheckoutReq req)
+
+    #Charge
+    ChargeResp Charge(1: ChargeReq req)
 }

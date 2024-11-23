@@ -87,3 +87,12 @@ func Checkout(ctx context.Context, req *checkout.CheckoutReq, callOptions ...cal
 	}
 	return resp, nil
 }
+
+func Charge(ctx context.Context, req *checkout.ChargeReq, callOptions ...callopt.Option) (resp *checkout.ChargeResp, err error) {
+	resp, err = defaultClient.Charge(ctx, req, callOptions...)
+	if err != nil {
+		klog.CtxErrorf(ctx, "Charge call failed,err =%+v", err)
+		return nil, err
+	}
+	return resp, nil
+}

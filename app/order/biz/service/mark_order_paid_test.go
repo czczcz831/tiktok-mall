@@ -2,16 +2,16 @@ package service
 
 import (
 	"context"
-	checkout "github.com/czczcz831/tiktok-mall/app/order/kitex_gen/checkout"
+	order "github.com/czczcz831/tiktok-mall/app/order/kitex_gen/order"
 	"testing"
 )
 
-func TestDeleteCreditCard_Run(t *testing.T) {
+func TestMarkOrderPaid_Run(t *testing.T) {
 	ctx := context.Background()
-	s := NewDeleteCreditCardService(ctx)
+	s := NewMarkOrderPaidService(ctx)
 	// init req and assert value
 
-	req := &checkout.DeleteCreditCardReq{}
+	req := &order.MarkOrderPaidReq{}
 	resp, err := s.Run(req)
 	t.Logf("err: %v", err)
 	t.Logf("resp: %v", resp)

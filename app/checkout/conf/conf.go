@@ -32,12 +32,22 @@ type OsEnvConf struct {
 	ConsulConf *ConsulConfig
 }
 
+type RocketMQ struct {
+	Endpoint  string `mapstructure:"endpoint"`
+	Group     string `mapstructure:"group"`
+	Region    string `mapstructure:"region"`
+	AccessKey string `mapstructure:"access_key"`
+	SecretKey string `mapstructure:"secret_key"`
+	Topic     string `mapstructure:"topic"`
+}
+
 type Config struct {
 	Kitex    Kitex    `mapstructure:"kitex"`
 	MySQL    MySQL    `mapstructure:"mysql"`
 	Redis    Redis    `mapstructure:"redis"`
 	Registry Registry `mapstructure:"registry"`
 	JWT      JWT      `mapstructure:"jwt"`
+	RocketMQ RocketMQ `mapstructure:"rocketmq"`
 
 	OsConf    *OsEnvConf
 	MD5Secret string `mapstructure:"md5_secret"`

@@ -76,6 +76,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"Charge": kitex.NewMethodInfo(
+		chargeHandler,
+		newCheckoutServiceChargeArgs,
+		newCheckoutServiceChargeResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -304,6 +311,24 @@ func newCheckoutServiceCheckoutResult() interface{} {
 	return checkout.NewCheckoutServiceCheckoutResult()
 }
 
+func chargeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*checkout.CheckoutServiceChargeArgs)
+	realResult := result.(*checkout.CheckoutServiceChargeResult)
+	success, err := handler.(checkout.CheckoutService).Charge(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newCheckoutServiceChargeArgs() interface{} {
+	return checkout.NewCheckoutServiceChargeArgs()
+}
+
+func newCheckoutServiceChargeResult() interface{} {
+	return checkout.NewCheckoutServiceChargeResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -399,6 +424,16 @@ func (p *kClient) Checkout(ctx context.Context, req *checkout.CheckoutReq) (r *c
 	_args.Req = req
 	var _result checkout.CheckoutServiceCheckoutResult
 	if err = p.c.Call(ctx, "Checkout", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) Charge(ctx context.Context, req *checkout.ChargeReq) (r *checkout.ChargeResp, err error) {
+	var _args checkout.CheckoutServiceChargeArgs
+	_args.Req = req
+	var _result checkout.CheckoutServiceChargeResult
+	if err = p.c.Call(ctx, "Charge", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

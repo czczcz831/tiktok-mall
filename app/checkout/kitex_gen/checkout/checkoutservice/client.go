@@ -20,6 +20,7 @@ type Client interface {
 	DeleteCreditCard(ctx context.Context, req *checkout.DeleteCreditCardReq, callOptions ...callopt.Option) (r *checkout.DeleteCreditCardResp, err error)
 	GetCreditCard(ctx context.Context, req *checkout.GetCreditCardReq, callOptions ...callopt.Option) (r *checkout.GetCreditCardResp, err error)
 	Checkout(ctx context.Context, req *checkout.CheckoutReq, callOptions ...callopt.Option) (r *checkout.CheckoutResp, err error)
+	Charge(ctx context.Context, req *checkout.ChargeReq, callOptions ...callopt.Option) (r *checkout.ChargeResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -94,4 +95,9 @@ func (p *kCheckoutServiceClient) GetCreditCard(ctx context.Context, req *checkou
 func (p *kCheckoutServiceClient) Checkout(ctx context.Context, req *checkout.CheckoutReq, callOptions ...callopt.Option) (r *checkout.CheckoutResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.Checkout(ctx, req)
+}
+
+func (p *kCheckoutServiceClient) Charge(ctx context.Context, req *checkout.ChargeReq, callOptions ...callopt.Option) (r *checkout.ChargeResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.Charge(ctx, req)
 }

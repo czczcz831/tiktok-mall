@@ -9,7 +9,7 @@ import (
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/server"
 	"github.com/czczcz831/tiktok-mall/app/order/conf"
-	"github.com/czczcz831/tiktok-mall/app/order/kitex_gen/checkout/checkoutservice"
+	"github.com/czczcz831/tiktok-mall/app/order/kitex_gen/order/orderservice"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -18,7 +18,7 @@ import (
 func main() {
 	opts := kitexInit()
 
-	svr := checkoutservice.NewServer(new(CheckoutServiceImpl), opts...)
+	svr := orderservice.NewServer(new(OrderServiceImpl), opts...)
 
 	err := svr.Run()
 	if err != nil {

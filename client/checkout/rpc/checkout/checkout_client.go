@@ -21,6 +21,7 @@ type RPCClient interface {
 	DeleteCreditCard(ctx context.Context, req *checkout.DeleteCreditCardReq, callOptions ...callopt.Option) (r *checkout.DeleteCreditCardResp, err error)
 	GetCreditCard(ctx context.Context, req *checkout.GetCreditCardReq, callOptions ...callopt.Option) (r *checkout.GetCreditCardResp, err error)
 	Checkout(ctx context.Context, req *checkout.CheckoutReq, callOptions ...callopt.Option) (r *checkout.CheckoutResp, err error)
+	Charge(ctx context.Context, req *checkout.ChargeReq, callOptions ...callopt.Option) (r *checkout.ChargeResp, err error)
 }
 
 func NewRPCClient(dstService string, opts ...client.Option) (RPCClient, error) {
@@ -83,4 +84,8 @@ func (c *clientImpl) GetCreditCard(ctx context.Context, req *checkout.GetCreditC
 
 func (c *clientImpl) Checkout(ctx context.Context, req *checkout.CheckoutReq, callOptions ...callopt.Option) (r *checkout.CheckoutResp, err error) {
 	return c.kitexClient.Checkout(ctx, req, callOptions...)
+}
+
+func (c *clientImpl) Charge(ctx context.Context, req *checkout.ChargeReq, callOptions ...callopt.Option) (r *checkout.ChargeResp, err error) {
+	return c.kitexClient.Charge(ctx, req, callOptions...)
 }

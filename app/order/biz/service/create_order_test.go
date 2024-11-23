@@ -2,16 +2,16 @@ package service
 
 import (
 	"context"
-	checkout "github.com/czczcz831/tiktok-mall/app/order/kitex_gen/checkout"
+	order "github.com/czczcz831/tiktok-mall/app/order/kitex_gen/order"
 	"testing"
 )
 
-func TestGetAddress_Run(t *testing.T) {
+func TestCreateOrder_Run(t *testing.T) {
 	ctx := context.Background()
-	s := NewGetAddressService(ctx)
+	s := NewCreateOrderService(ctx)
 	// init req and assert value
 
-	req := &checkout.GetAddressReq{}
+	req := &order.CreateOrderReq{}
 	resp, err := s.Run(req)
 	t.Logf("err: %v", err)
 	t.Logf("resp: %v", resp)

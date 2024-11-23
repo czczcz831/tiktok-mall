@@ -31,8 +31,8 @@ services:
       - broker
       - namesrv
     ports:
-      - 7070:8080
-      - 7071:8081
+      - 8080:8080
+      - 8081:8081
     restart: on-failure
     environment:
       - NAMESRV_ADDR=rmqnamesrv:9876

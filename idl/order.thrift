@@ -1,7 +1,10 @@
 namespace go order
 
-include "checkout.thrift"
-
+struct OrderItem{
+    string product_uuid
+    i64 price
+    i64 quantity
+}
 
 struct Order {
     string uuid
@@ -9,13 +12,13 @@ struct Order {
     i64 total
     bool is_paid
     i64 created_at
-    list<checkout.OrderItem> items
+    list<OrderItem> items
 }
 
 struct CreateOrderReq {
     string user_uuid
-    checkout.Address address
-    list<checkout.OrderItem> items
+    i64 total
+    list<OrderItem> items
 }
 
 struct CreateOrderResp{
@@ -28,4 +31,9 @@ struct MarkOrderPaidReq {
 
 struct MarkOrderPaidResp {
     Order order
+}
+
+service OrderService{
+    CreateOrderResp CreateOrder(1: CreateOrderReq req)
+    MarkOrderPaidResp MarkOrderPaid(1: MarkOrderPaidReq req)
 }
