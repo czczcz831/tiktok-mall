@@ -25,6 +25,14 @@ struct CreateOrderResp{
     Order order;
 }
 
+struct GetOrderReq {
+    string uuid
+}
+
+struct GetOrderResp {
+    Order order
+}
+
 struct MarkOrderPaidReq {
     string uuid
 }
@@ -36,4 +44,5 @@ struct MarkOrderPaidResp {
 service OrderService{
     CreateOrderResp CreateOrder(1: CreateOrderReq req)
     MarkOrderPaidResp MarkOrderPaid(1: MarkOrderPaidReq req)
+    GetOrderResp GetOrder(1: GetOrderReq req)
 }

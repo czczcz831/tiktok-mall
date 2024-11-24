@@ -4,7 +4,7 @@ package api
 
 import (
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/casbin"
+	// "github.com/czczcz831/tiktok-mall/app/api/biz/dal/casbin"
 )
 
 func rootMw() []app.HandlerFunc {

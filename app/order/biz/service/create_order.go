@@ -2,11 +2,15 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 
+	rocketGolang "github.com/apache/rocketmq-clients/golang"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/model"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/mysql"
+	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/rocketmq"
 	"github.com/czczcz831/tiktok-mall/app/order/conf"
 	order "github.com/czczcz831/tiktok-mall/app/order/kitex_gen/order"
+	consts "github.com/czczcz831/tiktok-mall/common/consts"
 	"github.com/czczcz831/tiktok-mall/common/utils"
 )
 
@@ -16,6 +20,8 @@ type CreateOrderService struct {
 func NewCreateOrderService(ctx context.Context) *CreateOrderService {
 	return &CreateOrderService{ctx: ctx}
 }
+
+var rocketCreateOrderTag = consts.RocketCreateOrderTag
 
 // Run create note info
 func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateOrderResp, err error) {
@@ -48,24 +54,52 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 		})
 	}
 
+	//Send Half-Message to RocketMQ
+	createOrderBytes, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	createOrderMsg := &rocketGolang.Message{
+		Topic: conf.GetConf().RocketMQ.Topic,
+		Body:  createOrderBytes,
+		Tag:   &rocketCreateOrderTag,
+	}
+	// RocketMQ Transaction Begin
+	rocketTx := rocketmq.CheckoutProducer.BeginTransaction()
+	_, err = rocketmq.CheckoutProducer.SendWithTransaction(context.TODO(), createOrderMsg, rocketTx)
+	if err != nil {
+		return nil, err
+	}
+
 	// LocalTransaction Begin
-	tx := mysql.DB.Begin()
+	mysqlTx := mysql.DB.Begin()
 
-	res := tx.Create(&createOrder)
+	res := mysqlTx.Create(&createOrder)
 
 	if res.Error != nil {
-		tx.Rollback()
+		mysqlTx.Rollback()
 		return nil, res.Error
 	}
 
-	res = tx.Create(&orderItems)
+	res = mysqlTx.Create(&orderItems)
 
 	if res.Error != nil {
-		tx.Rollback()
+		mysqlTx.Rollback()
 		return nil, res.Error
 	}
 
-	tx.Commit()
+	err = mysqlTx.Commit().Error
+	if err != nil {
+		mysqlTx.Rollback()
+		return nil, err
+	}
+
+	err = rocketTx.Commit()
+	if err != nil {
+		// Hand over to RocketMQ Back-Query to handle the message
+		return nil, err
+	}
 
 	//Transaction Commit
 

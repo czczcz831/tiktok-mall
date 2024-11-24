@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	CreateOrderProducer golang.Producer
+	CheckoutProducer golang.Producer
 )
 
 func Init() {
@@ -18,7 +18,7 @@ func Init() {
 	var err error
 	log.Println(conf.GetConf().RocketMQ.Endpoint)
 	golang.ResetLogger()
-	CreateOrderProducer, err = golang.NewProducer(
+	CheckoutProducer, err = golang.NewProducer(
 		&golang.Config{
 			Endpoint: conf.GetConf().RocketMQ.Endpoint,
 			Credentials: &credentials.SessionCredentials{
@@ -39,7 +39,7 @@ func Init() {
 		panic(err)
 	}
 
-	err = CreateOrderProducer.Start()
+	err = CheckoutProducer.Start()
 	if err != nil {
 		panic(err)
 	}
