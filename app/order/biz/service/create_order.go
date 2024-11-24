@@ -46,7 +46,14 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	orderItems := make([]*model.OrderItem, 0)
 
 	for _, item := range req.Items {
+		orderItemUuid, err := utils.UUIDGenerate(nodeId)
+		if err != nil {
+			return nil, err
+		}
 		orderItems = append(orderItems, &model.OrderItem{
+			Base: model.Base{
+				UUID: orderItemUuid,
+			},
 			OrderUUID:   orderUUID,
 			ProductUuid: item.ProductUuid,
 			Price:       item.Price,
@@ -79,6 +86,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 
 	if res.Error != nil {
 		mysqlTx.Rollback()
+		rocketTx.RollBack()
 		return nil, res.Error
 	}
 
@@ -86,12 +94,14 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 
 	if res.Error != nil {
 		mysqlTx.Rollback()
+		rocketTx.RollBack()
 		return nil, res.Error
 	}
 
 	err = mysqlTx.Commit().Error
 	if err != nil {
 		mysqlTx.Rollback()
+		rocketTx.RollBack()
 		return nil, err
 	}
 

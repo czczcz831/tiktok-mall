@@ -54,3 +54,5 @@ services:
 networks:
   rocketmq:
     driver: bridge
+
+# ./bin/mqadmin updatetopic -n rmqnamesrv:9876 -t CheckoutTransactionQueue -c DefaultCluster -a +message.type=TRANSACTION

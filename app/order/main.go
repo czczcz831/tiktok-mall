@@ -8,9 +8,12 @@ import (
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/server"
+	"github.com/czczcz831/tiktok-mall/app/order/biz/dal"
 	"github.com/czczcz831/tiktok-mall/app/order/conf"
 	"github.com/czczcz831/tiktok-mall/app/order/kitex_gen/order/orderservice"
+	_ "github.com/joho/godotenv/autoload"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
+	consul "github.com/kitex-contrib/registry-consul"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -40,6 +43,15 @@ func kitexInit() (opts []server.Option) {
 	}))
 	// thrift meta handler
 	opts = append(opts, server.WithMetaHandler(transmeta.ServerTTHeaderHandler))
+
+	// server registry
+	r, err := consul.NewConsulRegister(net.JoinHostPort(conf.GetConf().OsConf.ConsulConf.ConsulHost, conf.GetConf().OsConf.ConsulConf.ConsulPort))
+	if err != nil {
+		klog.Fatalf("new consul register failed: %v", err)
+	}
+	opts = append(opts, server.WithRegistry(r))
+
+	dal.Init()
 
 	// klog
 	logger := kitexlogrus.NewLogger()

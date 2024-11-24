@@ -27,10 +27,7 @@ func Init() {
 			},
 		},
 		golang.WithTransactionChecker(&golang.TransactionChecker{
-			Check: func(msg *golang.MessageView) golang.TransactionResolution {
-				log.Printf("check transaction message: %v", msg)
-				return golang.COMMIT
-			},
+			Check: CreateOrderTxChecker,
 		}),
 		golang.WithTopics(conf.GetConf().RocketMQ.Topic),
 	)
