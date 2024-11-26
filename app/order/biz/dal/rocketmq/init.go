@@ -6,6 +6,7 @@ import (
 
 	"github.com/apache/rocketmq-clients/golang"
 	"github.com/apache/rocketmq-clients/golang/credentials"
+	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/czczcz831/tiktok-mall/app/checkout/conf"
 )
 
@@ -33,12 +34,12 @@ func Init() {
 	)
 
 	if err != nil {
-		panic(err)
+		klog.Fatalf("new producer failed: %v", err)
 	}
 
 	err = CheckoutProducer.Start()
 	if err != nil {
-		panic(err)
+		klog.Fatalf("start producer failed: %v", err)
 	}
 
 	log.Println("start rocketmq producer success")

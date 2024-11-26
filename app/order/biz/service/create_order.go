@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	rocketGolang "github.com/apache/rocketmq-clients/golang"
+	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/model"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/rocketmq"
@@ -107,6 +108,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 
 	err = rocketTx.Commit()
 	if err != nil {
+		klog.Errorf("rocketmq commit failed: %v", err)
 		// Hand over to RocketMQ Back-Query to handle the message
 		return nil, err
 	}

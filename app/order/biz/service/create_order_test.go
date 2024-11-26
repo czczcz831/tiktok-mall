@@ -16,11 +16,11 @@ func TestCreateOrder_Run(t *testing.T) {
 	// init req and assert value
 
 	req := &order.CreateOrderReq{
-		UserUuid: "czczcz-test-uuid",
+		UserUuid: "1855968708639035392",
 		Total:    100,
 		Items: []*order.OrderItem{
 			{
-				ProductUuid: "czczcz-test-product-uuid",
+				ProductUuid: "1857372730428198912",
 				Price:       100,
 				Quantity:    1,
 			},
