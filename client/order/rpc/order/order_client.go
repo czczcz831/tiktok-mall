@@ -13,6 +13,7 @@ type RPCClient interface {
 	KitexClient() orderservice.Client
 	Service() string
 	CreateOrder(ctx context.Context, req *order.CreateOrderReq, callOptions ...callopt.Option) (r *order.CreateOrderResp, err error)
+	UpdateOrderAddress(ctx context.Context, req *order.UpdateOrderAddressReq, callOptions ...callopt.Option) (r *order.UpdateOrderAddressResp, err error)
 	MarkOrderPaid(ctx context.Context, req *order.MarkOrderPaidReq, callOptions ...callopt.Option) (r *order.MarkOrderPaidResp, err error)
 	GetOrder(ctx context.Context, req *order.GetOrderReq, callOptions ...callopt.Option) (r *order.GetOrderResp, err error)
 }
@@ -45,6 +46,10 @@ func (c *clientImpl) KitexClient() orderservice.Client {
 
 func (c *clientImpl) CreateOrder(ctx context.Context, req *order.CreateOrderReq, callOptions ...callopt.Option) (r *order.CreateOrderResp, err error) {
 	return c.kitexClient.CreateOrder(ctx, req, callOptions...)
+}
+
+func (c *clientImpl) UpdateOrderAddress(ctx context.Context, req *order.UpdateOrderAddressReq, callOptions ...callopt.Option) (r *order.UpdateOrderAddressResp, err error) {
+	return c.kitexClient.UpdateOrderAddress(ctx, req, callOptions...)
 }
 
 func (c *clientImpl) MarkOrderPaid(ctx context.Context, req *order.MarkOrderPaidReq, callOptions ...callopt.Option) (r *order.MarkOrderPaidResp, err error) {

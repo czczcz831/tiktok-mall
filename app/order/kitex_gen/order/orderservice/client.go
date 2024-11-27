@@ -12,6 +12,7 @@ import (
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
 	CreateOrder(ctx context.Context, req *order.CreateOrderReq, callOptions ...callopt.Option) (r *order.CreateOrderResp, err error)
+	UpdateOrderAddress(ctx context.Context, req *order.UpdateOrderAddressReq, callOptions ...callopt.Option) (r *order.UpdateOrderAddressResp, err error)
 	MarkOrderPaid(ctx context.Context, req *order.MarkOrderPaidReq, callOptions ...callopt.Option) (r *order.MarkOrderPaidResp, err error)
 	GetOrder(ctx context.Context, req *order.GetOrderReq, callOptions ...callopt.Option) (r *order.GetOrderResp, err error)
 }
@@ -48,6 +49,11 @@ type kOrderServiceClient struct {
 func (p *kOrderServiceClient) CreateOrder(ctx context.Context, req *order.CreateOrderReq, callOptions ...callopt.Option) (r *order.CreateOrderResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.CreateOrder(ctx, req)
+}
+
+func (p *kOrderServiceClient) UpdateOrderAddress(ctx context.Context, req *order.UpdateOrderAddressReq, callOptions ...callopt.Option) (r *order.UpdateOrderAddressResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.UpdateOrderAddress(ctx, req)
 }
 
 func (p *kOrderServiceClient) MarkOrderPaid(ctx context.Context, req *order.MarkOrderPaidReq, callOptions ...callopt.Option) (r *order.MarkOrderPaidResp, err error) {

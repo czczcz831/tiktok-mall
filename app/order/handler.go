@@ -30,3 +30,10 @@ func (s *OrderServiceImpl) GetOrder(ctx context.Context, req *order.GetOrderReq)
 
 	return resp, err
 }
+
+// UpdateOrderAddress implements the OrderServiceImpl interface.
+func (s *OrderServiceImpl) UpdateOrderAddress(ctx context.Context, req *order.UpdateOrderAddressReq) (resp *order.UpdateOrderAddressResp, err error) {
+	resp, err = service.NewUpdateOrderAddressService(ctx).Run(req)
+
+	return resp, err
+}

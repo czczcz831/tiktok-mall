@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	CheckoutProducer golang.Producer
+	CreateOrderTxProducer golang.Producer
 )
 
 func Init() {
@@ -19,7 +19,13 @@ func Init() {
 	var err error
 	log.Println(conf.GetConf().RocketMQ.Endpoint)
 	golang.ResetLogger()
-	CheckoutProducer, err = golang.NewProducer(
+
+	err = delayedCancelOrderConsumerInit()
+	if err != nil {
+		klog.Fatal(err)
+	}
+
+	CreateOrderTxProducer, err = golang.NewProducer(
 		&golang.Config{
 			Endpoint: conf.GetConf().RocketMQ.Endpoint,
 			Credentials: &credentials.SessionCredentials{
@@ -37,7 +43,7 @@ func Init() {
 		klog.Fatalf("new producer failed: %v", err)
 	}
 
-	err = CheckoutProducer.Start()
+	err = CreateOrderTxProducer.Start()
 	if err != nil {
 		klog.Fatalf("start producer failed: %v", err)
 	}

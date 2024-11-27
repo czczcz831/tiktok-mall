@@ -9,16 +9,28 @@ struct OrderItem{
 struct Order {
     string uuid
     string user_uuid
+    string address_uuid
     i64 total
-    bool is_paid
+    i32 status
     i64 created_at
     list<OrderItem> items
 }
 
 struct CreateOrderReq {
     string user_uuid
+    string address_uuid
     i64 total
     list<OrderItem> items
+}
+
+struct UpdateOrderAddressReq {
+    string uuid
+    string user_uuid
+    string address_uuid
+}
+
+struct UpdateOrderAddressResp {
+    string address_uuid
 }
 
 struct CreateOrderResp{
@@ -43,6 +55,7 @@ struct MarkOrderPaidResp {
 
 service OrderService{
     CreateOrderResp CreateOrder(1: CreateOrderReq req)
+    UpdateOrderAddressResp UpdateOrderAddress(1: UpdateOrderAddressReq req)
     MarkOrderPaidResp MarkOrderPaid(1: MarkOrderPaidReq req)
     GetOrderResp GetOrder(1: GetOrderReq req)
 }

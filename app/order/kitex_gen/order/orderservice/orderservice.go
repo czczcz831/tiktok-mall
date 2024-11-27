@@ -20,6 +20,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"UpdateOrderAddress": kitex.NewMethodInfo(
+		updateOrderAddressHandler,
+		newOrderServiceUpdateOrderAddressArgs,
+		newOrderServiceUpdateOrderAddressResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 	"MarkOrderPaid": kitex.NewMethodInfo(
 		markOrderPaidHandler,
 		newOrderServiceMarkOrderPaidArgs,
@@ -118,6 +125,24 @@ func newOrderServiceCreateOrderResult() interface{} {
 	return order.NewOrderServiceCreateOrderResult()
 }
 
+func updateOrderAddressHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*order.OrderServiceUpdateOrderAddressArgs)
+	realResult := result.(*order.OrderServiceUpdateOrderAddressResult)
+	success, err := handler.(order.OrderService).UpdateOrderAddress(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newOrderServiceUpdateOrderAddressArgs() interface{} {
+	return order.NewOrderServiceUpdateOrderAddressArgs()
+}
+
+func newOrderServiceUpdateOrderAddressResult() interface{} {
+	return order.NewOrderServiceUpdateOrderAddressResult()
+}
+
 func markOrderPaidHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	realArg := arg.(*order.OrderServiceMarkOrderPaidArgs)
 	realResult := result.(*order.OrderServiceMarkOrderPaidResult)
@@ -169,6 +194,16 @@ func (p *kClient) CreateOrder(ctx context.Context, req *order.CreateOrderReq) (r
 	_args.Req = req
 	var _result order.OrderServiceCreateOrderResult
 	if err = p.c.Call(ctx, "CreateOrder", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) UpdateOrderAddress(ctx context.Context, req *order.UpdateOrderAddressReq) (r *order.UpdateOrderAddressResp, err error) {
+	var _args order.OrderServiceUpdateOrderAddressArgs
+	_args.Req = req
+	var _result order.OrderServiceUpdateOrderAddressResult
+	if err = p.c.Call(ctx, "UpdateOrderAddress", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

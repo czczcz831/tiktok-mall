@@ -33,12 +33,13 @@ type OsEnvConf struct {
 }
 
 type RocketMQ struct {
-	Endpoint  string `mapstructure:"endpoint"`
-	Group     string `mapstructure:"group"`
-	Region    string `mapstructure:"region"`
-	AccessKey string `mapstructure:"access_key"`
-	SecretKey string `mapstructure:"secret_key"`
-	Topic     string `mapstructure:"topic"`
+	Endpoint      string `mapstructure:"endpoint"`
+	Group         string `mapstructure:"group"`
+	Region        string `mapstructure:"region"`
+	AccessKey     string `mapstructure:"access_key"`
+	SecretKey     string `mapstructure:"secret_key"`
+	Topic         string `mapstructure:"topic"`
+	ConsumerGroup string `mapstructure:"consumer_group"`
 }
 
 type Config struct {

@@ -16,6 +16,15 @@ func CreateOrder(ctx context.Context, req *order.CreateOrderReq, callOptions ...
 	return resp, nil
 }
 
+func UpdateOrderAddress(ctx context.Context, req *order.UpdateOrderAddressReq, callOptions ...callopt.Option) (resp *order.UpdateOrderAddressResp, err error) {
+	resp, err = defaultClient.UpdateOrderAddress(ctx, req, callOptions...)
+	if err != nil {
+		klog.CtxErrorf(ctx, "UpdateOrderAddress call failed,err =%+v", err)
+		return nil, err
+	}
+	return resp, nil
+}
+
 func MarkOrderPaid(ctx context.Context, req *order.MarkOrderPaidReq, callOptions ...callopt.Option) (resp *order.MarkOrderPaidResp, err error) {
 	resp, err = defaultClient.MarkOrderPaid(ctx, req, callOptions...)
 	if err != nil {

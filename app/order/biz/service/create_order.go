@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	rocketGolang "github.com/apache/rocketmq-clients/golang"
 	"github.com/cloudwego/kitex/pkg/klog"
@@ -23,6 +24,8 @@ func NewCreateOrderService(ctx context.Context) *CreateOrderService {
 }
 
 var rocketCreateOrderTag = consts.RocketCreateOrderTag
+var rocketCreateOrderDelayedTag = consts.RocketCreateOrderDelayedTag
+var delayedTime = time.Minute * 10
 
 // Run create note info
 func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateOrderResp, err error) {
@@ -37,11 +40,11 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	}
 
 	createOrder := &model.Order{
-		Base: model.Base{
-			UUID: orderUUID,
-		},
-		UserUuid: req.UserUuid,
-		Total:    req.Total,
+		Base:        model.Base{UUID: orderUUID},
+		UserUuid:    req.UserUuid,
+		AddressUuid: req.AddressUuid,
+		Total:       req.Total,
+		Status:      model.OrderStatusUnpaid,
 	}
 
 	orderItems := make([]*model.OrderItem, 0)
@@ -74,8 +77,8 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 		Tag:   &rocketCreateOrderTag,
 	}
 	// RocketMQ Transaction Begin
-	rocketTx := rocketmq.CheckoutProducer.BeginTransaction()
-	_, err = rocketmq.CheckoutProducer.SendWithTransaction(context.TODO(), createOrderMsg, rocketTx)
+	rocketTx := rocketmq.CreateOrderTxProducer.BeginTransaction()
+	_, err = rocketmq.CreateOrderTxProducer.SendWithTransaction(context.TODO(), createOrderMsg, rocketTx)
 	if err != nil {
 		return nil, err
 	}
@@ -106,10 +109,30 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 		return nil, err
 	}
 
+	//send delayed msgs (cancel order)
+
+	deliveryTimestamp := time.Now().Add(delayedTime)
+	cancelOrderUuidBytes := []byte(orderUUID)
+
+	createOrderDelayedMsg := &rocketGolang.Message{
+		Topic: conf.GetConf().RocketMQ.Topic,
+		Body:  cancelOrderUuidBytes,
+		Tag:   &rocketCreateOrderDelayedTag,
+	}
+
+	createOrderDelayedMsg.SetDelayTimestamp(deliveryTimestamp)
+
+	_, err = rocketmq.CreateOrderTxProducer.Send(context.TODO(), createOrderDelayedMsg)
+	if err != nil {
+		mysqlTx.Rollback()
+		rocketTx.RollBack()
+		return nil, err
+	}
+
 	err = rocketTx.Commit()
 	if err != nil {
+		// Hand over to RocketMQ check-back to handle the message
 		klog.Errorf("rocketmq commit failed: %v", err)
-		// Hand over to RocketMQ Back-Query to handle the message
 		return nil, err
 	}
 
@@ -130,7 +153,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 			Uuid:      orderUUID,
 			UserUuid:  createOrder.UserUuid,
 			Total:     createOrder.Total,
-			IsPaid:    false,
+			Status:    int32(createOrder.Status),
 			CreatedAt: createOrder.CreatedAt.Unix(),
 			Items:     respOrderItems,
 		},
