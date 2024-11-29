@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	CreateOrderTxProducer golang.Producer
+	OrderProducer golang.Producer
 )
 
 func Init() {
@@ -25,7 +25,7 @@ func Init() {
 		klog.Fatal(err)
 	}
 
-	CreateOrderTxProducer, err = golang.NewProducer(
+	OrderProducer, err = golang.NewProducer(
 		&golang.Config{
 			Endpoint: conf.GetConf().RocketMQ.Endpoint,
 			Credentials: &credentials.SessionCredentials{
@@ -36,14 +36,13 @@ func Init() {
 		golang.WithTransactionChecker(&golang.TransactionChecker{
 			Check: CreateOrderTxChecker,
 		}),
-		golang.WithTopics(conf.GetConf().RocketMQ.Topic),
 	)
 
 	if err != nil {
 		klog.Fatalf("new producer failed: %v", err)
 	}
 
-	err = CreateOrderTxProducer.Start()
+	err = OrderProducer.Start()
 	if err != nil {
 		klog.Fatalf("start producer failed: %v", err)
 	}

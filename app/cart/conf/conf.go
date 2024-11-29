@@ -38,7 +38,8 @@ type RocketMQ struct {
 	Region        string `mapstructure:"region"`
 	AccessKey     string `mapstructure:"access_key"`
 	SecretKey     string `mapstructure:"secret_key"`
-	Topic         string `mapstructure:"topic"`
+	TxTopic       string `mapstructure:"tx_topic"`
+	NormalTopic   string `mapstructure:"normal_topic"`
 	ConsumerGroup string `mapstructure:"consumer_group"`
 }
 

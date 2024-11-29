@@ -21,7 +21,7 @@ func Init() {
 		},
 	)
 
-	DB.AutoMigrate(&model.Address{}, &model.CreditCard{}, &model.Checkout{})
+	DB.AutoMigrate(&model.Address{},  &model.Checkout{})
 
 	if err != nil {
 		panic(err)

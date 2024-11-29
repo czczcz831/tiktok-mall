@@ -1,10 +1,27 @@
 namespace go payment
 
-include "checkout.thrift"
+struct CreditCard{
+    string uuid
+    string user_uuid
+    string credit_card_number
+    i64 credit_card_cvv
+    i64 credit_card_exp_month
+    i64 credit_card_exp_year
+}
+
 
 struct ChargeReq {
     string user_uuid
     string order_uuid
     i64 amount
-    checkout.CreditCard credit_card
+    CreditCard credit_card
+}
+
+struct ChargeResp {
+  string transaction_uuid    
+  bool success
+}
+
+service PaymentService {
+    ChargeResp Charge(1: ChargeReq req)
 }

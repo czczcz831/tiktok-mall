@@ -41,45 +41,10 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
-	"CreateCreditCard": kitex.NewMethodInfo(
-		createCreditCardHandler,
-		newCheckoutServiceCreateCreditCardArgs,
-		newCheckoutServiceCreateCreditCardResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingNone),
-	),
-	"UpdateCreditCard": kitex.NewMethodInfo(
-		updateCreditCardHandler,
-		newCheckoutServiceUpdateCreditCardArgs,
-		newCheckoutServiceUpdateCreditCardResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingNone),
-	),
-	"DeleteCreditCard": kitex.NewMethodInfo(
-		deleteCreditCardHandler,
-		newCheckoutServiceDeleteCreditCardArgs,
-		newCheckoutServiceDeleteCreditCardResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingNone),
-	),
-	"GetCreditCard": kitex.NewMethodInfo(
-		getCreditCardHandler,
-		newCheckoutServiceGetCreditCardArgs,
-		newCheckoutServiceGetCreditCardResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingNone),
-	),
 	"Checkout": kitex.NewMethodInfo(
 		checkoutHandler,
 		newCheckoutServiceCheckoutArgs,
 		newCheckoutServiceCheckoutResult,
-		false,
-		kitex.WithStreamingMode(kitex.StreamingNone),
-	),
-	"Charge": kitex.NewMethodInfo(
-		chargeHandler,
-		newCheckoutServiceChargeArgs,
-		newCheckoutServiceChargeResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
@@ -221,78 +186,6 @@ func newCheckoutServiceGetAddressResult() interface{} {
 	return checkout.NewCheckoutServiceGetAddressResult()
 }
 
-func createCreditCardHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*checkout.CheckoutServiceCreateCreditCardArgs)
-	realResult := result.(*checkout.CheckoutServiceCreateCreditCardResult)
-	success, err := handler.(checkout.CheckoutService).CreateCreditCard(ctx, realArg.Req)
-	if err != nil {
-		return err
-	}
-	realResult.Success = success
-	return nil
-}
-func newCheckoutServiceCreateCreditCardArgs() interface{} {
-	return checkout.NewCheckoutServiceCreateCreditCardArgs()
-}
-
-func newCheckoutServiceCreateCreditCardResult() interface{} {
-	return checkout.NewCheckoutServiceCreateCreditCardResult()
-}
-
-func updateCreditCardHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*checkout.CheckoutServiceUpdateCreditCardArgs)
-	realResult := result.(*checkout.CheckoutServiceUpdateCreditCardResult)
-	success, err := handler.(checkout.CheckoutService).UpdateCreditCard(ctx, realArg.Req)
-	if err != nil {
-		return err
-	}
-	realResult.Success = success
-	return nil
-}
-func newCheckoutServiceUpdateCreditCardArgs() interface{} {
-	return checkout.NewCheckoutServiceUpdateCreditCardArgs()
-}
-
-func newCheckoutServiceUpdateCreditCardResult() interface{} {
-	return checkout.NewCheckoutServiceUpdateCreditCardResult()
-}
-
-func deleteCreditCardHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*checkout.CheckoutServiceDeleteCreditCardArgs)
-	realResult := result.(*checkout.CheckoutServiceDeleteCreditCardResult)
-	success, err := handler.(checkout.CheckoutService).DeleteCreditCard(ctx, realArg.Req)
-	if err != nil {
-		return err
-	}
-	realResult.Success = success
-	return nil
-}
-func newCheckoutServiceDeleteCreditCardArgs() interface{} {
-	return checkout.NewCheckoutServiceDeleteCreditCardArgs()
-}
-
-func newCheckoutServiceDeleteCreditCardResult() interface{} {
-	return checkout.NewCheckoutServiceDeleteCreditCardResult()
-}
-
-func getCreditCardHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*checkout.CheckoutServiceGetCreditCardArgs)
-	realResult := result.(*checkout.CheckoutServiceGetCreditCardResult)
-	success, err := handler.(checkout.CheckoutService).GetCreditCard(ctx, realArg.Req)
-	if err != nil {
-		return err
-	}
-	realResult.Success = success
-	return nil
-}
-func newCheckoutServiceGetCreditCardArgs() interface{} {
-	return checkout.NewCheckoutServiceGetCreditCardArgs()
-}
-
-func newCheckoutServiceGetCreditCardResult() interface{} {
-	return checkout.NewCheckoutServiceGetCreditCardResult()
-}
-
 func checkoutHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
 	realArg := arg.(*checkout.CheckoutServiceCheckoutArgs)
 	realResult := result.(*checkout.CheckoutServiceCheckoutResult)
@@ -309,24 +202,6 @@ func newCheckoutServiceCheckoutArgs() interface{} {
 
 func newCheckoutServiceCheckoutResult() interface{} {
 	return checkout.NewCheckoutServiceCheckoutResult()
-}
-
-func chargeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*checkout.CheckoutServiceChargeArgs)
-	realResult := result.(*checkout.CheckoutServiceChargeResult)
-	success, err := handler.(checkout.CheckoutService).Charge(ctx, realArg.Req)
-	if err != nil {
-		return err
-	}
-	realResult.Success = success
-	return nil
-}
-func newCheckoutServiceChargeArgs() interface{} {
-	return checkout.NewCheckoutServiceChargeArgs()
-}
-
-func newCheckoutServiceChargeResult() interface{} {
-	return checkout.NewCheckoutServiceChargeResult()
 }
 
 type kClient struct {
@@ -379,61 +254,11 @@ func (p *kClient) GetAddress(ctx context.Context, req *checkout.GetAddressReq) (
 	return _result.GetSuccess(), nil
 }
 
-func (p *kClient) CreateCreditCard(ctx context.Context, req *checkout.CreateCreditCardReq) (r *checkout.CreateCreditCardResp, err error) {
-	var _args checkout.CheckoutServiceCreateCreditCardArgs
-	_args.Req = req
-	var _result checkout.CheckoutServiceCreateCreditCardResult
-	if err = p.c.Call(ctx, "CreateCreditCard", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) UpdateCreditCard(ctx context.Context, req *checkout.UpdateCreditCardReq) (r *checkout.UpdateCreditCardResp, err error) {
-	var _args checkout.CheckoutServiceUpdateCreditCardArgs
-	_args.Req = req
-	var _result checkout.CheckoutServiceUpdateCreditCardResult
-	if err = p.c.Call(ctx, "UpdateCreditCard", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) DeleteCreditCard(ctx context.Context, req *checkout.DeleteCreditCardReq) (r *checkout.DeleteCreditCardResp, err error) {
-	var _args checkout.CheckoutServiceDeleteCreditCardArgs
-	_args.Req = req
-	var _result checkout.CheckoutServiceDeleteCreditCardResult
-	if err = p.c.Call(ctx, "DeleteCreditCard", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) GetCreditCard(ctx context.Context, req *checkout.GetCreditCardReq) (r *checkout.GetCreditCardResp, err error) {
-	var _args checkout.CheckoutServiceGetCreditCardArgs
-	_args.Req = req
-	var _result checkout.CheckoutServiceGetCreditCardResult
-	if err = p.c.Call(ctx, "GetCreditCard", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
 func (p *kClient) Checkout(ctx context.Context, req *checkout.CheckoutReq) (r *checkout.CheckoutResp, err error) {
 	var _args checkout.CheckoutServiceCheckoutArgs
 	_args.Req = req
 	var _result checkout.CheckoutServiceCheckoutResult
 	if err = p.c.Call(ctx, "Checkout", &_args, &_result); err != nil {
-		return
-	}
-	return _result.GetSuccess(), nil
-}
-
-func (p *kClient) Charge(ctx context.Context, req *checkout.ChargeReq) (r *checkout.ChargeResp, err error) {
-	var _args checkout.CheckoutServiceChargeArgs
-	_args.Req = req
-	var _result checkout.CheckoutServiceChargeResult
-	if err = p.c.Call(ctx, "Charge", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

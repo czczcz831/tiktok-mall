@@ -8,5 +8,4 @@ type Checkout struct {
 	Email     string `gorm:"type:varchar(255);not null" json:"email"`
 
 	AddressUUID    string `gorm:"type:char(36);not null" json:"address_uuid"`
-	CreditCardUUID string `gorm:"type:char(36);not null" json:"credit_card_uuid"`
 }

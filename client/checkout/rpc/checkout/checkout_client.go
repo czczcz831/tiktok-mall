@@ -16,12 +16,7 @@ type RPCClient interface {
 	UpdateAddress(ctx context.Context, req *checkout.UpdateAddressReq, callOptions ...callopt.Option) (r *checkout.UpdateAddressResp, err error)
 	DeleteAddress(ctx context.Context, req *checkout.DeleteAddressReq, callOptions ...callopt.Option) (r *checkout.DeleteAddressResp, err error)
 	GetAddress(ctx context.Context, req *checkout.GetAddressReq, callOptions ...callopt.Option) (r *checkout.GetAddressResp, err error)
-	CreateCreditCard(ctx context.Context, req *checkout.CreateCreditCardReq, callOptions ...callopt.Option) (r *checkout.CreateCreditCardResp, err error)
-	UpdateCreditCard(ctx context.Context, req *checkout.UpdateCreditCardReq, callOptions ...callopt.Option) (r *checkout.UpdateCreditCardResp, err error)
-	DeleteCreditCard(ctx context.Context, req *checkout.DeleteCreditCardReq, callOptions ...callopt.Option) (r *checkout.DeleteCreditCardResp, err error)
-	GetCreditCard(ctx context.Context, req *checkout.GetCreditCardReq, callOptions ...callopt.Option) (r *checkout.GetCreditCardResp, err error)
 	Checkout(ctx context.Context, req *checkout.CheckoutReq, callOptions ...callopt.Option) (r *checkout.CheckoutResp, err error)
-	Charge(ctx context.Context, req *checkout.ChargeReq, callOptions ...callopt.Option) (r *checkout.ChargeResp, err error)
 }
 
 func NewRPCClient(dstService string, opts ...client.Option) (RPCClient, error) {
@@ -66,26 +61,6 @@ func (c *clientImpl) GetAddress(ctx context.Context, req *checkout.GetAddressReq
 	return c.kitexClient.GetAddress(ctx, req, callOptions...)
 }
 
-func (c *clientImpl) CreateCreditCard(ctx context.Context, req *checkout.CreateCreditCardReq, callOptions ...callopt.Option) (r *checkout.CreateCreditCardResp, err error) {
-	return c.kitexClient.CreateCreditCard(ctx, req, callOptions...)
-}
-
-func (c *clientImpl) UpdateCreditCard(ctx context.Context, req *checkout.UpdateCreditCardReq, callOptions ...callopt.Option) (r *checkout.UpdateCreditCardResp, err error) {
-	return c.kitexClient.UpdateCreditCard(ctx, req, callOptions...)
-}
-
-func (c *clientImpl) DeleteCreditCard(ctx context.Context, req *checkout.DeleteCreditCardReq, callOptions ...callopt.Option) (r *checkout.DeleteCreditCardResp, err error) {
-	return c.kitexClient.DeleteCreditCard(ctx, req, callOptions...)
-}
-
-func (c *clientImpl) GetCreditCard(ctx context.Context, req *checkout.GetCreditCardReq, callOptions ...callopt.Option) (r *checkout.GetCreditCardResp, err error) {
-	return c.kitexClient.GetCreditCard(ctx, req, callOptions...)
-}
-
 func (c *clientImpl) Checkout(ctx context.Context, req *checkout.CheckoutReq, callOptions ...callopt.Option) (r *checkout.CheckoutResp, err error) {
 	return c.kitexClient.Checkout(ctx, req, callOptions...)
-}
-
-func (c *clientImpl) Charge(ctx context.Context, req *checkout.ChargeReq, callOptions ...callopt.Option) (r *checkout.ChargeResp, err error) {
-	return c.kitexClient.Charge(ctx, req, callOptions...)
 }

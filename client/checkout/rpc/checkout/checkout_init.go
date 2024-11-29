@@ -1,11 +1,15 @@
 package checkout
 
 import (
+	"net"
+	"os"
 	"sync"
 
 	"github.com/cloudwego/kitex/client"
+	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/transport"
+	consul "github.com/kitex-contrib/registry-consul"
 )
 
 var (
@@ -13,7 +17,6 @@ var (
 	defaultClient     RPCClient
 	defaultDstService = "checkout"
 	defaultClientOpts = []client.Option{
-		client.WithHostPorts("127.0.0.1:8888"),
 		client.WithMetaHandler(transmeta.ClientTTHeaderHandler),
 		client.WithTransportProtocol(transport.TTHeader),
 	}
@@ -21,6 +24,16 @@ var (
 )
 
 func init() {
+	consulHost := os.Getenv("CONSUL_HOST")
+	consulPort := os.Getenv("CONSUL_PORT")
+	r, err := consul.NewConsulResolver(net.JoinHostPort(consulHost, consulPort))
+
+	if err != nil {
+		klog.Fatalf("new consul resolver failed: %v", err)
+	}
+
+	defaultClientOpts = append(defaultClientOpts, client.WithResolver(r))
+
 	DefaultClient()
 }
 

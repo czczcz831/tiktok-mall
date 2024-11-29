@@ -41,11 +41,11 @@ func clearCartConsumerInit() error {
 	},
 		golang.WithAwaitDuration(awaitDuration),
 		golang.WithSubscriptionExpressions(map[string]*golang.FilterExpression{
-			conf.GetConf().RocketMQ.Topic: golang.SUB_ALL,
+			conf.GetConf().RocketMQ.TxTopic: golang.SUB_ALL,
 		}),
 	)
 
-	klog.Infof("topic: %s", conf.GetConf().RocketMQ.Topic)
+	klog.Infof("topic: %s", conf.GetConf().RocketMQ.TxTopic)
 	klog.Infof("consumer group: %s", conf.GetConf().RocketMQ.ConsumerGroup)
 	klog.Infof("endpoint: %s", conf.GetConf().RocketMQ.Endpoint)
 

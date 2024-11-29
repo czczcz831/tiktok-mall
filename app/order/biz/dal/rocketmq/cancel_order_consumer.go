@@ -42,11 +42,11 @@ func delayedCancelOrderConsumerInit() error {
 	},
 		golang.WithAwaitDuration(awaitDuration),
 		golang.WithSubscriptionExpressions(map[string]*golang.FilterExpression{
-			conf.GetConf().RocketMQ.Topic: golang.NewFilterExpressionWithType(consts.RocketCreateOrderDelayedTag, golang.TAG),
+			conf.GetConf().RocketMQ.NormalTopic: golang.NewFilterExpressionWithType(consts.RocketCreateOrderDelayedTag, golang.TAG),
 		}),
 	)
 
-	klog.Infof("topic: %s", conf.GetConf().RocketMQ.Topic)
+	klog.Infof("topic: %s", conf.GetConf().RocketMQ.NormalTopic)
 	klog.Infof("consumer group: %s", conf.GetConf().RocketMQ.ConsumerGroup)
 	klog.Infof("endpoint: %s", conf.GetConf().RocketMQ.Endpoint)
 

@@ -15,12 +15,7 @@ type Client interface {
 	UpdateAddress(ctx context.Context, req *checkout.UpdateAddressReq, callOptions ...callopt.Option) (r *checkout.UpdateAddressResp, err error)
 	DeleteAddress(ctx context.Context, req *checkout.DeleteAddressReq, callOptions ...callopt.Option) (r *checkout.DeleteAddressResp, err error)
 	GetAddress(ctx context.Context, req *checkout.GetAddressReq, callOptions ...callopt.Option) (r *checkout.GetAddressResp, err error)
-	CreateCreditCard(ctx context.Context, req *checkout.CreateCreditCardReq, callOptions ...callopt.Option) (r *checkout.CreateCreditCardResp, err error)
-	UpdateCreditCard(ctx context.Context, req *checkout.UpdateCreditCardReq, callOptions ...callopt.Option) (r *checkout.UpdateCreditCardResp, err error)
-	DeleteCreditCard(ctx context.Context, req *checkout.DeleteCreditCardReq, callOptions ...callopt.Option) (r *checkout.DeleteCreditCardResp, err error)
-	GetCreditCard(ctx context.Context, req *checkout.GetCreditCardReq, callOptions ...callopt.Option) (r *checkout.GetCreditCardResp, err error)
 	Checkout(ctx context.Context, req *checkout.CheckoutReq, callOptions ...callopt.Option) (r *checkout.CheckoutResp, err error)
-	Charge(ctx context.Context, req *checkout.ChargeReq, callOptions ...callopt.Option) (r *checkout.ChargeResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -72,32 +67,7 @@ func (p *kCheckoutServiceClient) GetAddress(ctx context.Context, req *checkout.G
 	return p.kClient.GetAddress(ctx, req)
 }
 
-func (p *kCheckoutServiceClient) CreateCreditCard(ctx context.Context, req *checkout.CreateCreditCardReq, callOptions ...callopt.Option) (r *checkout.CreateCreditCardResp, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.CreateCreditCard(ctx, req)
-}
-
-func (p *kCheckoutServiceClient) UpdateCreditCard(ctx context.Context, req *checkout.UpdateCreditCardReq, callOptions ...callopt.Option) (r *checkout.UpdateCreditCardResp, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.UpdateCreditCard(ctx, req)
-}
-
-func (p *kCheckoutServiceClient) DeleteCreditCard(ctx context.Context, req *checkout.DeleteCreditCardReq, callOptions ...callopt.Option) (r *checkout.DeleteCreditCardResp, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.DeleteCreditCard(ctx, req)
-}
-
-func (p *kCheckoutServiceClient) GetCreditCard(ctx context.Context, req *checkout.GetCreditCardReq, callOptions ...callopt.Option) (r *checkout.GetCreditCardResp, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.GetCreditCard(ctx, req)
-}
-
 func (p *kCheckoutServiceClient) Checkout(ctx context.Context, req *checkout.CheckoutReq, callOptions ...callopt.Option) (r *checkout.CheckoutResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.Checkout(ctx, req)
-}
-
-func (p *kCheckoutServiceClient) Charge(ctx context.Context, req *checkout.ChargeReq, callOptions ...callopt.Option) (r *checkout.ChargeResp, err error) {
-	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.Charge(ctx, req)
 }

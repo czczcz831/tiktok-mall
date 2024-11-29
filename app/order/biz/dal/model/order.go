@@ -9,7 +9,7 @@ const (
 
 type Order struct {
 	Base
-	UserUuid    string `gorm:"type:char(36);index"`
+	UserUuid    string `gorm:"type:char(36);"`
 	AddressUuid string `gorm:"type:char(36);"`
 	Total       int64  `gorm:"type:bigint;not null"`
 	Status      int    `gorm:"type:int;not null"`
@@ -17,8 +17,8 @@ type Order struct {
 
 type OrderItem struct {
 	Base
-	OrderUUID   string `gorm:"type:char(36);index"`
-	ProductUuid string `gorm:"type:char(36);index"`
+	OrderUUID   string `gorm:"type:char(36);"`
+	ProductUuid string `gorm:"type:char(36);"`
 	Price       int64  `gorm:"type:bigint;not null"`
 	Quantity    int64  `gorm:"type:bigint;not null"`
 }

@@ -25,7 +25,7 @@ func NewCreateOrderService(ctx context.Context) *CreateOrderService {
 
 var rocketCreateOrderTag = consts.RocketCreateOrderTag
 var rocketCreateOrderDelayedTag = consts.RocketCreateOrderDelayedTag
-var delayedTime = time.Minute * 10
+var delayedTime = time.Second * 10
 
 // Run create note info
 func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateOrderResp, err error) {
@@ -72,13 +72,13 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	}
 
 	createOrderMsg := &rocketGolang.Message{
-		Topic: conf.GetConf().RocketMQ.Topic,
+		Topic: conf.GetConf().RocketMQ.TxTopic,
 		Body:  createOrderBytes,
 		Tag:   &rocketCreateOrderTag,
 	}
 	// RocketMQ Transaction Begin
-	rocketTx := rocketmq.CreateOrderTxProducer.BeginTransaction()
-	_, err = rocketmq.CreateOrderTxProducer.SendWithTransaction(context.TODO(), createOrderMsg, rocketTx)
+	rocketTx := rocketmq.OrderProducer.BeginTransaction()
+	_, err = rocketmq.OrderProducer.SendWithTransaction(context.TODO(), createOrderMsg, rocketTx)
 	if err != nil {
 		return nil, err
 	}
@@ -115,14 +115,14 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	cancelOrderUuidBytes := []byte(orderUUID)
 
 	createOrderDelayedMsg := &rocketGolang.Message{
-		Topic: conf.GetConf().RocketMQ.Topic,
+		Topic: conf.GetConf().RocketMQ.NormalTopic,
 		Body:  cancelOrderUuidBytes,
 		Tag:   &rocketCreateOrderDelayedTag,
 	}
 
 	createOrderDelayedMsg.SetDelayTimestamp(deliveryTimestamp)
 
-	_, err = rocketmq.CreateOrderTxProducer.Send(context.TODO(), createOrderDelayedMsg)
+	_, err = rocketmq.OrderProducer.Send(context.TODO(), createOrderDelayedMsg)
 	if err != nil {
 		mysqlTx.Rollback()
 		rocketTx.RollBack()

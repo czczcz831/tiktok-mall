@@ -81,3 +81,78 @@ func _addproducttocartMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _checkoutMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _checkout0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _chargeMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _checkout1Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updateaddressMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _credit_cardMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _createcreditcardMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getcreditcardMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deletecreditcardMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updatecreditcardMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _addressMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _createaddressMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getaddressMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deleteaddressMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _paymentMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

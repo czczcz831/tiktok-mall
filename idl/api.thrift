@@ -135,3 +135,107 @@ service CartService {
     ClearCartResp ClearCart(1: ClearCartReq req) (api.delete="/cart/:user_uuid")
     GetCartResp GetCart(1: GetCartReq req) (api.get="/cart/:user_uuid")
 }
+
+
+#*********Checkout*********#
+
+struct Address {
+    string uuid (api.body = "uuid")
+    string user_uuid (api.body = "user_uuid")
+    string street_address (api.body = "street_address")
+    string city (api.body = "city")
+    string state (api.body = "state")
+    string country (api.body = "country")
+    i64 zip_code (api.body = "zip_code")
+}
+
+
+struct OrderItem {
+    string product_uuid (api.body = "product_uuid")
+    i64 price (api.body = "price")
+    i64 quantity (api.body = "quantity")
+}
+
+struct CreateAddressReq {
+    string user_uuid (api.body = "user_uuid")
+    string street_address (api.body = "street_address")
+    string city (api.body = "city")
+    string state (api.body = "state")
+    string country (api.body = "country")
+    i64 zip_code (api.body = "zip_code")
+}
+
+struct CreateAddressResp {
+    Address address
+}
+
+struct UpdateAddressReq {
+    Address address
+}
+
+struct UpdateAddressResp {
+    Address address
+}
+
+struct DeleteAddressReq {
+    string uuid (api.path = "uuid")
+}
+
+struct DeleteAddressResp {
+    string uuid
+}
+
+struct GetAddressReq {
+    string user_uuid (api.path = "user_uuid")
+}
+
+struct GetAddressResp {
+    list<Address> addresses
+}
+
+struct CheckoutReq {
+    string user_uuid (api.body = "user_uuid")
+    string first_name (api.body = "first_name")
+    string last_name (api.body = "last_name")
+    string email (api.body = "email")
+    string address_uuid (api.body = "address_uuid")
+    string credit_card_uuid (api.body = "credit_card_uuid")
+    list<OrderItem> items (api.body = "items")
+}
+
+struct CheckoutResp {
+    string order_uuid
+}
+
+service CheckoutService {
+    CreateAddressResp CreateAddress(1: CreateAddressReq req) (api.post="/checkout/address", api.body="json")
+    UpdateAddressResp UpdateAddress(1: UpdateAddressReq req) (api.put="/checkout/address", api.body="json")
+    DeleteAddressResp DeleteAddress(1: DeleteAddressReq req) (api.delete="/checkout/address/:uuid")
+    GetAddressResp GetAddress(1: GetAddressReq req) (api.get="/checkout/address/:user_uuid")
+
+    CheckoutResp Checkout(1: CheckoutReq req) (api.post="/checkout", api.body="json")
+}
+
+#************PAYMENT***********8
+
+struct CreditCard {
+    string uuid (api.body = "uuid")
+    string user_uuid (api.body = "user_uuid")
+    string credit_card_number (api.body = "credit_card_number")
+    i64 credit_card_cvv (api.body = "credit_card_cvv")
+    i64 credit_card_exp_month (api.body = "credit_card_exp_month")
+    i64 credit_card_exp_year (api.body = "credit_card_exp_year")
+}
+
+struct ChargeReq {
+    string order_uuid (api.body = "order_uuid")
+    CreditCard credit_card (api.body = "credit_card") 
+}
+
+struct ChargeResp {
+    string transaction_uuid
+}
+
+service PaymentService{
+    ChargeResp Charge(1: ChargeReq req) (api.post="/payment/charge", api.body="json")
+}

@@ -17,6 +17,7 @@ import (
 func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
+	root.POST("/checkout", append(_checkoutMw(), api.Checkout)...)
 	root.PUT("/product", append(_updateproductMw(), api.UpdateProduct)...)
 	root.GET("/product", append(_getproductlistMw(), api.GetProductList)...)
 	{
@@ -24,6 +25,18 @@ func Register(r *server.Hertz) {
 		_cart.DELETE("/:user_uuid", append(_clearcartMw(), api.ClearCart)...)
 		_cart.GET("/:user_uuid", append(_getcartMw(), api.GetCart)...)
 		_cart.POST("/add_product", append(_addproducttocartMw(), api.AddProductToCart)...)
+	}
+	{
+		_checkout0 := root.Group("/checkout", _checkout0Mw()...)
+		_checkout0.POST("/address", append(_createaddressMw(), api.CreateAddress)...)
+		_address := _checkout0.Group("/address", _addressMw()...)
+		_address.GET("/:user_uuid", append(_getaddressMw(), api.GetAddress)...)
+		_address.DELETE("/:uuid", append(_deleteaddressMw(), api.DeleteAddress)...)
+		_checkout0.PUT("/address", append(_updateaddressMw(), api.UpdateAddress)...)
+	}
+	{
+		_payment := root.Group("/payment", _paymentMw()...)
+		_payment.POST("/charge", append(_chargeMw(), api.Charge)...)
 	}
 	root.POST("/product", append(_createproductMw(), api.CreateProduct)...)
 	_product := root.Group("/product", _productMw()...)

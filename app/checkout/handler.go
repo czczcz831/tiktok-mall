@@ -37,44 +37,9 @@ func (s *CheckoutServiceImpl) GetAddress(ctx context.Context, req *checkout.GetA
 	return resp, err
 }
 
-// CreateCreditCard implements the CheckoutServiceImpl interface.
-func (s *CheckoutServiceImpl) CreateCreditCard(ctx context.Context, req *checkout.CreateCreditCardReq) (resp *checkout.CreateCreditCardResp, err error) {
-	resp, err = service.NewCreateCreditCardService(ctx).Run(req)
-
-	return resp, err
-}
-
-// UpdateCreditCard implements the CheckoutServiceImpl interface.
-func (s *CheckoutServiceImpl) UpdateCreditCard(ctx context.Context, req *checkout.UpdateCreditCardReq) (resp *checkout.UpdateCreditCardResp, err error) {
-	resp, err = service.NewUpdateCreditCardService(ctx).Run(req)
-
-	return resp, err
-}
-
-// DeleteCreditCard implements the CheckoutServiceImpl interface.
-func (s *CheckoutServiceImpl) DeleteCreditCard(ctx context.Context, req *checkout.DeleteCreditCardReq) (resp *checkout.DeleteCreditCardResp, err error) {
-	resp, err = service.NewDeleteCreditCardService(ctx).Run(req)
-
-	return resp, err
-}
-
-// GetCreditCard implements the CheckoutServiceImpl interface.
-func (s *CheckoutServiceImpl) GetCreditCard(ctx context.Context, req *checkout.GetCreditCardReq) (resp *checkout.GetCreditCardResp, err error) {
-	resp, err = service.NewGetCreditCardService(ctx).Run(req)
-
-	return resp, err
-}
-
 // Checkout implements the CheckoutServiceImpl interface.
 func (s *CheckoutServiceImpl) Checkout(ctx context.Context, req *checkout.CheckoutReq) (resp *checkout.CheckoutResp, err error) {
 	resp, err = service.NewCheckoutService(ctx).Run(req)
-
-	return resp, err
-}
-
-// Charge implements the CheckoutServiceImpl interface.
-func (s *CheckoutServiceImpl) Charge(ctx context.Context, req *checkout.ChargeReq) (resp *checkout.ChargeResp, err error) {
-	resp, err = service.NewChargeService(ctx).Run(req)
 
 	return resp, err
 }
