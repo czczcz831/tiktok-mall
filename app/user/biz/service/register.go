@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"github.com/bwmarrin/snowflake"
 	"github.com/czczcz831/tiktok-mall/app/user/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/user/biz/model"
 	"github.com/czczcz831/tiktok-mall/app/user/conf"
@@ -22,13 +21,13 @@ func NewRegisterService(ctx context.Context) *RegisterService {
 // Run create note info
 func (s *RegisterService) Run(req *user.RegisterReq) (resp *user.RegisterResp, err error) {
 	// Finish your business logic.
-
 	nodeId := conf.GetConf().NodeID
-	node, err := snowflake.NewNode(nodeId % 1024)
+
+	uuid, err := utils.UUIDGenerate(nodeId)
+
 	if err != nil {
 		return nil, err
 	}
-	uuid := node.Generate().String()
 
 	newUser := &model.User{
 		Base:     model.Base{UUID: uuid},

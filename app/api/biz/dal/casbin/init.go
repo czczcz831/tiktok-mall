@@ -1,10 +1,14 @@
 package casbin
 
 import (
+	"context"
+
 	"github.com/casbin/casbin/v2"
+	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/czczcz831/tiktok-mall/app/api/biz/router/api"
+	"github.com/czczcz831/tiktok-mall/app/api/conf"
 	"github.com/czczcz831/tiktok-mall/app/user/biz/dal/mysql"
+	"github.com/czczcz831/tiktok-mall/common/utils"
 
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	casbinHertz "github.com/hertz-contrib/casbin"
@@ -25,6 +29,23 @@ const (
 	CUSTOMER_OBJECT = "customer_obj"
 	SELLER_OBJECT   = "seller_obj"
 )
+
+func SubjectFromToken(ctx context.Context, c *app.RequestContext) string {
+	token := c.GetRequest().Header.Get("Authorization")
+	if token == "" {
+		return ""
+	}
+
+	publicKeyHexString := conf.GetConf().JWT.PublicSecret
+
+	uuid, _, err := utils.VerifyToken(token, publicKeyHexString)
+
+	if err != nil {
+		return ""
+	}
+
+	return uuid
+}
 
 func Init() {
 	a, err := gormadapter.NewAdapterByDB(mysql.DB)
@@ -62,7 +83,7 @@ func Init() {
 		klog.Fatalf("load policy failed: %v", err)
 	}
 
-	CasbinHertzMiddleware, err = casbinHertz.NewCasbinMiddlewareFromEnforcer(CasbinEnforcer, api.SubjectFromToken)
+	CasbinHertzMiddleware, err = casbinHertz.NewCasbinMiddlewareFromEnforcer(CasbinEnforcer, SubjectFromToken)
 	if err != nil {
 		klog.Fatalf("new casbin middleware failed: %v", err)
 	}
