@@ -57,12 +57,12 @@ func kitexInit() (opts []server.Option) {
 	//Logstash
 	logstashConn, err := net.Dial("tcp", conf.GetConf().Logstash)
 	if err != nil {
-		klog.Fatalf("logstash connect error: %v", err)
+		klog.Infof("logstash connect error: %v", err)
+	} else {
+		logger.Logger().WithField("app", conf.GetConf().Kitex.Service)
+		hook := logrustash.New(logstashConn, logger.Logger().Formatter)
+		logger.Logger().AddHook(hook)
 	}
-	logger.Logger().WithField("app", conf.GetConf().Kitex.Service)
-
-	hook := logrustash.New(logstashConn, logger.Logger().Formatter)
-	logger.Logger().AddHook(hook)
 	klog.SetLogger(logger)
 	klog.SetLevel(conf.LogLevel())
 	asyncWriter := &zapcore.BufferedWriteSyncer{

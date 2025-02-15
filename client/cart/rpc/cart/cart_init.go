@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"context"
 	"net"
 	"os"
 	"sync"
@@ -9,6 +10,7 @@ import (
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/transport"
+	"github.com/kitex-contrib/opensergo/sentinel"
 	consul "github.com/kitex-contrib/registry-consul"
 )
 
@@ -32,6 +34,14 @@ func init() {
 	if err != nil {
 		klog.Fatalf("new consul resolver failed: %v", err)
 	}
+
+	//Sentinel middleware
+	bf := func(ctx context.Context, req, resp interface{}, blockErr error) error {
+		return blockErr
+	}
+	defaultClientOpts = append(defaultClientOpts, client.WithMiddleware(sentinel.SentinelClientMiddleware(
+		sentinel.WithBlockFallback(bf),
+	)))
 
 	defaultClientOpts = append(defaultClientOpts, client.WithResolver(r))
 

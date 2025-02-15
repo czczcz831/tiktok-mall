@@ -1,14 +1,16 @@
 package sentinel
 
 import (
+	"github.com/alibaba/sentinel-golang/core/circuitbreaker"
 	"github.com/alibaba/sentinel-golang/core/flow"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 )
 
 func loadRules() {
 
-	//每个API设置QPS Thresh
+	//Flow Control
 	_, err := flow.LoadRules([]*flow.Rule{
+		//API
 		{
 			Resource:               APIUserLogin,
 			Threshold:              100,
@@ -128,6 +130,21 @@ func loadRules() {
 			ControlBehavior:        flow.Reject,
 			StatIntervalInMs:       1000,
 		},
+	})
+
+	//Circuit break
+	_, err = circuitbreaker.LoadRules([]*circuitbreaker.Rule{
+		//UserLogin
+		//Break when Error ratio reaches 10%, and retry after 3s when the circuit breaker is open
+		{
+			Resource:         RpcCallUserLogin,
+			Strategy:         circuitbreaker.ErrorRatio,
+			RetryTimeoutMs:   3000,
+			MinRequestAmount: 10,
+			StatIntervalMs:   10000,
+			Threshold:        0.1,
+		},
+		//More circuit breaks to be configured......
 	})
 
 	if err != nil {

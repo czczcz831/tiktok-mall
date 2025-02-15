@@ -17,3 +17,7 @@ run: ## run {svc} server. example: make run svc=product
 .PHONY: tidy
 tidy: ## run `go mod tidy` for all go module
 	@scripts/tidy.sh
+
+.PHONY: tmux-run
+tmux-run: ## run all svcs in tmux
+	@scripts/tmux_run_all.sh

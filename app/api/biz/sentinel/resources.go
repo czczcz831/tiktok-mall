@@ -28,3 +28,13 @@ const (
 	// PaymentService
 	APIPaymentCharge = "POST:/payment/charge"
 )
+
+// Control clients in PROJECT_DIR/client/*, only works in api.
+const (
+	// UserService
+	RpcCallUserLogin    = "user:login"
+	RpcCallUserRegister = "user:register"
+
+	//TODO: More to be added
+
+)

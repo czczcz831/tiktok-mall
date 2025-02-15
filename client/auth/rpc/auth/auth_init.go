@@ -1,14 +1,18 @@
 package auth
 
 import (
+	"context"
 	"net"
 	"os"
 	"sync"
+
+	"errors"
 
 	"github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/transport"
+	"github.com/kitex-contrib/opensergo/sentinel"
 	consul "github.com/kitex-contrib/registry-consul"
 )
 
@@ -24,6 +28,7 @@ var (
 )
 
 func init() {
+	//Consul client resolve
 	consulHost := os.Getenv("CONSUL_HOST")
 	consulPort := os.Getenv("CONSUL_PORT")
 	r, err := consul.NewConsulResolver(net.JoinHostPort(consulHost, consulPort))
@@ -31,6 +36,14 @@ func init() {
 	if err != nil {
 		klog.Fatalf("new consul resolver failed: %v", err)
 	}
+
+	//Sentinel middleware
+	bf := func(ctx context.Context, req, resp interface{}, blockErr error) error {
+		return errors.New("circuit break! ")
+	}
+	defaultClientOpts = append(defaultClientOpts, client.WithMiddleware(sentinel.SentinelClientMiddleware(
+		sentinel.WithBlockFallback(bf),
+	)))
 
 	defaultClientOpts = append(defaultClientOpts, client.WithResolver(r))
 

@@ -35,6 +35,13 @@ func (h *LoginService) Run(req *api.LoginReq) (resp *api.LoginResp, err error) {
 
 	if err != nil {
 		return nil, &packer.MyError{
+			Code: packer.UNKNOWN_SERVER_ERROR,
+			Err:  err,
+		}
+	}
+
+	if loginResp.UserUuid == "" {
+		return nil, &packer.MyError{
 			Code: packer.INVALID_ACCOUNT_PASSWORD_ERROR,
 			Err:  err,
 		}

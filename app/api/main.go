@@ -66,13 +66,13 @@ func registerMiddleware(h *server.Hertz) {
 	//Logstash
 	logstashConn, err := net.Dial("tcp", conf.GetConf().Logstash)
 	if err != nil {
-		hlog.Fatalf("logstash connect error: %v", err)
+		hlog.Infof("logstash connect error: %v", err)
+	} else {
+		logger.Logger().WithField("app", conf.GetConf().Hertz.Service)
+		hook := logrustash.New(logstashConn, logger.Logger().Formatter)
+		logger.Logger().AddHook(hook)
 	}
-	logger.Logger().WithField("app", conf.GetConf().Hertz.Service)
 
-	hook := logrustash.New(logstashConn, logger.Logger().Formatter)
-
-	logger.Logger().AddHook(hook)
 	hlog.SetLogger(logger)
 	hlog.SetLevel(conf.LogLevel())
 	asyncWriter := &zapcore.BufferedWriteSyncer{
