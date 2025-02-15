@@ -5,7 +5,7 @@ import (
 
 	"github.com/casbin/casbin/v2"
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/kitex/pkg/klog"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/api/conf"
 	"github.com/czczcz831/tiktok-mall/common/utils"
@@ -49,18 +49,18 @@ func SubjectFromToken(ctx context.Context, c *app.RequestContext) string {
 func Init() {
 	a, err := gormadapter.NewAdapterByDB(mysql.DB)
 	if err != nil {
-		klog.Fatalf("new casbin enforcer failed: %v", err)
+		hlog.Fatalf("new casbin enforcer failed: %v", err)
 	}
 
 	CasbinEnforcer, err = casbin.NewEnforcer("casbin.conf", a)
 	if err != nil {
-		klog.Fatalf("new casbin enforcer failed: %v", err)
+		hlog.Fatalf("new casbin enforcer failed: %v", err)
 	}
 	CasbinEnforcer.EnableAutoSave(true)
 
 	err = CasbinEnforcer.LoadPolicy()
 	if err != nil {
-		klog.Fatalf("load policy failed: %v", err)
+		hlog.Fatalf("load policy failed: %v", err)
 	}
 
 	// 初始化
@@ -78,11 +78,11 @@ func Init() {
 	CasbinEnforcer.SavePolicy()
 
 	if err != nil {
-		klog.Fatalf("load policy failed: %v", err)
+		hlog.Fatalf("load policy failed: %v", err)
 	}
 
 	CasbinHertzMiddleware, err = casbinHertz.NewCasbinMiddlewareFromEnforcer(CasbinEnforcer, SubjectFromToken)
 	if err != nil {
-		klog.Fatalf("new casbin middleware failed: %v", err)
+		hlog.Fatalf("new casbin middleware failed: %v", err)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"net"
 	"time"
 
+	logrustash "github.com/bshuster-repo/logrus-logstash-hook"
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/server"
@@ -49,6 +50,15 @@ func kitexInit() (opts []server.Option) {
 
 	// klog
 	logger := kitexlogrus.NewLogger()
+	//Logstash
+	logstashConn, err := net.Dial("tcp", conf.GetConf().Logstash)
+	if err != nil {
+		klog.Fatalf("logstash connect error: %v", err)
+	}
+	logger.Logger().WithField("app", conf.GetConf().Kitex.Service)
+
+	hook := logrustash.New(logstashConn, logger.Logger().Formatter)
+	logger.Logger().AddHook(hook)
 	klog.SetLogger(logger)
 	klog.SetLevel(conf.LogLevel())
 	asyncWriter := &zapcore.BufferedWriteSyncer{

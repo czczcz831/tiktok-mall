@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/czczcz831/tiktok-mall/app/api/conf"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -19,6 +20,6 @@ func Init() {
 		},
 	)
 	if err != nil {
-		panic(err)
+		hlog.Fatal(err)
 	}
 }

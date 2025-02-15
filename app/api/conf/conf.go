@@ -12,7 +12,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	capi "github.com/hashicorp/consul/api"
 	consul "github.com/hertz-contrib/registry/consul"
-	"github.com/kr/pretty"
+
 	"github.com/spf13/viper"
 	"gopkg.in/validator.v2"
 )
@@ -44,10 +44,11 @@ type JWT struct {
 type Config struct {
 	Env string
 
-	Hertz Hertz `mapstructure:"hertz"`
-	MySQL MySQL `mapstructure:"mysql"`
-	Redis Redis `mapstructure:"redis"`
-	JWT   JWT   `mapstructure:"jwt"`
+	Hertz    Hertz  `mapstructure:"hertz"`
+	MySQL    MySQL  `mapstructure:"mysql"`
+	Redis    Redis  `mapstructure:"redis"`
+	JWT      JWT    `mapstructure:"jwt"`
+	Logstash string `mapstructure:"logstash"`
 
 	OsConf *OsEnvConf
 	NodeID int64
@@ -84,6 +85,7 @@ func GetConf() *Config {
 }
 
 func GetRegister() registry.Registry {
+	once.Do(initConf)
 	return register
 }
 
@@ -96,8 +98,7 @@ func initConf() {
 	consulCfg.Token = conf.OsConf.ConsulConf.ConsulToken
 	consulApi, err := capi.NewClient(consulCfg)
 	if err != nil {
-		hlog.Error("create consul client error - %v", err)
-		panic(err)
+		hlog.Fatal("create consul client error - %v", err)
 	}
 
 	register = consul.NewConsulRegister(consulApi)
@@ -106,11 +107,9 @@ func initConf() {
 	content, _, err := consulApi.KV().Get(conf.OsConf.ConsulConf.ConsulConfigKey, nil)
 	if err != nil {
 		hlog.Fatalf("consul kv failed: %s", err.Error())
-		panic(err)
 	}
 	if content == nil {
 		hlog.Fatalf("consul kv failed: %s", "content is nil")
-		panic("consul key does not exist")
 	}
 
 	selfInfo, err := consulApi.Agent().Self()
@@ -136,20 +135,16 @@ func initConf() {
 	err = v.ReadConfig(bytes.NewBuffer(content.Value))
 	if err != nil {
 		hlog.Errorf("parse yaml error - %v", err)
-		panic(err)
 	}
 
 	err = v.Unmarshal(conf)
 	if err != nil {
 		hlog.Errorf("unmarshal config error - %v", err)
-		panic(err)
 	}
 	if err := validator.Validate(conf); err != nil {
 		hlog.Error("validate config error - %v", err)
-		panic(err)
 	}
 
-	pretty.Printf("%+v\n", conf)
 }
 
 func initOsConf() *OsEnvConf {

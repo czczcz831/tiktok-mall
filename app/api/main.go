@@ -4,8 +4,10 @@ package main
 
 import (
 	"context"
+	"net"
 	"time"
 
+	logrustash "github.com/bshuster-repo/logrus-logstash-hook"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/middlewares/server/recovery"
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -27,8 +29,6 @@ import (
 )
 
 func main() {
-	// init dal
-	dal.Init()
 	address := conf.GetConf().Hertz.Address
 	// server registry
 
@@ -45,6 +45,8 @@ func main() {
 	)
 
 	registerMiddleware(h)
+	// init dal
+	dal.Init()
 
 	// add a ping route to test
 	h.GET("/ping", func(c context.Context, ctx *app.RequestContext) {
@@ -59,6 +61,16 @@ func main() {
 func registerMiddleware(h *server.Hertz) {
 	// log
 	logger := hertzlogrus.NewLogger()
+	//Logstash
+	logstashConn, err := net.Dial("tcp", conf.GetConf().Logstash)
+	if err != nil {
+		hlog.Fatalf("logstash connect error: %v", err)
+	}
+	logger.Logger().WithField("app", conf.GetConf().Hertz.Service)
+
+	hook := logrustash.New(logstashConn, logger.Logger().Formatter)
+
+	logger.Logger().AddHook(hook)
 	hlog.SetLogger(logger)
 	hlog.SetLevel(conf.LogLevel())
 	asyncWriter := &zapcore.BufferedWriteSyncer{

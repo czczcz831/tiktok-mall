@@ -50,6 +50,7 @@ type Config struct {
 	Registry Registry `mapstructure:"registry"`
 	JWT      JWT      `mapstructure:"jwt"`
 	RocketMQ RocketMQ `mapstructure:"rocketmq"`
+	Logstash string   `mapstructure:"logstash"`
 
 	OsConf    *OsEnvConf
 	MD5Secret string `mapstructure:"md5_secret"`

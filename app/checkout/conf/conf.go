@@ -40,6 +40,7 @@ type Config struct {
 	Redis    Redis    `mapstructure:"redis"`
 	Registry Registry `mapstructure:"registry"`
 	JWT      JWT      `mapstructure:"jwt"`
+	Logstash string   `mapstructure:"logstash"`
 
 	OsConf    *OsEnvConf
 	MD5Secret string `mapstructure:"md5_secret"`

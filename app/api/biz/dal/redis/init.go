@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/czczcz831/tiktok-mall/app/api/conf"
 	"github.com/redis/go-redis/v9"
 )
@@ -17,6 +18,6 @@ func Init() {
 		DB:       conf.GetConf().Redis.DB,
 	})
 	if err := RedisClient.Ping(context.Background()).Err(); err != nil {
-		panic(err)
+		hlog.Fatal(err)
 	}
 }
