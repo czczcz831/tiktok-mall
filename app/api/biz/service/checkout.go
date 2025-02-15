@@ -34,15 +34,13 @@ func (h *CheckoutService) Run(req *api.CheckoutReq) (resp *api.CheckoutResp, err
 	}
 
 	checkoutResp, err := checkoutAgent.Checkout(h.Context, &checkout.CheckoutReq{
-		UserUuid:       req.UserUUID,
-		FirstName:      req.FirstName,
-		LastName:       req.LastName,
-		Email:          req.Email,
-		AddressUuid:    req.AddressUUID,
-		CreditCardUuid: req.CreditCardUUID,
-		Items:          reqItems,
+		UserUuid:    req.UserUUID,
+		FirstName:   req.FirstName,
+		LastName:    req.LastName,
+		Email:       req.Email,
+		AddressUuid: req.AddressUUID,
+		Items:       reqItems,
 	})
-
 	if err != nil {
 		return nil, err
 	}

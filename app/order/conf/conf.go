@@ -17,14 +17,16 @@ import (
 )
 
 var (
-	conf *Config
-	once sync.Once
+	conf      *Config
+	once      sync.Once
+	consulCfg *capi.Config
 )
 
 type ConsulConfig struct {
 	ConsulHost      string `mapstructure:"consul_host"`
 	ConsulPort      string `mapstructure:"consul_port"`
 	ConsulConfigKey string `mapstructure:"consul_config_key"`
+	ConsulToken     string `mapstructure:"consul_token"`
 }
 
 type OsEnvConf struct {
@@ -38,8 +40,6 @@ type RocketMQ struct {
 	Region        string `mapstructure:"region"`
 	AccessKey     string `mapstructure:"access_key"`
 	SecretKey     string `mapstructure:"secret_key"`
-	TxTopic       string `mapstructure:"tx_topic"`
-	NormalTopic   string `mapstructure:"normal_topic"`
 	ConsumerGroup string `mapstructure:"consumer_group"`
 }
 
@@ -96,13 +96,18 @@ func GetConf() *Config {
 	return conf
 }
 
+func GetConsulCfg() *capi.Config {
+	return consulCfg
+}
+
 func initConf() {
 
 	conf = new(Config)
 	conf.OsConf = initOsConf()
 
-	consulCfg := capi.DefaultConfig()
+	consulCfg = capi.DefaultConfig()
 	consulCfg.Address = net.JoinHostPort(conf.OsConf.ConsulConf.ConsulHost, conf.OsConf.ConsulConf.ConsulPort)
+	consulCfg.Token = conf.OsConf.ConsulConf.ConsulToken
 	consulApi, err := capi.NewClient(consulCfg)
 
 	if err != nil {
@@ -166,6 +171,7 @@ func initOsConf() *OsEnvConf {
 	osConf.Env = os.Getenv("GO_ENV")
 	osConf.ConsulConf.ConsulHost = os.Getenv("CONSUL_HOST")
 	osConf.ConsulConf.ConsulPort = os.Getenv("CONSUL_PORT")
+	osConf.ConsulConf.ConsulToken = os.Getenv("CONSUL_TOKEN")
 	osConf.ConsulConf.ConsulConfigKey = os.Getenv("CONSUL_CONFIG_KEY")
 	return osConf
 }

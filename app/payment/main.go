@@ -11,6 +11,7 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/payment/biz/dal"
 	"github.com/czczcz831/tiktok-mall/app/payment/conf"
 	"github.com/czczcz831/tiktok-mall/app/payment/kitex_gen/payment/paymentservice"
+	_ "github.com/joho/godotenv/autoload"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
 	consul "github.com/kitex-contrib/registry-consul"
 	"go.uber.org/zap/zapcore"
@@ -44,7 +45,7 @@ func kitexInit() (opts []server.Option) {
 	opts = append(opts, server.WithMetaHandler(transmeta.ServerTTHeaderHandler))
 
 	// server registry
-	r, err := consul.NewConsulRegister(net.JoinHostPort(conf.GetConf().OsConf.ConsulConf.ConsulHost, conf.GetConf().OsConf.ConsulConf.ConsulPort))
+	r, err := consul.NewConsulRegisterWithConfig(conf.GetConsulCfg())
 	if err != nil {
 		klog.Fatalf("new consul register failed: %v", err)
 	}

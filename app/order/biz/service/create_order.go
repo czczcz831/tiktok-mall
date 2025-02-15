@@ -9,7 +9,8 @@ import (
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/model"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/mysql"
-	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/rocketmq"
+	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/rocketmq/producer"
+
 	"github.com/czczcz831/tiktok-mall/app/order/conf"
 	order "github.com/czczcz831/tiktok-mall/app/order/kitex_gen/order"
 	consts "github.com/czczcz831/tiktok-mall/common/consts"
@@ -72,13 +73,13 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	}
 
 	createOrderMsg := &rocketGolang.Message{
-		Topic: conf.GetConf().RocketMQ.TxTopic,
+		Topic: consts.RocketOrderTransactionTopic,
 		Body:  createOrderBytes,
 		Tag:   &rocketCreateOrderTag,
 	}
 	// RocketMQ Transaction Begin
-	rocketTx := rocketmq.OrderProducer.BeginTransaction()
-	_, err = rocketmq.OrderProducer.SendWithTransaction(context.TODO(), createOrderMsg, rocketTx)
+	rocketTx := producer.OrderProducer.BeginTransaction()
+	_, err = producer.OrderProducer.SendWithTransaction(context.TODO(), createOrderMsg, rocketTx)
 	if err != nil {
 		return nil, err
 	}
@@ -115,14 +116,14 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	cancelOrderUuidBytes := []byte(orderUUID)
 
 	createOrderDelayedMsg := &rocketGolang.Message{
-		Topic: conf.GetConf().RocketMQ.NormalTopic,
+		Topic: consts.RocketOrderNormalTopic,
 		Body:  cancelOrderUuidBytes,
 		Tag:   &rocketCreateOrderDelayedTag,
 	}
 
 	createOrderDelayedMsg.SetDelayTimestamp(deliveryTimestamp)
 
-	_, err = rocketmq.OrderProducer.Send(context.TODO(), createOrderDelayedMsg)
+	_, err = producer.OrderProducer.Send(context.TODO(), createOrderDelayedMsg)
 	if err != nil {
 		mysqlTx.Rollback()
 		rocketTx.RollBack()

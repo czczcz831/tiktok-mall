@@ -1,10 +1,9 @@
-package rocketmq
+package consumer
 
 import (
+	"context"
 	"encoding/json"
 	"time"
-
-	"context"
 
 	"github.com/apache/rocketmq-clients/golang"
 	"github.com/apache/rocketmq-clients/golang/credentials"
@@ -13,11 +12,10 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/cart/biz/model"
 	"github.com/czczcz831/tiktok-mall/app/cart/conf"
 	order "github.com/czczcz831/tiktok-mall/app/order/kitex_gen/order"
+	"github.com/czczcz831/tiktok-mall/common/consts"
 )
 
-var (
-	clearCartConsumer golang.SimpleConsumer
-)
+var clearCartConsumer golang.SimpleConsumer
 
 const (
 	// maximum waiting time for receive func
@@ -29,11 +27,11 @@ const (
 	// receive messages in a loop
 )
 
-func clearCartConsumerInit() error {
+func clearCartConsumerInit() {
 	var err error
 	clearCartConsumer, err = golang.NewSimpleConsumer(&golang.Config{
 		Endpoint:      conf.GetConf().RocketMQ.Endpoint,
-		ConsumerGroup: conf.GetConf().RocketMQ.ConsumerGroup,
+		ConsumerGroup: consts.RocketCartConsumerGroup,
 		Credentials: &credentials.SessionCredentials{
 			AccessKey:    conf.GetConf().RocketMQ.AccessKey,
 			AccessSecret: conf.GetConf().RocketMQ.AccessKey,
@@ -41,12 +39,10 @@ func clearCartConsumerInit() error {
 	},
 		golang.WithAwaitDuration(awaitDuration),
 		golang.WithSubscriptionExpressions(map[string]*golang.FilterExpression{
-			conf.GetConf().RocketMQ.TxTopic: golang.SUB_ALL,
+			consts.RocketOrderTransactionTopic: golang.SUB_ALL,
 		}),
 	)
 
-	klog.Infof("topic: %s", conf.GetConf().RocketMQ.TxTopic)
-	klog.Infof("consumer group: %s", conf.GetConf().RocketMQ.ConsumerGroup)
 	klog.Infof("endpoint: %s", conf.GetConf().RocketMQ.Endpoint)
 
 	if err != nil {
@@ -62,8 +58,6 @@ func clearCartConsumerInit() error {
 	{
 		go clearCartOrderConsumerHandler()
 	}
-
-	return nil
 
 }
 
@@ -91,7 +85,7 @@ func clearCartOrderConsumerHandler() {
 }
 
 func clearCartBiz(mv *golang.MessageView) error {
-	//Unmarshal message
+	// Unmarshal message
 
 	req := &order.CreateOrderReq{}
 	err := json.Unmarshal(mv.GetBody(), req)
@@ -100,7 +94,7 @@ func clearCartBiz(mv *golang.MessageView) error {
 		return err
 	}
 
-	//clear cart
+	// clear cart
 
 	userUuid := req.UserUuid
 

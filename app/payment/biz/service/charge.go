@@ -9,7 +9,7 @@ import (
 	rocketGolang "github.com/apache/rocketmq-clients/golang"
 	"github.com/czczcz831/tiktok-mall/app/payment/biz/dal/model"
 	"github.com/czczcz831/tiktok-mall/app/payment/biz/dal/mysql"
-	"github.com/czczcz831/tiktok-mall/app/payment/biz/dal/rocketmq"
+	"github.com/czczcz831/tiktok-mall/app/payment/biz/dal/rocketmq/producer"
 	"github.com/czczcz831/tiktok-mall/app/payment/conf"
 	payment "github.com/czczcz831/tiktok-mall/app/payment/kitex_gen/payment"
 	"github.com/czczcz831/tiktok-mall/common/consts"
@@ -24,8 +24,10 @@ func NewChargeService(ctx context.Context) *ChargeService {
 	return &ChargeService{ctx: ctx}
 }
 
-var rocketCreatePaymentTag = consts.RocketCreatePaymentTag
-var delayedTime = time.Minute * 5
+var (
+	rocketCreatePaymentTag = consts.RocketCreatePaymentTag
+	delayedTime            = time.Minute * 5
+)
 
 // Run create note info
 func (s *ChargeService) Run(req *payment.ChargeReq) (resp *payment.ChargeResp, err error) {
@@ -39,7 +41,7 @@ func (s *ChargeService) Run(req *payment.ChargeReq) (resp *payment.ChargeResp, e
 		return nil, err
 	}
 
-	//Check if transaction exist
+	// Check if transaction exist
 
 	transactionIns := &model.Transaction{}
 
@@ -57,16 +59,16 @@ func (s *ChargeService) Run(req *payment.ChargeReq) (resp *payment.ChargeResp, e
 		if createRes.Error != nil {
 			return nil, createRes.Error
 		}
-		//Send delayed msg to rocketmq
+		// Send delayed msg to rocketmq
 		delayedPaymentMsg := &rocketGolang.Message{
-			Topic: conf.GetConf().RocketMQ.NormalTopic,
+			Topic: consts.RocketPaymentNormalTopic,
 			Body:  []byte(transactionIns.UUID),
 			Tag:   &rocketCreatePaymentTag,
 		}
 
 		delayedPaymentMsg.SetDelayTimestamp(time.Now().Add(delayedTime))
 
-		_, err = rocketmq.PaymentProducer.Send(context.TODO(), delayedPaymentMsg)
+		_, err = producer.PaymentProducer.Send(context.TODO(), delayedPaymentMsg)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +101,7 @@ func call3rdPartyService() bool {
 	// call 3rd party service
 	// simulate the time cost
 	time.Sleep(500 * time.Millisecond)
-	//randomly return success or failure
+	// randomly return success or failure
 	rand.Seed(time.Now().UnixNano())
 	return rand.Intn(2) == 0
 }

@@ -8,22 +8,26 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/cloudwego/hertz/pkg/app/server/registry"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	capi "github.com/hashicorp/consul/api"
+	consul "github.com/hertz-contrib/registry/consul"
 	"github.com/kr/pretty"
 	"github.com/spf13/viper"
 	"gopkg.in/validator.v2"
 )
 
 var (
-	conf *Config
-	once sync.Once
+	conf     *Config
+	once     sync.Once
+	register registry.Registry
 )
 
 type ConsulConfig struct {
 	ConsulHost      string `mapstructure:"consul_host"`
 	ConsulPort      string `mapstructure:"consul_port"`
 	ConsulConfigKey string `mapstructure:"consul_config_key"`
+	ConsulToken     string `mapstructure:"consul_token"`
 }
 
 type OsEnvConf struct {
@@ -79,19 +83,25 @@ func GetConf() *Config {
 	return conf
 }
 
-func initConf() {
+func GetRegister() registry.Registry {
+	return register
+}
 
+func initConf() {
 	conf = new(Config)
 	conf.OsConf = initOsConf()
 
 	consulCfg := capi.DefaultConfig()
 	consulCfg.Address = net.JoinHostPort(conf.OsConf.ConsulConf.ConsulHost, conf.OsConf.ConsulConf.ConsulPort)
+	consulCfg.Token = conf.OsConf.ConsulConf.ConsulToken
 	consulApi, err := capi.NewClient(consulCfg)
-
 	if err != nil {
 		hlog.Error("create consul client error - %v", err)
 		panic(err)
 	}
+
+	register = consul.NewConsulRegister(consulApi)
+
 	hlog.Infof("consul client created: %v", conf.OsConf.ConsulConf.ConsulConfigKey)
 	content, _, err := consulApi.KV().Get(conf.OsConf.ConsulConf.ConsulConfigKey, nil)
 	if err != nil {
@@ -124,7 +134,6 @@ func initConf() {
 	v := viper.New()
 	v.SetConfigType("yaml")
 	err = v.ReadConfig(bytes.NewBuffer(content.Value))
-
 	if err != nil {
 		hlog.Errorf("parse yaml error - %v", err)
 		panic(err)
@@ -150,6 +159,7 @@ func initOsConf() *OsEnvConf {
 	osConf.ConsulConf.ConsulHost = os.Getenv("CONSUL_HOST")
 	osConf.ConsulConf.ConsulPort = os.Getenv("CONSUL_PORT")
 	osConf.ConsulConf.ConsulConfigKey = os.Getenv("CONSUL_CONFIG_KEY")
+	osConf.ConsulConf.ConsulToken = os.Getenv("CONSUL_TOKEN")
 	return osConf
 }
 

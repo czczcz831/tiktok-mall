@@ -45,8 +45,11 @@ func kitexInit() (opts []server.Option) {
 	// thrift meta handler
 	opts = append(opts, server.WithMetaHandler(transmeta.ServerTTHeaderHandler))
 
-	//server registry
-	r, err := consul.NewConsulRegister(net.JoinHostPort(conf.GetConf().OsConf.ConsulConf.ConsulHost, conf.GetConf().OsConf.ConsulConf.ConsulPort))
+	// server registry
+
+	consulCfg := conf.GetConsulCfg()
+
+	r, err := consul.NewConsulRegisterWithConfig(consulCfg)
 	if err != nil {
 		klog.Fatalf("new consul register failed: %v", err)
 	}

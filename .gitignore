@@ -36,3 +36,4 @@ tmp/
 *.local.yml
 *.yaml
 *.env
+activate.sh

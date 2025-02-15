@@ -1,4 +1,4 @@
-package rocketmq
+package consumer
 
 import (
 	"time"
@@ -12,11 +12,11 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/order/conf"
 	"github.com/czczcz831/tiktok-mall/common/consts"
 
-	"github.com/czczcz831/tiktok-mall/app/payment/biz/dal/model"
+	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/model"
 )
 
 var (
-	delayedCancelPaymentConsumer golang.SimpleConsumer
+	delayedCancelOrderConsumer golang.SimpleConsumer
 )
 
 const (
@@ -29,12 +29,12 @@ const (
 	// receive messages in a loop
 )
 
-func delayedCancelPaymentConsumerInit() error {
+func delayedCancelOrderConsumerInit() error {
 	var err error
 
-	delayedCancelPaymentConsumer, err = golang.NewSimpleConsumer(&golang.Config{
+	delayedCancelOrderConsumer, err = golang.NewSimpleConsumer(&golang.Config{
 		Endpoint:      conf.GetConf().RocketMQ.Endpoint,
-		ConsumerGroup: conf.GetConf().RocketMQ.ConsumerGroup,
+		ConsumerGroup: consts.RocketOrderConsumerGroup,
 		Credentials: &credentials.SessionCredentials{
 			AccessKey:    conf.GetConf().RocketMQ.AccessKey,
 			AccessSecret: conf.GetConf().RocketMQ.AccessKey,
@@ -42,66 +42,64 @@ func delayedCancelPaymentConsumerInit() error {
 	},
 		golang.WithAwaitDuration(awaitDuration),
 		golang.WithSubscriptionExpressions(map[string]*golang.FilterExpression{
-			conf.GetConf().RocketMQ.NormalTopic: golang.NewFilterExpressionWithType(consts.RocketCreateOrderDelayedTag, golang.TAG),
+			consts.RocketOrderNormalTopic: golang.NewFilterExpressionWithType(consts.RocketCreateOrderDelayedTag, golang.TAG),
 		}),
 	)
 
-	klog.Infof("topic: %s", conf.GetConf().RocketMQ.NormalTopic)
-	klog.Infof("consumer group: %s", conf.GetConf().RocketMQ.ConsumerGroup)
 	klog.Infof("endpoint: %s", conf.GetConf().RocketMQ.Endpoint)
 
 	if err != nil {
 		klog.Fatalf("new simple consumer failed: %v", err)
 	}
 
-	err = delayedCancelPaymentConsumer.Start()
+	err = delayedCancelOrderConsumer.Start()
 	if err != nil {
 		klog.Fatalf("start simple consumer failed: %v", err)
 	}
 
 	// Start handlers
 	{
-		go delayedCancelPaymentConsumerHandler()
+		go delayedCancelOrderConsumerHandler()
 	}
 
 	return nil
 
 }
 
-func delayedCancelPaymentConsumerHandler() {
-	defer delayedCancelPaymentConsumer.GracefulStop()
+func delayedCancelOrderConsumerHandler() {
+	defer delayedCancelOrderConsumer.GracefulStop()
 	for {
 		klog.Info("start recevie message")
-		mvs, err := delayedCancelPaymentConsumer.Receive(context.TODO(), maxMessageNum, invisibleDuration)
+		mvs, err := delayedCancelOrderConsumer.Receive(context.TODO(), maxMessageNum, invisibleDuration)
 		if err != nil {
 			klog.Errorf("receive message failed: %v", err)
 		}
 		// ack message
 		for _, mv := range mvs {
 			klog.Infof("message 6666666666666666666666666666666666: %v", mv)
-			err := delayedCancelPaymentConsumer.Ack(context.TODO(), mv)
+			err := delayedCancelOrderConsumer.Ack(context.TODO(), mv)
 			if err != nil {
 				klog.Errorf("ack message failed: %v", err)
 			}
-			err = cancelPaymentBiz(mv)
+			err = cancelOrderBiz(mv)
 			if err != nil {
-				klog.Errorf("cancel payment failed: %v", err)
+				klog.Errorf("clear cart failed: %v", err)
 			}
 		}
 	}
 }
 
-func cancelPaymentBiz(mv *golang.MessageView) error {
+func cancelOrderBiz(mv *golang.MessageView) error {
 	//Unmarshal message
 
-	transactionUuid := string(mv.GetBody())
+	orderUuid := string(mv.GetBody())
 	//delete order
 
-	klog.Infof("transactionUuid %s", transactionUuid)
+	klog.Infof("orderUuid %s", &orderUuid)
 
-	res := mysql.DB.Model(&model.Transaction{}).Where("uuid = ?", transactionUuid).Where("status != ?", model.TransactionStatusPaid).Update("status", model.TransactionStatusCancel)
+	res := mysql.DB.Model(&model.Order{}).Where("uuid = ?", orderUuid).Where("status != ?", model.OrderStatusPaid).Update("status", model.OrderStatusCancelled)
 	if res.Error != nil {
-		klog.Errorf("cancel payment failed: %v", res.Error)
+		klog.Errorf("cancel order failed: %v", res.Error)
 		return res.Error
 	}
 	return nil
