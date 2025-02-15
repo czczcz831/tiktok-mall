@@ -34,7 +34,7 @@ func delayedCancelOrderConsumerInit() error {
 
 	delayedCancelOrderConsumer, err = golang.NewSimpleConsumer(&golang.Config{
 		Endpoint:      conf.GetConf().RocketMQ.Endpoint,
-		ConsumerGroup: consts.RocketOrderConsumerGroup,
+		ConsumerGroup: consts.RocketDelayCancelOrderConsumerGroup,
 		Credentials: &credentials.SessionCredentials{
 			AccessKey:    conf.GetConf().RocketMQ.AccessKey,
 			AccessSecret: conf.GetConf().RocketMQ.AccessKey,

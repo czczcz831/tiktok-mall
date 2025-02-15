@@ -17,11 +17,13 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/dal"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/router"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/sentinel"
 	"github.com/czczcz831/tiktok-mall/app/api/conf"
 	"github.com/hertz-contrib/cors"
 	"github.com/hertz-contrib/gzip"
 	"github.com/hertz-contrib/logger/accesslog"
 	hertzlogrus "github.com/hertz-contrib/logger/logrus"
+	hertzSentinel "github.com/hertz-contrib/opensergo/sentinel/adapter"
 	"github.com/hertz-contrib/pprof"
 	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/zap/zapcore"
@@ -107,4 +109,16 @@ func registerMiddleware(h *server.Hertz) {
 
 	// cores
 	h.Use(cors.Default())
+
+	//sentinelInit
+	sentinel.Init()
+	h.Use(hertzSentinel.SentinelServerMiddleware(
+		hertzSentinel.WithServerBlockFallback(func(c context.Context, ctx *app.RequestContext) {
+			ctx.AbortWithStatusJSON(439, utils.H{
+				"err":  "too many request; the quota used up",
+				"code": 10000,
+			})
+		}),
+	))
+
 }

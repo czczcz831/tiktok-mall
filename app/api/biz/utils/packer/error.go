@@ -6,6 +6,9 @@ const DEFAULT_SUCCESS_CODE = 0
 const (
 	OK = 0
 
+	//Sentinel Limit Traffic
+	TOO_MANY_REQUEST_ERROR = 10000
+
 	//Client Error
 	UNKNOWN_CLIENT_ERROR           = 40000
 	INVALID_PARAMS_ERROR           = 40001

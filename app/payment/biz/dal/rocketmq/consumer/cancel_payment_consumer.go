@@ -31,7 +31,7 @@ func delayedCancelPaymentConsumerInit() error {
 
 	delayedCancelPaymentConsumer, err = golang.NewSimpleConsumer(&golang.Config{
 		Endpoint:      conf.GetConf().RocketMQ.Endpoint,
-		ConsumerGroup: consts.RocketPaymentConsumerGroup,
+		ConsumerGroup: consts.RocketDelayCancelPaymentConsumerGroup,
 		Credentials: &credentials.SessionCredentials{
 			AccessKey:    conf.GetConf().RocketMQ.AccessKey,
 			AccessSecret: conf.GetConf().RocketMQ.AccessKey,

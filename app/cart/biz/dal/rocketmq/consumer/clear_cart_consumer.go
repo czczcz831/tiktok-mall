@@ -31,7 +31,7 @@ func clearCartConsumerInit() {
 	var err error
 	clearCartConsumer, err = golang.NewSimpleConsumer(&golang.Config{
 		Endpoint:      conf.GetConf().RocketMQ.Endpoint,
-		ConsumerGroup: consts.RocketCartConsumerGroup,
+		ConsumerGroup: consts.RocketClearCartConsumer,
 		Credentials: &credentials.SessionCredentials{
 			AccessKey:    conf.GetConf().RocketMQ.AccessKey,
 			AccessSecret: conf.GetConf().RocketMQ.AccessKey,

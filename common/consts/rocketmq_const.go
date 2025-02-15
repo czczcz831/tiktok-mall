@@ -24,9 +24,9 @@ const (
 // ConsumerGroup
 const (
 	// Cart
-	RocketCartConsumerGroup = "cart_consumer"
+	RocketClearCartConsumer = "clear_cart_consumer"
 	// Order
-	RocketOrderConsumerGroup = "order_consumer"
+	RocketDelayCancelOrderConsumerGroup = "delayed_cancel_order_consumer"
 	// Payment
-	RocketPaymentConsumerGroup = "payment_consumer"
+	RocketDelayCancelPaymentConsumerGroup = "payment_consumer"
 )
