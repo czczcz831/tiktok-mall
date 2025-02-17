@@ -72,7 +72,6 @@ func delayedCancelPaymentConsumerHandler() {
 		}
 		// ack message
 		for _, mv := range mvs {
-			klog.Infof("message 6666666666666666666666666666666666: %v", mv)
 			err := delayedCancelPaymentConsumer.Ack(context.TODO(), mv)
 			if err != nil {
 				klog.Errorf("ack message failed: %v", err)

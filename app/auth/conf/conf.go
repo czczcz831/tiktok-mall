@@ -41,6 +41,7 @@ type Config struct {
 	Registry Registry `mapstructure:"registry"`
 	JWT      JWT      `mapstructure:"jwt"`
 	Logstash string   `mapstructure:"logstash"`
+	Metrics  string   `mapstructure:"metrics"`
 
 	OsConf *OsEnvConf
 	NodeID int64

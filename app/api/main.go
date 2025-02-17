@@ -23,6 +23,7 @@ import (
 	"github.com/hertz-contrib/gzip"
 	"github.com/hertz-contrib/logger/accesslog"
 	hertzlogrus "github.com/hertz-contrib/logger/logrus"
+	prometheus "github.com/hertz-contrib/monitor-prometheus"
 	hertzSentinel "github.com/hertz-contrib/opensergo/sentinel/adapter"
 	"github.com/hertz-contrib/pprof"
 	_ "github.com/joho/godotenv/autoload"
@@ -44,6 +45,10 @@ func main() {
 			Weight:      10,
 			Tags:        nil,
 		}),
+		//Metrics
+		server.WithTracer(
+			prometheus.NewServerTracer(conf.GetConf().Metrics, "/metrics"),
+		),
 	)
 
 	registerMiddleware(h)

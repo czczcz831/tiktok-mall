@@ -49,6 +49,7 @@ type Config struct {
 	Redis    Redis  `mapstructure:"redis"`
 	JWT      JWT    `mapstructure:"jwt"`
 	Logstash string `mapstructure:"logstash"`
+	Metrics  string `mapstructure:"metrics"`
 
 	OsConf *OsEnvConf
 	NodeID int64

@@ -50,6 +50,7 @@ type Config struct {
 	JWT      JWT      `mapstructure:"jwt"`
 	RocketMQ RocketMQ `mapstructure:"rocketmq"`
 	Logstash string   `mapstructure:"logstash"`
+	Metrics  string   `mapstructure:"metrics"`
 
 	OsConf    *OsEnvConf
 	MD5Secret string `mapstructure:"md5_secret"`

@@ -51,6 +51,7 @@ type Config struct {
 	JWT      JWT      `mapstructure:"jwt"`
 	RocketMQ RocketMQ `mapstructure:"rocketmq"`
 	Logstash string   `mapstructure:"logstash"`
+	Metrics  string   `mapstructure:"metrics"`
 
 	OsConf    *OsEnvConf
 	MD5Secret string `mapstructure:"md5_secret"`
@@ -102,7 +103,6 @@ func GetConsulCfg() *capi.Config {
 }
 
 func initConf() {
-
 	conf = new(Config)
 	conf.OsConf = initOsConf()
 
@@ -110,7 +110,6 @@ func initConf() {
 	consulCfg.Address = net.JoinHostPort(conf.OsConf.ConsulConf.ConsulHost, conf.OsConf.ConsulConf.ConsulPort)
 	consulCfg.Token = conf.OsConf.ConsulConf.ConsulToken
 	consulApi, err := capi.NewClient(consulCfg)
-
 	if err != nil {
 		klog.Error("create consul client error - %v", err)
 		panic(err)
@@ -147,7 +146,6 @@ func initConf() {
 	v := viper.New()
 	v.SetConfigType("yaml")
 	err = v.ReadConfig(bytes.NewBuffer(content.Value))
-
 	if err != nil {
 		klog.Errorf("parse yaml error - %v", err)
 		panic(err)

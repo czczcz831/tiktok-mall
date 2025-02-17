@@ -12,6 +12,7 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/user/conf"
 	"github.com/czczcz831/tiktok-mall/app/user/kitex_gen/user/userservice"
 	_ "github.com/joho/godotenv/autoload"
+	prometheus "github.com/kitex-contrib/monitor-prometheus"
 	kitexlogrus "github.com/kitex-contrib/obs-opentelemetry/logging/logrus"
 	consul "github.com/kitex-contrib/registry-consul"
 	"go.uber.org/zap/zapcore"
@@ -48,6 +49,8 @@ func kitexInit() (opts []server.Option) {
 		klog.Fatalf("new consul register failed: %v", err)
 	}
 	opts = append(opts, server.WithRegistry(r))
+	//Metrics
+	opts = append(opts, server.WithTracer(prometheus.NewServerTracer(conf.GetConf().Metrics, "/metrics")))
 
 	//dal init
 	dal.Init()
