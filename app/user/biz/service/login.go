@@ -22,7 +22,6 @@ func NewLoginService(ctx context.Context) *LoginService {
 
 // Run create note info
 func (s *LoginService) Run(req *user.LoginReq) (resp *user.LoginResp, err error) {
-	return nil, errors.New("test")
 	// Finish your business logic.
 	cryptoPassword := utils.MD5Crypto(req.Password, conf.GetConf().MD5Secret)
 	loginUser := &model.User{Email: req.Email, Password: cryptoPassword}

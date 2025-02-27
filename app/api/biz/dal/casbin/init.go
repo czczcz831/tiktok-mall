@@ -42,6 +42,8 @@ func SubjectFromToken(ctx context.Context, c *app.RequestContext) string {
 	if err != nil {
 		return ""
 	}
+	// 设置uuid到上下文
+	c.Set("uuid", uuid)
 
 	return uuid
 }
@@ -65,17 +67,21 @@ func Init() {
 
 	// 初始化
 	// AdminRole
-	CasbinEnforcer.AddPolicy(ADMIN_ROLE, "*", "*")
-	// CustomerRole
-	CasbinEnforcer.AddPolicy(CUSTOMER_ROLE, CUSTOMER_OBJECT, "*")
+	CasbinEnforcer.AddPolicy(ADMIN_ROLE, ".*") // Admin 可以访问所有资源
+	//CustomerRole
+	CasbinEnforcer.AddPolicy(CUSTOMER_ROLE, CUSTOMER_OBJECT) // Customer 只能访问 customer_obj
 	// SellerRole
-	CasbinEnforcer.AddPolicy(SELLER_ROLE, SELLER_OBJECT, "*")
-	CasbinEnforcer.AddPolicy(SELLER_ROLE, CUSTOMER_OBJECT, "*")
+	CasbinEnforcer.AddPolicy(SELLER_ROLE, SELLER_OBJECT)   // Seller 只能访问 seller_obj
+	CasbinEnforcer.AddPolicy(SELLER_ROLE, CUSTOMER_OBJECT) // Seller 也可以访问 customer_obj
 
 	// Superuser
 	CasbinEnforcer.AddRoleForUser("superuser-uuid", ADMIN_ROLE)
 
 	CasbinEnforcer.SavePolicy()
+	ok, err := CasbinEnforcer.Enforce("superuser-uuid", SELLER_OBJECT)
+	if !ok {
+		hlog.Fatalf("enforce failed: %v", err)
+	}
 
 	if err != nil {
 		hlog.Fatalf("load policy failed: %v", err)

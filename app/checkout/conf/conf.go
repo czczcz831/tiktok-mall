@@ -41,11 +41,11 @@ type Config struct {
 	Registry Registry `mapstructure:"registry"`
 	JWT      JWT      `mapstructure:"jwt"`
 	Logstash string   `mapstructure:"logstash"`
+	Metrics  string   `mapstructure:"metrics"`
 
 	OsConf    *OsEnvConf
 	MD5Secret string `mapstructure:"md5_secret"`
 	NodeID    int64
-	Metrics   string `mapstructure:"metrics"`
 }
 
 type JWT struct {
