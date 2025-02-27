@@ -81,12 +81,16 @@ func _cartMw() []app.HandlerFunc {
 
 func _clearcartMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
+	}
 }
 
 func _getcartMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
+	}
 }
 
 func _addproducttocartMw() []app.HandlerFunc {

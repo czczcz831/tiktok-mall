@@ -20,6 +20,7 @@ const (
 	UNKNOWN_SERVER_ERROR     = 50000
 	AUTH_DELIBER_TOKEN_ERROR = 50001
 	USER_REGISTER_ERROR      = 50002
+	CHECKOUT_ERROR           = 50003
 )
 
 var ErrorMessages = map[int]string{

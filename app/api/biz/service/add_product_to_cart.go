@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/utils/packer"
 	api "github.com/czczcz831/tiktok-mall/app/api/hertz_gen/api"
 	cart "github.com/czczcz831/tiktok-mall/client/cart/kitex_gen/cart"
 	cartAgent "github.com/czczcz831/tiktok-mall/client/cart/rpc/cart"
@@ -25,10 +26,19 @@ func (h *AddProductToCartService) Run(req *api.AddProductToCartReq) (resp *api.A
 	//}()
 	// todo edit your code
 
+	userUUID, ok := h.RequestContext.Get("uuid")
+	if !ok {
+		return nil, &packer.MyError{
+			Code: packer.UNKNOWN_SERVER_ERROR,
+		}
+	}
+
+	userUUIDStr, _ := userUUID.(string)
+
 	addResp, err := cartAgent.AddProductToCart(h.Context, &cart.AddProductToCartReq{
 		Item: &cart.CartItem{
-			UserUuid:    req.Item.UserUUID,
-			ProductUuid: req.Item.UserUUID,
+			UserUuid:    userUUIDStr,
+			ProductUuid: req.Item.ProductUUID,
 			Quantity:    int32(req.Item.Quantity),
 		},
 	})
@@ -39,7 +49,6 @@ func (h *AddProductToCartService) Run(req *api.AddProductToCartReq) (resp *api.A
 
 	return &api.AddProductToCartResp{
 		Item: &api.CartItem{
-			UserUUID:    addResp.Item.UserUuid,
 			ProductUUID: addResp.Item.ProductUuid,
 			Quantity:    int64(addResp.Item.Quantity),
 		},

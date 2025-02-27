@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/utils/packer"
 	api "github.com/czczcz831/tiktok-mall/app/api/hertz_gen/api"
 	cart "github.com/czczcz831/tiktok-mall/client/cart/kitex_gen/cart"
 	cartAgent "github.com/czczcz831/tiktok-mall/client/cart/rpc/cart"
@@ -25,8 +26,17 @@ func (h *GetCartService) Run(req *api.GetCartReq) (resp *api.GetCartResp, err er
 	//}()
 	// todo edit your code
 
+	userUUID, ok := h.RequestContext.Get("uuid")
+	if !ok {
+		return nil, &packer.MyError{
+			Code: packer.UNKNOWN_SERVER_ERROR,
+		}
+	}
+
+	userUUIDStr, _ := userUUID.(string)
+
 	getCartResp, err := cartAgent.GetCart(h.Context, &cart.GetCartReq{
-		UserUuid: req.UserUUID,
+		UserUuid: userUUIDStr,
 	})
 
 	if err != nil {
@@ -37,7 +47,6 @@ func (h *GetCartService) Run(req *api.GetCartReq) (resp *api.GetCartResp, err er
 
 	for _, item := range getCartResp.Items {
 		items = append(items, &api.CartItem{
-			UserUUID:    item.UserUuid,
 			ProductUUID: item.ProductUuid,
 			Quantity:    int64(item.Quantity),
 		})

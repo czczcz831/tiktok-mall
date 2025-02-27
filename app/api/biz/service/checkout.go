@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/utils/packer"
 	api "github.com/czczcz831/tiktok-mall/app/api/hertz_gen/api"
 	checkout "github.com/czczcz831/tiktok-mall/client/checkout/kitex_gen/checkout"
 	checkoutAgent "github.com/czczcz831/tiktok-mall/client/checkout/rpc/checkout"
@@ -33,8 +34,17 @@ func (h *CheckoutService) Run(req *api.CheckoutReq) (resp *api.CheckoutResp, err
 		})
 	}
 
+	userUUID, ok := h.RequestContext.Get("uuid")
+	if !ok {
+		return nil, &packer.MyError{
+			Code: packer.UNKNOWN_SERVER_ERROR,
+		}
+	}
+
+	userUUIDStr, _ := userUUID.(string)
+
 	checkoutResp, err := checkoutAgent.Checkout(h.Context, &checkout.CheckoutReq{
-		UserUuid:    req.UserUUID,
+		UserUuid:    userUUIDStr,
 		FirstName:   req.FirstName,
 		LastName:    req.LastName,
 		Email:       req.Email,

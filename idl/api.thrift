@@ -100,7 +100,6 @@ service ProductService {
 #*********Cart*********#
 
 struct CartItem {
-    string user_uuid (api.body = "user_uuid")
     string product_uuid (api.body = "product_uuid")
     i64 quantity (api.body = "quantity")
 }
@@ -114,7 +113,6 @@ struct AddProductToCartResp {
 }
 
 struct ClearCartReq {
-    string user_uuid (api.path = "user_uuid")
 }
 
 struct ClearCartResp {
@@ -122,7 +120,6 @@ struct ClearCartResp {
 }
 
 struct GetCartReq {
-    string user_uuid (api.path = "user_uuid")
 }
 
 struct GetCartResp {
@@ -132,8 +129,8 @@ struct GetCartResp {
 
 service CartService {
     AddProductToCartResp AddProductToCart(1: AddProductToCartReq req) (api.post="/cart/add_product", api.body="json")
-    ClearCartResp ClearCart(1: ClearCartReq req) (api.delete="/cart/:user_uuid")
-    GetCartResp GetCart(1: GetCartReq req) (api.get="/cart/:user_uuid")
+    ClearCartResp ClearCart(1: ClearCartReq req) (api.delete="/cart")
+    GetCartResp GetCart(1: GetCartReq req) (api.get="/cart")
 }
 
 
@@ -141,7 +138,6 @@ service CartService {
 
 struct Address {
     string uuid (api.body = "uuid")
-    string user_uuid (api.body = "user_uuid")
     string street_address (api.body = "street_address")
     string city (api.body = "city")
     string state (api.body = "state")
@@ -157,7 +153,6 @@ struct OrderItem {
 }
 
 struct CreateAddressReq {
-    string user_uuid (api.body = "user_uuid")
     string street_address (api.body = "street_address")
     string city (api.body = "city")
     string state (api.body = "state")
@@ -186,7 +181,6 @@ struct DeleteAddressResp {
 }
 
 struct GetAddressReq {
-    string user_uuid (api.path = "user_uuid")
 }
 
 struct GetAddressResp {
@@ -194,7 +188,6 @@ struct GetAddressResp {
 }
 
 struct CheckoutReq {
-    string user_uuid (api.body = "user_uuid")
     string first_name (api.body = "first_name")
     string last_name (api.body = "last_name")
     string email (api.body = "email")
@@ -211,7 +204,7 @@ service CheckoutService {
     CreateAddressResp CreateAddress(1: CreateAddressReq req) (api.post="/checkout/address", api.body="json")
     UpdateAddressResp UpdateAddress(1: UpdateAddressReq req) (api.put="/checkout/address", api.body="json")
     DeleteAddressResp DeleteAddress(1: DeleteAddressReq req) (api.delete="/checkout/address/:uuid")
-    GetAddressResp GetAddress(1: GetAddressReq req) (api.get="/checkout/address/:user_uuid")
+    GetAddressResp GetAddress(1: GetAddressReq req) (api.get="/checkout/address")
 
     CheckoutResp Checkout(1: CheckoutReq req) (api.post="/checkout", api.body="json")
 }

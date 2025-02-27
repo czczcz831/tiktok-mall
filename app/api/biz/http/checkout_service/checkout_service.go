@@ -116,16 +116,14 @@ func (s *CheckoutServiceClient) GetAddress(context context.Context, req *api.Get
 	ret, err := s.client.r().
 		setContext(context).
 		setQueryParams(map[string]interface{}{}).
-		setPathParams(map[string]string{
-			"user_uuid": req.GetUserUUID(),
-		}).
+		setPathParams(map[string]string{}).
 		setHeaders(map[string]string{}).
 		setFormParams(map[string]string{}).
 		setFormFileParams(map[string]string{}).
 		setBodyParam(req).
 		setRequestOption(reqOpt...).
 		setResult(httpResp).
-		execute("GET", "/checkout/address/:user_uuid")
+		execute("GET", "/checkout/address")
 	if err != nil {
 		return nil, nil, err
 	}

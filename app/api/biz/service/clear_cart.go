@@ -3,7 +3,10 @@ package service
 import (
 	"context"
 
+	"errors"
+
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/utils/packer"
 	api "github.com/czczcz831/tiktok-mall/app/api/hertz_gen/api"
 	cart "github.com/czczcz831/tiktok-mall/client/cart/kitex_gen/cart"
 	cartAgent "github.com/czczcz831/tiktok-mall/client/cart/rpc/cart"
@@ -24,8 +27,19 @@ func (h *ClearCartService) Run(req *api.ClearCartReq) (resp *api.ClearCartResp, 
 	// hlog.CtxInfof(h.Context, "resp = %+v", resp)
 	//}()
 	// todo edit your code
+
+	userUUID, ok := h.RequestContext.Get("uuid")
+	if !ok {
+		return nil, &packer.MyError{
+			Code: packer.UNKNOWN_SERVER_ERROR,
+			Err:  errors.New("user uuid not found"),
+		}
+	}
+
+	userUUIDStr, _ := userUUID.(string)
+
 	clearResp, err := cartAgent.ClearCart(h.Context, &cart.ClearCartReq{
-		UserUuid: req.UserUUID,
+		UserUuid: userUUIDStr,
 	})
 
 	if err != nil {
