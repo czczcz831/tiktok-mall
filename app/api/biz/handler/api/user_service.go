@@ -71,3 +71,23 @@ func Register(ctx context.Context, c *app.RequestContext) {
 	}
 	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
 }
+
+// Logout .
+// @router /user/logout [POST]
+func Logout(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req api.LogoutReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+
+	resp, err := service.NewLogoutService(ctx, c).Run(&req)
+
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
+}

@@ -16,4 +16,6 @@ struct DeliverTokenReq {
 struct DeliveryResp {
     1: string token
     2: string refresh_token
+    3: i64 token_expire_after
+    4: i64 refresh_token_expire_after
 }

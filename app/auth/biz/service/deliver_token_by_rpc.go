@@ -31,7 +31,9 @@ func (s *DeliverTokenByRPCService) Run(req *auth.DeliverTokenReq) (resp *auth.De
 	}
 
 	return &auth.DeliveryResp{
-		Token:        token,
-		RefreshToken: refreshToken,
+		Token:                   token,
+		RefreshToken:            refreshToken,
+		TokenExpireAfter:        int64(tokenExpire),
+		RefreshTokenExpireAfter: int64(refreshTokenExpire),
 	}, nil
 }

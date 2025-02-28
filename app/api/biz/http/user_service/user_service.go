@@ -19,6 +19,8 @@ var (
 type Client interface {
 	Login(context context.Context, req *api.LoginReq, reqOpt ...config.RequestOption) (resp *api.LoginResp, rawResponse *protocol.Response, err error)
 
+	Logout(context context.Context, req *api.LogoutReq, reqOpt ...config.RequestOption) (resp *api.LogoutResp, rawResponse *protocol.Response, err error)
+
 	RefreshToken(context context.Context, req *api.RefreshTokenReq, reqOpt ...config.RequestOption) (resp *api.LoginResp, rawResponse *protocol.Response, err error)
 
 	Register(context context.Context, req *api.RegisterReq, reqOpt ...config.RequestOption) (resp *api.RegisterResp, rawResponse *protocol.Response, err error)
@@ -52,6 +54,28 @@ func (s *UserServiceClient) Login(context context.Context, req *api.LoginReq, re
 		setRequestOption(reqOpt...).
 		setResult(httpResp).
 		execute("POST", "/user/login")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resp = httpResp
+	rawResponse = ret.rawResponse
+	return resp, rawResponse, nil
+}
+
+func (s *UserServiceClient) Logout(context context.Context, req *api.LogoutReq, reqOpt ...config.RequestOption) (resp *api.LogoutResp, rawResponse *protocol.Response, err error) {
+	httpResp := &api.LogoutResp{}
+	ret, err := s.client.r().
+		setContext(context).
+		setQueryParams(map[string]interface{}{}).
+		setPathParams(map[string]string{}).
+		setHeaders(map[string]string{}).
+		setFormParams(map[string]string{}).
+		setFormFileParams(map[string]string{}).
+		setBodyParam(req).
+		setRequestOption(reqOpt...).
+		setResult(httpResp).
+		execute("POST", "/user/logout")
 	if err != nil {
 		return nil, nil, err
 	}
@@ -116,6 +140,10 @@ func ConfigDefaultClient(ops ...Option) (err error) {
 
 func Login(context context.Context, req *api.LoginReq, reqOpt ...config.RequestOption) (resp *api.LoginResp, rawResponse *protocol.Response, err error) {
 	return defaultClient.Login(context, req, reqOpt...)
+}
+
+func Logout(context context.Context, req *api.LogoutReq, reqOpt ...config.RequestOption) (resp *api.LogoutResp, rawResponse *protocol.Response, err error) {
+	return defaultClient.Logout(context, req, reqOpt...)
 }
 
 func RefreshToken(context context.Context, req *api.RefreshTokenReq, reqOpt ...config.RequestOption) (resp *api.LoginResp, rawResponse *protocol.Response, err error) {

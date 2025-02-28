@@ -3,10 +3,13 @@ package casbin
 import (
 	"context"
 
+	"fmt"
+
 	"github.com/casbin/casbin/v2"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/mysql"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/redis"
 	"github.com/czczcz831/tiktok-mall/app/api/conf"
 	"github.com/czczcz831/tiktok-mall/common/utils"
 
@@ -38,12 +41,25 @@ func SubjectFromToken(ctx context.Context, c *app.RequestContext) string {
 
 	publicKeyHexString := conf.GetConf().JWT.PublicSecret
 
+	//Verify token in redis
+	redisKey := fmt.Sprintf("token:%s", token)
+	exists, err := redis.RedisClient.Exists(context.Background(), redisKey).Result()
+	if err != nil {
+		return ""
+	}
+	if exists == 0 {
+		return ""
+	}
+
+	//这一步其实没必要了，uuid可以存redis里，但还是双重验证一下吧
+	//这一步其实没必要了，uuid可以存redis里，但还是双重验证一下吧
 	uuid, _, err := utils.VerifyToken(token, publicKeyHexString)
 	if err != nil {
 		return ""
 	}
-	// 设置uuid到上下文
+	// 设置uuid和token到上下文
 	c.Set("uuid", uuid)
+	c.Set("token", token)
 
 	return uuid
 }

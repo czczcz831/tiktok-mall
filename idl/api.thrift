@@ -24,9 +24,18 @@ struct RegisterResp {
     string user_uuid
 }
 
+struct LogoutReq{
+
+}
+
+struct LogoutResp{
+    bool ok 
+}
+
 
 service UserService {
     LoginResp Login(1: LoginReq req) (api.post="/user/login", api.body="json")
+    LogoutResp Logout(1: LogoutReq req) (api.post="/user/logout",)
     LoginResp RefreshToken(1: RefreshTokenReq req) (api.post="/user/refresh_token", api.body="json")
     RegisterResp Register(1: RegisterReq req) (api.post="/user/register", api.body="json")
 }

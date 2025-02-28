@@ -184,3 +184,11 @@ func _paymentMw() []app.HandlerFunc {
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
+
+// 登出需要角色拥有CUSTOMER_OBJECT权限
+func _logoutMw() []app.HandlerFunc {
+	// your code...
+	return []app.HandlerFunc{
+		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
+	}
+}

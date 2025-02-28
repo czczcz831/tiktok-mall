@@ -45,6 +45,7 @@ func Register(r *server.Hertz) {
 	{
 		_user := root.Group("/user", _userMw()...)
 		_user.POST("/login", append(_loginMw(), api.Login)...)
+		_user.POST("/logout", append(_logoutMw(), api.Logout)...)
 		_user.POST("/refresh_token", append(_refreshtokenMw(), api.RefreshToken)...)
 		_user.POST("/register", append(_registerMw(), api.Register)...)
 	}

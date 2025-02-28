@@ -40,7 +40,9 @@ func (s *RefeshTokenByRPCService) Run(req *auth.RefeshTokenReq) (resp *auth.Deli
 	}
 
 	return &auth.DeliveryResp{
-		Token:        token,
-		RefreshToken: refreshToken,
+		Token:                   token,
+		RefreshToken:            refreshToken,
+		TokenExpireAfter:        int64(tokenExpire),
+		RefreshTokenExpireAfter: int64(refreshTokenExpire),
 	}, nil
 }

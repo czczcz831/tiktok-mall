@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/redis"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/utils/packer"
 	api "github.com/czczcz831/tiktok-mall/app/api/hertz_gen/api"
 	auth "github.com/czczcz831/tiktok-mall/client/auth/kitex_gen/auth"
@@ -56,6 +59,15 @@ func (h *LoginService) Run(req *api.LoginReq) (resp *api.LoginResp, err error) {
 	if err != nil {
 		return nil, &packer.MyError{
 			Code: packer.AUTH_DELIBER_TOKEN_ERROR,
+			Err:  err,
+		}
+	}
+
+	redisKey := fmt.Sprintf("token:%s", deliveryTokenResp.Token)
+	_, err = redis.RedisClient.Set(context.Background(), redisKey, "", time.Duration(deliveryTokenResp.TokenExpireAfter)*time.Hour).Result()
+	if err != nil {
+		return nil, &packer.MyError{
+			Code: packer.UNKNOWN_SERVER_ERROR,
 			Err:  err,
 		}
 	}
