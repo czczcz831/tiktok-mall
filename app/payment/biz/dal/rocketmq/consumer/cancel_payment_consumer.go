@@ -39,7 +39,7 @@ func delayedCancelPaymentConsumerInit() error {
 	},
 		golang.WithAwaitDuration(awaitDuration),
 		golang.WithSubscriptionExpressions(map[string]*golang.FilterExpression{
-			consts.RocketPaymentNormalTopic: golang.NewFilterExpressionWithType(consts.RocketCreatePaymentTag, golang.TAG),
+			consts.RocketPaymentDelayedTopic: golang.NewFilterExpressionWithType(consts.RocketCreatePaymentTag, golang.TAG),
 		}),
 	)
 

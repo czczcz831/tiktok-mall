@@ -69,6 +69,15 @@ struct PreDecrStockResp{
     bool ok
 }
 
+struct ChargeStockReq{
+    list<OrderItem> items
+}
+
+struct ChargeStockResp{
+    bool ok
+}
+
+
 service ProductService {
     CreateProductResp CreateProduct(1: CreateProductReq req)
     UpdateProductResp UpdateProduct(1: UpdateProductReq req)
@@ -77,4 +86,5 @@ service ProductService {
     GetProductListResp GetProductList(1: GetProductListReq req)
 
     PreDecrStockResp PreDecrStock(1: PreDecrStockReq req)
+    ChargeStockResp ChargeStock(1: ChargeStockReq req)
 }

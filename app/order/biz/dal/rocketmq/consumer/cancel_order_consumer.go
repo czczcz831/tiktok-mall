@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"context"
+	"errors"
 
 	"github.com/apache/rocketmq-clients/golang"
 	"github.com/apache/rocketmq-clients/golang/credentials"
@@ -13,6 +14,8 @@ import (
 	"github.com/czczcz831/tiktok-mall/common/consts"
 
 	"github.com/czczcz831/tiktok-mall/app/order/biz/model"
+	product "github.com/czczcz831/tiktok-mall/client/product/kitex_gen/product"
+	productAgent "github.com/czczcz831/tiktok-mall/client/product/rpc/product"
 )
 
 var (
@@ -34,7 +37,7 @@ func delayedCancelOrderConsumerInit() error {
 
 	delayedCancelOrderConsumer, err = golang.NewSimpleConsumer(&golang.Config{
 		Endpoint:      conf.GetConf().RocketMQ.Endpoint,
-		ConsumerGroup: consts.RocketDelayCancelOrderConsumerGroup,
+		ConsumerGroup: consts.RocketDelayOrderCancelOrderConsumerGroup,
 		Credentials: &credentials.SessionCredentials{
 			AccessKey:    conf.GetConf().RocketMQ.AccessKey,
 			AccessSecret: conf.GetConf().RocketMQ.AccessKey,
@@ -42,7 +45,7 @@ func delayedCancelOrderConsumerInit() error {
 	},
 		golang.WithAwaitDuration(awaitDuration),
 		golang.WithSubscriptionExpressions(map[string]*golang.FilterExpression{
-			consts.RocketOrderNormalTopic: golang.NewFilterExpressionWithType(consts.RocketCreateOrderDelayedTag, golang.TAG),
+			consts.RocketOrderDelayedTopic: golang.NewFilterExpressionWithType(consts.RocketCreateOrderDelayedTag, golang.TAG),
 		}),
 	)
 
@@ -100,6 +103,51 @@ func cancelOrderBiz(mv *golang.MessageView) error {
 	if res.Error != nil {
 		klog.Errorf("cancel order failed: %v", res.Error)
 		return res.Error
+	}
+
+	//Unpaid order
+	if res.RowsAffected != 0 {
+		//Recharge stock
+		err := rechargeStockBiz(orderUuid)
+		if err != nil {
+			klog.Errorf("recharge stock failed: %v", err)
+			return err
+		}
+	}
+
+	return nil
+}
+
+func rechargeStockBiz(orderUuid string) error {
+	orderItems := make([]*model.OrderItem, 0)
+
+	res := mysql.DB.Model(&model.OrderItem{}).Where("order_uuid = ?", orderUuid).Find(&orderItems)
+	if res.Error != nil {
+		klog.Errorf("find order items failed: %v", res.Error)
+		return res.Error
+	}
+
+	chargeStockReqItems := make([]*product.OrderItem, 0)
+	for _, item := range orderItems {
+		chargeStockReqItems = append(chargeStockReqItems, &product.OrderItem{
+			Uuid:     item.ProductUuid,
+			Quantity: item.Quantity,
+		})
+	}
+
+	chargeStockReq := &product.ChargeStockReq{
+		Items: chargeStockReqItems,
+	}
+
+	chargeStockResp, err := productAgent.ChargeStock(context.Background(), chargeStockReq)
+	if err != nil {
+		klog.Errorf("charge stock failed: %v", err)
+		return err
+	}
+
+	if !chargeStockResp.Ok {
+		klog.Error("charge stock failed")
+		return errors.New("charge stock failed")
 	}
 	return nil
 }

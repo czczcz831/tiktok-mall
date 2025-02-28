@@ -60,3 +60,12 @@ func PreDecrStock(ctx context.Context, req *product.PreDecrStockReq, callOptions
 	}
 	return resp, nil
 }
+
+func ChargeStock(ctx context.Context, req *product.ChargeStockReq, callOptions ...callopt.Option) (resp *product.ChargeStockResp, err error) {
+	resp, err = defaultClient.ChargeStock(ctx, req, callOptions...)
+	if err != nil {
+		klog.CtxErrorf(ctx, "ChargeStock call failed,err =%+v", err)
+		return nil, err
+	}
+	return resp, nil
+}

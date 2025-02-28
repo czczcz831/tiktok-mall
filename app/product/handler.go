@@ -51,3 +51,10 @@ func (s *ProductServiceImpl) PreDecrStock(ctx context.Context, req *product.PreD
 
 	return resp, err
 }
+
+// ChargeStock implements the ProductServiceImpl interface.
+func (s *ProductServiceImpl) ChargeStock(ctx context.Context, req *product.ChargeStockReq) (resp *product.ChargeStockResp, err error) {
+	resp, err = service.NewChargeStockService(ctx).Run(req)
+
+	return resp, err
+}

@@ -55,6 +55,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"ChargeStock": kitex.NewMethodInfo(
+		chargeStockHandler,
+		newProductServiceChargeStockArgs,
+		newProductServiceChargeStockResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -229,6 +236,24 @@ func newProductServicePreDecrStockResult() interface{} {
 	return product.NewProductServicePreDecrStockResult()
 }
 
+func chargeStockHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*product.ProductServiceChargeStockArgs)
+	realResult := result.(*product.ProductServiceChargeStockResult)
+	success, err := handler.(product.ProductService).ChargeStock(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newProductServiceChargeStockArgs() interface{} {
+	return product.NewProductServiceChargeStockArgs()
+}
+
+func newProductServiceChargeStockResult() interface{} {
+	return product.NewProductServiceChargeStockResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -294,6 +319,16 @@ func (p *kClient) PreDecrStock(ctx context.Context, req *product.PreDecrStockReq
 	_args.Req = req
 	var _result product.ProductServicePreDecrStockResult
 	if err = p.c.Call(ctx, "PreDecrStock", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) ChargeStock(ctx context.Context, req *product.ChargeStockReq) (r *product.ChargeStockResp, err error) {
+	var _args product.ProductServiceChargeStockArgs
+	_args.Req = req
+	var _result product.ProductServiceChargeStockResult
+	if err = p.c.Call(ctx, "ChargeStock", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

@@ -61,7 +61,7 @@ func (s *ChargeService) Run(req *payment.ChargeReq) (resp *payment.ChargeResp, e
 		}
 		// Send delayed msg to rocketmq
 		delayedPaymentMsg := &rocketGolang.Message{
-			Topic: consts.RocketPaymentNormalTopic,
+			Topic: consts.RocketPaymentDelayedTopic,
 			Body:  []byte(transactionIns.UUID),
 			Tag:   &rocketCreatePaymentTag,
 		}

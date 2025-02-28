@@ -29,7 +29,7 @@ func NewCreateOrderService(ctx context.Context) *CreateOrderService {
 
 var rocketCreateOrderTag = consts.RocketCreateOrderTag
 var rocketCreateOrderDelayedTag = consts.RocketCreateOrderDelayedTag
-var delayedTime = time.Second * 10
+var delayedTime = consts.RocketOrderDelayedTime
 
 // Run create note info
 func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateOrderResp, err error) {
@@ -102,6 +102,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	if res.Error != nil {
 		mysqlTx.Rollback()
 		rocketTx.RollBack()
+		stockRollback(orderItems)
 		return nil, res.Error
 	}
 
@@ -110,6 +111,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	if res.Error != nil {
 		mysqlTx.Rollback()
 		rocketTx.RollBack()
+		stockRollback(orderItems)
 		return nil, res.Error
 	}
 
@@ -117,6 +119,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	if err != nil {
 		mysqlTx.Rollback()
 		rocketTx.RollBack()
+		stockRollback(orderItems)
 		return nil, err
 	}
 
@@ -126,7 +129,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	cancelOrderUuidBytes := []byte(orderUUID)
 
 	createOrderDelayedMsg := &rocketGolang.Message{
-		Topic: consts.RocketOrderNormalTopic,
+		Topic: consts.RocketOrderDelayedTopic,
 		Body:  cancelOrderUuidBytes,
 		Tag:   &rocketCreateOrderDelayedTag,
 	}
@@ -137,6 +140,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 	if err != nil {
 		mysqlTx.Rollback()
 		rocketTx.RollBack()
+		stockRollback(orderItems)
 		return nil, err
 	}
 
@@ -194,4 +198,29 @@ func preDecrStock(req *order.CreateOrderReq) error {
 
 	return nil
 
+}
+
+func stockRollback(orderItems []*model.OrderItem) error {
+	chargeStockReqItems := make([]*product.OrderItem, 0)
+	for _, item := range orderItems {
+		chargeStockReqItems = append(chargeStockReqItems, &product.OrderItem{
+			Uuid:     item.ProductUuid,
+			Quantity: item.Quantity,
+		})
+	}
+
+	chargeStockReq := &product.ChargeStockReq{
+		Items: chargeStockReqItems,
+	}
+
+	chargeStockResp, err := productAgent.ChargeStock(context.Background(), chargeStockReq)
+	if err != nil {
+		return err
+	}
+
+	if !chargeStockResp.Ok {
+		return errors.New("charge stock failed")
+	}
+
+	return nil
 }
