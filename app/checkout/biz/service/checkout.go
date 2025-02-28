@@ -6,6 +6,8 @@ import (
 	checkout "github.com/czczcz831/tiktok-mall/app/checkout/kitex_gen/checkout"
 	order "github.com/czczcz831/tiktok-mall/client/order/kitex_gen/order"
 	orderAgent "github.com/czczcz831/tiktok-mall/client/order/rpc/order"
+	product "github.com/czczcz831/tiktok-mall/client/product/kitex_gen/product"
+	productAgent "github.com/czczcz831/tiktok-mall/client/product/rpc/product"
 )
 
 type CheckoutService struct {
@@ -22,22 +24,29 @@ func (s *CheckoutService) Run(req *checkout.CheckoutReq) (resp *checkout.Checkou
 	total := int64(0)
 	items := []*order.OrderItem{}
 	for _, item := range req.Items {
-		total += item.Price * int64(item.Quantity)
+		//Call product service to get product info
+		product, err := productAgent.GetProduct(s.ctx, &product.GetProductReq{
+			Uuid: item.ProductUuid,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		total += product.Product.Price * int64(item.Quantity)
 		items = append(items, &order.OrderItem{
 			ProductUuid: item.ProductUuid,
+			Price:       product.Product.Price,
 			Quantity:    item.Quantity,
 		})
 	}
 
-	//Rocketmq Transaction
-
 	createResp, err := orderAgent.CreateOrder(s.ctx, &order.CreateOrderReq{
-		UserUuid: req.UserUuid,
-		Total:    total,
-		Items:    items,
+		UserUuid:    req.UserUuid,
+		AddressUuid: req.AddressUuid,
+		Total:       total,
+		Items:       items,
 	})
-
-	//Async call product service to update stock
 
 	if err != nil {
 		return nil, err

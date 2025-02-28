@@ -19,7 +19,7 @@ func NewDeleteAddressService(ctx context.Context) *DeleteAddressService {
 func (s *DeleteAddressService) Run(req *checkout.DeleteAddressReq) (resp *checkout.DeleteAddressResp, err error) {
 	// Finish your business logic.
 
-	res := mysql.DB.Delete(&model.Address{}, "uuid = ?", req.Uuid)
+	res := mysql.DB.Delete(&model.Address{}, "uuid = ? AND user_uuid = ?", req.Uuid, req.UserUuid)
 
 	if res.Error != nil {
 		return nil, res.Error

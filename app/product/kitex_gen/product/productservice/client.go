@@ -16,6 +16,7 @@ type Client interface {
 	DeleteProduct(ctx context.Context, req *product.DeleteProductReq, callOptions ...callopt.Option) (r *product.DeleteProductResp, err error)
 	GetProduct(ctx context.Context, req *product.GetProductReq, callOptions ...callopt.Option) (r *product.GetProductResp, err error)
 	GetProductList(ctx context.Context, req *product.GetProductListReq, callOptions ...callopt.Option) (r *product.GetProductListResp, err error)
+	PreDecrStock(ctx context.Context, req *product.PreDecrStockReq, callOptions ...callopt.Option) (r *product.PreDecrStockResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -70,4 +71,9 @@ func (p *kProductServiceClient) GetProduct(ctx context.Context, req *product.Get
 func (p *kProductServiceClient) GetProductList(ctx context.Context, req *product.GetProductListReq, callOptions ...callopt.Option) (r *product.GetProductListResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.GetProductList(ctx, req)
+}
+
+func (p *kProductServiceClient) PreDecrStock(ctx context.Context, req *product.PreDecrStockReq, callOptions ...callopt.Option) (r *product.PreDecrStockResp, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.PreDecrStock(ctx, req)
 }

@@ -29,7 +29,7 @@ func (s *UpdateAddressService) Run(req *checkout.UpdateAddressReq) (resp *checko
 		ZipCode:       req.Address.ZipCode,
 	}
 
-	res := mysql.DB.Where("uuid = ?", req.Address.Uuid).Updates(updatedAddress)
+	res := mysql.DB.Where("uuid = ? AND user_uuid = ?", req.Address.Uuid, req.Address.UserUuid).Updates(updatedAddress)
 
 	if res.Error != nil {
 		return nil, res.Error

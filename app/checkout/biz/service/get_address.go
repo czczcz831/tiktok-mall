@@ -31,7 +31,13 @@ func (s *GetAddressService) Run(req *checkout.GetAddressReq) (resp *checkout.Get
 
 	for _, address := range addresses {
 		addressResp = append(addressResp, &checkout.Address{
-			Uuid: address.UUID,
+			Uuid:          address.UUID,
+			UserUuid:      address.UserUUID,
+			StreetAddress: address.StreetAddress,
+			City:          address.City,
+			State:         address.State,
+			Country:       address.Country,
+			ZipCode:       address.ZipCode,
 		})
 	}
 

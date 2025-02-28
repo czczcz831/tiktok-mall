@@ -49,7 +49,13 @@ func (s *CreateAddressService) Run(req *checkout.CreateAddressReq) (resp *checko
 
 	return &checkout.CreateAddressResp{
 		Address: &checkout.Address{
-			Uuid: createAddress.UUID,
+			Uuid:          createAddress.UUID,
+			UserUuid:      uuid,
+			StreetAddress: createAddress.StreetAddress,
+			City:          createAddress.City,
+			State:         createAddress.State,
+			Country:       createAddress.Country,
+			ZipCode:       createAddress.ZipCode,
 		},
 	}, nil
 

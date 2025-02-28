@@ -37,7 +37,7 @@ func (h *UpdateAddressService) Run(req *api.UpdateAddressReq) (resp *api.UpdateA
 
 	updateAddressResp, err := checkoutAgent.UpdateAddress(h.Context, &checkout.UpdateAddressReq{
 		Address: &checkout.Address{
-			Uuid:          userUUIDStr,
+			Uuid:          req.Address.UUID,
 			UserUuid:      userUUIDStr,
 			StreetAddress: req.Address.StreetAddress,
 			City:          req.Address.City,

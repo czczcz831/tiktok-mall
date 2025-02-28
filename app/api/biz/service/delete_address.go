@@ -37,7 +37,8 @@ func (h *DeleteAddressService) Run(req *api.DeleteAddressReq) (resp *api.DeleteA
 	userUUIDStr, _ := userUUID.(string)
 
 	deleteAddressResp, err := checkoutAgent.DeleteAddress(h.Context, &checkout.DeleteAddressReq{
-		Uuid: userUUIDStr,
+		Uuid:     req.UUID,
+		UserUuid: userUUIDStr,
 	})
 
 	if err != nil {

@@ -491,20 +491,6 @@ func (p *OrderItem) FastRead(buf []byte) (int, error) {
 					goto SkipFieldError
 				}
 			}
-		case 3:
-			if fieldTypeId == thrift.I64 {
-				l, err = p.FastReadField3(buf[offset:])
-				offset += l
-				if err != nil {
-					goto ReadFieldError
-				}
-			} else {
-				l, err = bthrift.Binary.Skip(buf[offset:], fieldTypeId)
-				offset += l
-				if err != nil {
-					goto SkipFieldError
-				}
-			}
 		default:
 			l, err = bthrift.Binary.Skip(buf[offset:], fieldTypeId)
 			offset += l
@@ -562,20 +548,6 @@ func (p *OrderItem) FastReadField2(buf []byte) (int, error) {
 	} else {
 		offset += l
 
-		p.Price = v
-
-	}
-	return offset, nil
-}
-
-func (p *OrderItem) FastReadField3(buf []byte) (int, error) {
-	offset := 0
-
-	if v, l, err := bthrift.Binary.ReadI64(buf[offset:]); err != nil {
-		return offset, err
-	} else {
-		offset += l
-
 		p.Quantity = v
 
 	}
@@ -592,7 +564,6 @@ func (p *OrderItem) FastWriteNocopy(buf []byte, binaryWriter bthrift.BinaryWrite
 	offset += bthrift.Binary.WriteStructBegin(buf[offset:], "OrderItem")
 	if p != nil {
 		offset += p.fastWriteField2(buf[offset:], binaryWriter)
-		offset += p.fastWriteField3(buf[offset:], binaryWriter)
 		offset += p.fastWriteField1(buf[offset:], binaryWriter)
 	}
 	offset += bthrift.Binary.WriteFieldStop(buf[offset:])
@@ -606,7 +577,6 @@ func (p *OrderItem) BLength() int {
 	if p != nil {
 		l += p.field1Length()
 		l += p.field2Length()
-		l += p.field3Length()
 	}
 	l += bthrift.Binary.FieldStopLength()
 	l += bthrift.Binary.StructEndLength()
@@ -624,16 +594,7 @@ func (p *OrderItem) fastWriteField1(buf []byte, binaryWriter bthrift.BinaryWrite
 
 func (p *OrderItem) fastWriteField2(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "price", thrift.I64, 2)
-	offset += bthrift.Binary.WriteI64(buf[offset:], p.Price)
-
-	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
-	return offset
-}
-
-func (p *OrderItem) fastWriteField3(buf []byte, binaryWriter bthrift.BinaryWriter) int {
-	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "quantity", thrift.I64, 3)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "quantity", thrift.I64, 2)
 	offset += bthrift.Binary.WriteI64(buf[offset:], p.Quantity)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
@@ -651,16 +612,7 @@ func (p *OrderItem) field1Length() int {
 
 func (p *OrderItem) field2Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("price", thrift.I64, 2)
-	l += bthrift.Binary.I64Length(p.Price)
-
-	l += bthrift.Binary.FieldEndLength()
-	return l
-}
-
-func (p *OrderItem) field3Length() int {
-	l := 0
-	l += bthrift.Binary.FieldBeginLength("quantity", thrift.I64, 3)
+	l += bthrift.Binary.FieldBeginLength("quantity", thrift.I64, 2)
 	l += bthrift.Binary.I64Length(p.Quantity)
 
 	l += bthrift.Binary.FieldEndLength()
@@ -1454,6 +1406,20 @@ func (p *DeleteAddressReq) FastRead(buf []byte) (int, error) {
 					goto SkipFieldError
 				}
 			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				l, err = p.FastReadField2(buf[offset:])
+				offset += l
+				if err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				l, err = bthrift.Binary.Skip(buf[offset:], fieldTypeId)
+				offset += l
+				if err != nil {
+					goto SkipFieldError
+				}
+			}
 		default:
 			l, err = bthrift.Binary.Skip(buf[offset:], fieldTypeId)
 			offset += l
@@ -1503,6 +1469,20 @@ func (p *DeleteAddressReq) FastReadField1(buf []byte) (int, error) {
 	return offset, nil
 }
 
+func (p *DeleteAddressReq) FastReadField2(buf []byte) (int, error) {
+	offset := 0
+
+	if v, l, err := bthrift.Binary.ReadString(buf[offset:]); err != nil {
+		return offset, err
+	} else {
+		offset += l
+
+		p.UserUuid = v
+
+	}
+	return offset, nil
+}
+
 // for compatibility
 func (p *DeleteAddressReq) FastWrite(buf []byte) int {
 	return 0
@@ -1513,6 +1493,7 @@ func (p *DeleteAddressReq) FastWriteNocopy(buf []byte, binaryWriter bthrift.Bina
 	offset += bthrift.Binary.WriteStructBegin(buf[offset:], "DeleteAddressReq")
 	if p != nil {
 		offset += p.fastWriteField1(buf[offset:], binaryWriter)
+		offset += p.fastWriteField2(buf[offset:], binaryWriter)
 	}
 	offset += bthrift.Binary.WriteFieldStop(buf[offset:])
 	offset += bthrift.Binary.WriteStructEnd(buf[offset:])
@@ -1524,6 +1505,7 @@ func (p *DeleteAddressReq) BLength() int {
 	l += bthrift.Binary.StructBeginLength("DeleteAddressReq")
 	if p != nil {
 		l += p.field1Length()
+		l += p.field2Length()
 	}
 	l += bthrift.Binary.FieldStopLength()
 	l += bthrift.Binary.StructEndLength()
@@ -1539,10 +1521,28 @@ func (p *DeleteAddressReq) fastWriteField1(buf []byte, binaryWriter bthrift.Bina
 	return offset
 }
 
+func (p *DeleteAddressReq) fastWriteField2(buf []byte, binaryWriter bthrift.BinaryWriter) int {
+	offset := 0
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "user_uuid", thrift.STRING, 2)
+	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.UserUuid)
+
+	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
+	return offset
+}
+
 func (p *DeleteAddressReq) field1Length() int {
 	l := 0
 	l += bthrift.Binary.FieldBeginLength("uuid", thrift.STRING, 1)
 	l += bthrift.Binary.StringLengthNocopy(p.Uuid)
+
+	l += bthrift.Binary.FieldEndLength()
+	return l
+}
+
+func (p *DeleteAddressReq) field2Length() int {
+	l := 0
+	l += bthrift.Binary.FieldBeginLength("user_uuid", thrift.STRING, 2)
+	l += bthrift.Binary.StringLengthNocopy(p.UserUuid)
 
 	l += bthrift.Binary.FieldEndLength()
 	return l

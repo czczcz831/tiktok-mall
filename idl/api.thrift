@@ -148,7 +148,6 @@ struct Address {
 
 struct OrderItem {
     string product_uuid (api.body = "product_uuid")
-    i64 price (api.body = "price")
     i64 quantity (api.body = "quantity")
 }
 
@@ -192,7 +191,6 @@ struct CheckoutReq {
     string last_name (api.body = "last_name")
     string email (api.body = "email")
     string address_uuid (api.body = "address_uuid")
-    string credit_card_uuid (api.body = "credit_card_uuid")
     list<OrderItem> items (api.body = "items")
 }
 

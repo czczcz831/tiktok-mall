@@ -25,15 +25,6 @@ func (h *CheckoutService) Run(req *api.CheckoutReq) (resp *api.CheckoutResp, err
 	// hlog.CtxInfof(h.Context, "resp = %+v", resp)
 	//}()
 	// todo edit your code
-
-	reqItems := make([]*checkout.OrderItem, 0)
-	for _, item := range req.Items {
-		reqItems = append(reqItems, &checkout.OrderItem{
-			ProductUuid: item.ProductUUID,
-			Quantity:    item.Quantity,
-		})
-	}
-
 	userUUID, ok := h.RequestContext.Get("uuid")
 	if !ok {
 		return nil, &packer.MyError{
@@ -42,6 +33,15 @@ func (h *CheckoutService) Run(req *api.CheckoutReq) (resp *api.CheckoutResp, err
 	}
 
 	userUUIDStr, _ := userUUID.(string)
+
+	//Checkout center calculates the total price of the items. (There could be some discount)
+	reqItems := make([]*checkout.OrderItem, 0)
+	for _, item := range req.Items {
+		reqItems = append(reqItems, &checkout.OrderItem{
+			ProductUuid: item.ProductUUID,
+			Quantity:    item.Quantity,
+		})
+	}
 
 	checkoutResp, err := checkoutAgent.Checkout(h.Context, &checkout.CheckoutReq{
 		UserUuid:    userUUIDStr,

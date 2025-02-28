@@ -8,8 +8,8 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/order/conf"
 
 	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/model"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/mysql"
+	"github.com/czczcz831/tiktok-mall/app/order/biz/model"
 	order "github.com/czczcz831/tiktok-mall/app/order/kitex_gen/order"
 )
 

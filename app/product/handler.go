@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"github.com/czczcz831/tiktok-mall/app/product/biz/service"
 	product "github.com/czczcz831/tiktok-mall/app/product/kitex_gen/product"
 )
@@ -40,6 +41,13 @@ func (s *ProductServiceImpl) GetProduct(ctx context.Context, req *product.GetPro
 // GetProductList implements the ProductServiceImpl interface.
 func (s *ProductServiceImpl) GetProductList(ctx context.Context, req *product.GetProductListReq) (resp *product.GetProductListResp, err error) {
 	resp, err = service.NewGetProductListService(ctx).Run(req)
+
+	return resp, err
+}
+
+// PreDecrStock implements the ProductServiceImpl interface.
+func (s *ProductServiceImpl) PreDecrStock(ctx context.Context, req *product.PreDecrStockReq) (resp *product.PreDecrStockResp, err error) {
+	resp, err = service.NewPreDecrStockService(ctx).Run(req)
 
 	return resp, err
 }

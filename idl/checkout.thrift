@@ -13,7 +13,6 @@ struct Address{
 
 struct OrderItem{
     string product_uuid
-    i64 price
     i64 quantity
 }
 
@@ -41,6 +40,7 @@ struct UpdateAddressResp{
 
 struct DeleteAddressReq{
     string uuid
+    string user_uuid
 }
 
 struct DeleteAddressResp{

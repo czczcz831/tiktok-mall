@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/model"
+	"github.com/czczcz831/tiktok-mall/app/order/biz/model"
 	"github.com/czczcz831/tiktok-mall/app/order/conf"
 
 	"gorm.io/driver/mysql"

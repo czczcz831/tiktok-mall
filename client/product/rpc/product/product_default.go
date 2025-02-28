@@ -51,3 +51,12 @@ func GetProductList(ctx context.Context, req *product.GetProductListReq, callOpt
 	}
 	return resp, nil
 }
+
+func PreDecrStock(ctx context.Context, req *product.PreDecrStockReq, callOptions ...callopt.Option) (resp *product.PreDecrStockResp, err error) {
+	resp, err = defaultClient.PreDecrStock(ctx, req, callOptions...)
+	if err != nil {
+		klog.CtxErrorf(ctx, "PreDecrStock call failed,err =%+v", err)
+		return nil, err
+	}
+	return resp, nil
+}

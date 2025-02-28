@@ -8,6 +8,11 @@ struct Product{
     i64 stock
 }
 
+struct OrderItem{
+    string uuid
+    i64 quantity
+}
+
 struct CreateProductReq{
     string name
     string description
@@ -56,10 +61,20 @@ struct GetProductListResp{
     list<Product> products
 }
 
+struct PreDecrStockReq{
+    list<OrderItem> items
+}
+
+struct PreDecrStockResp{
+    bool ok
+}
+
 service ProductService {
     CreateProductResp CreateProduct(1: CreateProductReq req)
     UpdateProductResp UpdateProduct(1: UpdateProductReq req)
     DeleteProductResp DeleteProduct(1: DeleteProductReq req)
     GetProductResp GetProduct(1: GetProductReq req)
     GetProductListResp GetProductList(1: GetProductListReq req)
+
+    PreDecrStockResp PreDecrStock(1: PreDecrStockReq req)
 }

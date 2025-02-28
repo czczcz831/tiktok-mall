@@ -3,16 +3,19 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 
 	rocketGolang "github.com/apache/rocketmq-clients/golang"
 	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/model"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/rocketmq/producer"
+	"github.com/czczcz831/tiktok-mall/app/order/biz/model"
 
 	"github.com/czczcz831/tiktok-mall/app/order/conf"
 	order "github.com/czczcz831/tiktok-mall/app/order/kitex_gen/order"
+	product "github.com/czczcz831/tiktok-mall/client/product/kitex_gen/product"
+	productAgent "github.com/czczcz831/tiktok-mall/client/product/rpc/product"
 	consts "github.com/czczcz831/tiktok-mall/common/consts"
 	"github.com/czczcz831/tiktok-mall/common/utils"
 )
@@ -32,10 +35,16 @@ var delayedTime = time.Second * 10
 func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateOrderResp, err error) {
 	// Finish your business logic.
 
+	//1.Pre-process
 	nodeId := conf.GetConf().NodeID
 
 	orderUUID, err := utils.UUIDGenerate(nodeId)
 
+	if err != nil {
+		return nil, err
+	}
+	//1.1 Pre-decr stock
+	err = preDecrStock(req)
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +75,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 		})
 	}
 
+	//2. Transaction Begin,To ensure the atomicity of the order creation
 	//Send Half-Message to RocketMQ
 	createOrderBytes, err := json.Marshal(req)
 	if err != nil {
@@ -84,7 +94,7 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 		return nil, err
 	}
 
-	// LocalTransaction Begin
+	// MysqlTransaction Begin
 	mysqlTx := mysql.DB.Begin()
 
 	res := mysqlTx.Create(&createOrder)
@@ -159,4 +169,29 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 			Items:     respOrderItems,
 		},
 	}, nil
+}
+
+func preDecrStock(req *order.CreateOrderReq) error {
+	preDecrReqItems := make([]*product.OrderItem, 0)
+	for _, item := range req.Items {
+		preDecrReqItems = append(preDecrReqItems, &product.OrderItem{
+			Uuid:     item.ProductUuid,
+			Quantity: item.Quantity,
+		})
+	}
+
+	preDecrStockResp, err := productAgent.PreDecrStock(context.Background(), &product.PreDecrStockReq{
+		Items: preDecrReqItems,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if !preDecrStockResp.Ok {
+		return errors.New("preDecrStock failed")
+	}
+
+	return nil
+
 }
