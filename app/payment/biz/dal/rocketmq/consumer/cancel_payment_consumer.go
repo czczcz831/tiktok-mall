@@ -7,11 +7,11 @@ import (
 	"github.com/apache/rocketmq-clients/golang"
 	"github.com/apache/rocketmq-clients/golang/credentials"
 	"github.com/cloudwego/kitex/pkg/klog"
-	"github.com/czczcz831/tiktok-mall/app/order/biz/dal/mysql"
-	"github.com/czczcz831/tiktok-mall/app/order/conf"
 	"github.com/czczcz831/tiktok-mall/common/consts"
 
 	"github.com/czczcz831/tiktok-mall/app/payment/biz/dal/model"
+	"github.com/czczcz831/tiktok-mall/app/payment/biz/dal/mysql"
+	"github.com/czczcz831/tiktok-mall/app/payment/conf"
 )
 
 var delayedCancelPaymentConsumer golang.SimpleConsumer
@@ -72,13 +72,13 @@ func delayedCancelPaymentConsumerHandler() {
 		}
 		// ack message
 		for _, mv := range mvs {
-			err := delayedCancelPaymentConsumer.Ack(context.TODO(), mv)
-			if err != nil {
-				klog.Errorf("ack message failed: %v", err)
-			}
 			err = cancelPaymentBiz(mv)
 			if err != nil {
 				klog.Errorf("cancel payment failed: %v", err)
+			}
+			err = delayedCancelPaymentConsumer.Ack(context.TODO(), mv)
+			if err != nil {
+				klog.Errorf("ack message failed: %v", err)
 			}
 		}
 	}

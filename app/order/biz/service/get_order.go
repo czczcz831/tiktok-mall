@@ -21,7 +21,7 @@ func (s *GetOrderService) Run(req *order.GetOrderReq) (resp *order.GetOrderResp,
 
 	var createOrder model.Order
 
-	orderResp := mysql.DB.Where("uuid = ?", req.Uuid).First(createOrder)
+	orderResp := mysql.DB.Where("uuid = ?", req.Uuid).First(&createOrder)
 	if orderResp.Error != nil {
 		return nil, orderResp.Error
 	}

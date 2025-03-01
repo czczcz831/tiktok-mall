@@ -20,6 +20,7 @@ func Register(r *server.Hertz) {
 	root.DELETE("/cart", append(_clearcartMw(), api.ClearCart)...)
 	root.GET("/cart", append(_getcartMw(), api.GetCart)...)
 	root.POST("/checkout", append(_checkoutMw(), api.Checkout)...)
+	root.GET("/orders", append(_getuserordersMw(), api.GetUserOrders)...)
 	root.PUT("/product", append(_updateproductMw(), api.UpdateProduct)...)
 	root.GET("/product", append(_getproductlistMw(), api.GetProductList)...)
 	{

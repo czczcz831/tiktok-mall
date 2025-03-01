@@ -1,8 +1,6 @@
 namespace go payment
 
 struct CreditCard{
-    string uuid
-    string user_uuid
     string credit_card_number
     i64 credit_card_cvv
     i64 credit_card_exp_month

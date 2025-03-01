@@ -41,6 +41,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"GetUserOrders": kitex.NewMethodInfo(
+		getUserOrdersHandler,
+		newOrderServiceGetUserOrdersArgs,
+		newOrderServiceGetUserOrdersResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -179,6 +186,24 @@ func newOrderServiceGetOrderResult() interface{} {
 	return order.NewOrderServiceGetOrderResult()
 }
 
+func getUserOrdersHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*order.OrderServiceGetUserOrdersArgs)
+	realResult := result.(*order.OrderServiceGetUserOrdersResult)
+	success, err := handler.(order.OrderService).GetUserOrders(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newOrderServiceGetUserOrdersArgs() interface{} {
+	return order.NewOrderServiceGetUserOrdersArgs()
+}
+
+func newOrderServiceGetUserOrdersResult() interface{} {
+	return order.NewOrderServiceGetUserOrdersResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -224,6 +249,16 @@ func (p *kClient) GetOrder(ctx context.Context, req *order.GetOrderReq) (r *orde
 	_args.Req = req
 	var _result order.OrderServiceGetOrderResult
 	if err = p.c.Call(ctx, "GetOrder", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetUserOrders(ctx context.Context, req *order.GetUserOrdersReq) (r *order.GetUserOrdersResp, err error) {
+	var _args order.OrderServiceGetUserOrdersArgs
+	_args.Req = req
+	var _result order.OrderServiceGetUserOrdersResult
+	if err = p.c.Call(ctx, "GetUserOrders", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

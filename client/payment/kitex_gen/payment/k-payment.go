@@ -60,7 +60,7 @@ func (p *CreditCard) FastRead(buf []byte) (int, error) {
 				}
 			}
 		case 2:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I64 {
 				l, err = p.FastReadField2(buf[offset:])
 				offset += l
 				if err != nil {
@@ -74,7 +74,7 @@ func (p *CreditCard) FastRead(buf []byte) (int, error) {
 				}
 			}
 		case 3:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I64 {
 				l, err = p.FastReadField3(buf[offset:])
 				offset += l
 				if err != nil {
@@ -90,34 +90,6 @@ func (p *CreditCard) FastRead(buf []byte) (int, error) {
 		case 4:
 			if fieldTypeId == thrift.I64 {
 				l, err = p.FastReadField4(buf[offset:])
-				offset += l
-				if err != nil {
-					goto ReadFieldError
-				}
-			} else {
-				l, err = bthrift.Binary.Skip(buf[offset:], fieldTypeId)
-				offset += l
-				if err != nil {
-					goto SkipFieldError
-				}
-			}
-		case 5:
-			if fieldTypeId == thrift.I64 {
-				l, err = p.FastReadField5(buf[offset:])
-				offset += l
-				if err != nil {
-					goto ReadFieldError
-				}
-			} else {
-				l, err = bthrift.Binary.Skip(buf[offset:], fieldTypeId)
-				offset += l
-				if err != nil {
-					goto SkipFieldError
-				}
-			}
-		case 6:
-			if fieldTypeId == thrift.I64 {
-				l, err = p.FastReadField6(buf[offset:])
 				offset += l
 				if err != nil {
 					goto ReadFieldError
@@ -172,41 +144,13 @@ func (p *CreditCard) FastReadField1(buf []byte) (int, error) {
 	} else {
 		offset += l
 
-		p.Uuid = v
-
-	}
-	return offset, nil
-}
-
-func (p *CreditCard) FastReadField2(buf []byte) (int, error) {
-	offset := 0
-
-	if v, l, err := bthrift.Binary.ReadString(buf[offset:]); err != nil {
-		return offset, err
-	} else {
-		offset += l
-
-		p.UserUuid = v
-
-	}
-	return offset, nil
-}
-
-func (p *CreditCard) FastReadField3(buf []byte) (int, error) {
-	offset := 0
-
-	if v, l, err := bthrift.Binary.ReadString(buf[offset:]); err != nil {
-		return offset, err
-	} else {
-		offset += l
-
 		p.CreditCardNumber = v
 
 	}
 	return offset, nil
 }
 
-func (p *CreditCard) FastReadField4(buf []byte) (int, error) {
+func (p *CreditCard) FastReadField2(buf []byte) (int, error) {
 	offset := 0
 
 	if v, l, err := bthrift.Binary.ReadI64(buf[offset:]); err != nil {
@@ -220,7 +164,7 @@ func (p *CreditCard) FastReadField4(buf []byte) (int, error) {
 	return offset, nil
 }
 
-func (p *CreditCard) FastReadField5(buf []byte) (int, error) {
+func (p *CreditCard) FastReadField3(buf []byte) (int, error) {
 	offset := 0
 
 	if v, l, err := bthrift.Binary.ReadI64(buf[offset:]); err != nil {
@@ -234,7 +178,7 @@ func (p *CreditCard) FastReadField5(buf []byte) (int, error) {
 	return offset, nil
 }
 
-func (p *CreditCard) FastReadField6(buf []byte) (int, error) {
+func (p *CreditCard) FastReadField4(buf []byte) (int, error) {
 	offset := 0
 
 	if v, l, err := bthrift.Binary.ReadI64(buf[offset:]); err != nil {
@@ -257,12 +201,10 @@ func (p *CreditCard) FastWriteNocopy(buf []byte, binaryWriter bthrift.BinaryWrit
 	offset := 0
 	offset += bthrift.Binary.WriteStructBegin(buf[offset:], "CreditCard")
 	if p != nil {
-		offset += p.fastWriteField4(buf[offset:], binaryWriter)
-		offset += p.fastWriteField5(buf[offset:], binaryWriter)
-		offset += p.fastWriteField6(buf[offset:], binaryWriter)
-		offset += p.fastWriteField1(buf[offset:], binaryWriter)
 		offset += p.fastWriteField2(buf[offset:], binaryWriter)
 		offset += p.fastWriteField3(buf[offset:], binaryWriter)
+		offset += p.fastWriteField4(buf[offset:], binaryWriter)
+		offset += p.fastWriteField1(buf[offset:], binaryWriter)
 	}
 	offset += bthrift.Binary.WriteFieldStop(buf[offset:])
 	offset += bthrift.Binary.WriteStructEnd(buf[offset:])
@@ -277,8 +219,6 @@ func (p *CreditCard) BLength() int {
 		l += p.field2Length()
 		l += p.field3Length()
 		l += p.field4Length()
-		l += p.field5Length()
-		l += p.field6Length()
 	}
 	l += bthrift.Binary.FieldStopLength()
 	l += bthrift.Binary.StructEndLength()
@@ -287,8 +227,8 @@ func (p *CreditCard) BLength() int {
 
 func (p *CreditCard) fastWriteField1(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "uuid", thrift.STRING, 1)
-	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.Uuid)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "credit_card_number", thrift.STRING, 1)
+	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.CreditCardNumber)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
 	return offset
@@ -296,8 +236,8 @@ func (p *CreditCard) fastWriteField1(buf []byte, binaryWriter bthrift.BinaryWrit
 
 func (p *CreditCard) fastWriteField2(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "user_uuid", thrift.STRING, 2)
-	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.UserUuid)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "credit_card_cvv", thrift.I64, 2)
+	offset += bthrift.Binary.WriteI64(buf[offset:], p.CreditCardCvv)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
 	return offset
@@ -305,8 +245,8 @@ func (p *CreditCard) fastWriteField2(buf []byte, binaryWriter bthrift.BinaryWrit
 
 func (p *CreditCard) fastWriteField3(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "credit_card_number", thrift.STRING, 3)
-	offset += bthrift.Binary.WriteStringNocopy(buf[offset:], binaryWriter, p.CreditCardNumber)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "credit_card_exp_month", thrift.I64, 3)
+	offset += bthrift.Binary.WriteI64(buf[offset:], p.CreditCardExpMonth)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
 	return offset
@@ -314,25 +254,7 @@ func (p *CreditCard) fastWriteField3(buf []byte, binaryWriter bthrift.BinaryWrit
 
 func (p *CreditCard) fastWriteField4(buf []byte, binaryWriter bthrift.BinaryWriter) int {
 	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "credit_card_cvv", thrift.I64, 4)
-	offset += bthrift.Binary.WriteI64(buf[offset:], p.CreditCardCvv)
-
-	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
-	return offset
-}
-
-func (p *CreditCard) fastWriteField5(buf []byte, binaryWriter bthrift.BinaryWriter) int {
-	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "credit_card_exp_month", thrift.I64, 5)
-	offset += bthrift.Binary.WriteI64(buf[offset:], p.CreditCardExpMonth)
-
-	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
-	return offset
-}
-
-func (p *CreditCard) fastWriteField6(buf []byte, binaryWriter bthrift.BinaryWriter) int {
-	offset := 0
-	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "credit_card_exp_year", thrift.I64, 6)
+	offset += bthrift.Binary.WriteFieldBegin(buf[offset:], "credit_card_exp_year", thrift.I64, 4)
 	offset += bthrift.Binary.WriteI64(buf[offset:], p.CreditCardExpYear)
 
 	offset += bthrift.Binary.WriteFieldEnd(buf[offset:])
@@ -341,8 +263,8 @@ func (p *CreditCard) fastWriteField6(buf []byte, binaryWriter bthrift.BinaryWrit
 
 func (p *CreditCard) field1Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("uuid", thrift.STRING, 1)
-	l += bthrift.Binary.StringLengthNocopy(p.Uuid)
+	l += bthrift.Binary.FieldBeginLength("credit_card_number", thrift.STRING, 1)
+	l += bthrift.Binary.StringLengthNocopy(p.CreditCardNumber)
 
 	l += bthrift.Binary.FieldEndLength()
 	return l
@@ -350,8 +272,8 @@ func (p *CreditCard) field1Length() int {
 
 func (p *CreditCard) field2Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("user_uuid", thrift.STRING, 2)
-	l += bthrift.Binary.StringLengthNocopy(p.UserUuid)
+	l += bthrift.Binary.FieldBeginLength("credit_card_cvv", thrift.I64, 2)
+	l += bthrift.Binary.I64Length(p.CreditCardCvv)
 
 	l += bthrift.Binary.FieldEndLength()
 	return l
@@ -359,8 +281,8 @@ func (p *CreditCard) field2Length() int {
 
 func (p *CreditCard) field3Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("credit_card_number", thrift.STRING, 3)
-	l += bthrift.Binary.StringLengthNocopy(p.CreditCardNumber)
+	l += bthrift.Binary.FieldBeginLength("credit_card_exp_month", thrift.I64, 3)
+	l += bthrift.Binary.I64Length(p.CreditCardExpMonth)
 
 	l += bthrift.Binary.FieldEndLength()
 	return l
@@ -368,25 +290,7 @@ func (p *CreditCard) field3Length() int {
 
 func (p *CreditCard) field4Length() int {
 	l := 0
-	l += bthrift.Binary.FieldBeginLength("credit_card_cvv", thrift.I64, 4)
-	l += bthrift.Binary.I64Length(p.CreditCardCvv)
-
-	l += bthrift.Binary.FieldEndLength()
-	return l
-}
-
-func (p *CreditCard) field5Length() int {
-	l := 0
-	l += bthrift.Binary.FieldBeginLength("credit_card_exp_month", thrift.I64, 5)
-	l += bthrift.Binary.I64Length(p.CreditCardExpMonth)
-
-	l += bthrift.Binary.FieldEndLength()
-	return l
-}
-
-func (p *CreditCard) field6Length() int {
-	l := 0
-	l += bthrift.Binary.FieldBeginLength("credit_card_exp_year", thrift.I64, 6)
+	l += bthrift.Binary.FieldBeginLength("credit_card_exp_year", thrift.I64, 4)
 	l += bthrift.Binary.I64Length(p.CreditCardExpYear)
 
 	l += bthrift.Binary.FieldEndLength()

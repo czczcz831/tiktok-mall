@@ -15,6 +15,8 @@ const (
 	INVALID_TOKEN_ERROR            = 40002
 	INVALID_ACCOUNT_PASSWORD_ERROR = 40003
 	PASSWORD_NOT_MATCH_ERROR       = 40004
+	CHARGE_FAILED_ERROR            = 40005
+	STOCK_NOT_ENOUGH_ERROR         = 40006
 
 	//Server Error
 	UNKNOWN_SERVER_ERROR     = 50000
@@ -32,7 +34,8 @@ var ErrorMessages = map[int]string{
 	40002: "Invalid Token",
 	40003: "Invalid Account or Password",
 	40004: "Password Not Match",
-
+	40005: "Charge Failed. Plz Try again",
+	40006: "Stock Not Enough. Plz Try again later",
 	//Server Error
 	50000: "Unknow Server Error",
 	50001: "Auth Deliever Token Error",

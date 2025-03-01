@@ -20,9 +20,11 @@ func Init() {
 			SkipDefaultTransaction: true,
 		},
 	)
+	if err != nil {
+		panic(err)
+	}
 
-  DB.AutoMigrate(&model.Transaction{})
-
+	err = DB.AutoMigrate(&model.Transaction{})
 	if err != nil {
 		panic(err)
 	}

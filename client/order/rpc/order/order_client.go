@@ -16,6 +16,7 @@ type RPCClient interface {
 	UpdateOrderAddress(ctx context.Context, req *order.UpdateOrderAddressReq, callOptions ...callopt.Option) (r *order.UpdateOrderAddressResp, err error)
 	MarkOrderPaid(ctx context.Context, req *order.MarkOrderPaidReq, callOptions ...callopt.Option) (r *order.MarkOrderPaidResp, err error)
 	GetOrder(ctx context.Context, req *order.GetOrderReq, callOptions ...callopt.Option) (r *order.GetOrderResp, err error)
+	GetUserOrders(ctx context.Context, req *order.GetUserOrdersReq, callOptions ...callopt.Option) (r *order.GetUserOrdersResp, err error)
 }
 
 func NewRPCClient(dstService string, opts ...client.Option) (RPCClient, error) {
@@ -58,4 +59,8 @@ func (c *clientImpl) MarkOrderPaid(ctx context.Context, req *order.MarkOrderPaid
 
 func (c *clientImpl) GetOrder(ctx context.Context, req *order.GetOrderReq, callOptions ...callopt.Option) (r *order.GetOrderResp, err error) {
 	return c.kitexClient.GetOrder(ctx, req, callOptions...)
+}
+
+func (c *clientImpl) GetUserOrders(ctx context.Context, req *order.GetUserOrdersReq, callOptions ...callopt.Option) (r *order.GetUserOrdersResp, err error) {
+	return c.kitexClient.GetUserOrders(ctx, req, callOptions...)
 }

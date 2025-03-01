@@ -77,7 +77,12 @@ func (s *CreateOrderService) Run(req *order.CreateOrderReq) (resp *order.CreateO
 
 	//2. Transaction Begin,To ensure the atomicity of the order creation
 	//Send Half-Message to RocketMQ
-	createOrderBytes, err := json.Marshal(req)
+	orderProducerMsg := &producer.OrderProducerMsg{
+		OrderUuid: orderUUID,
+		UserUuid:  req.UserUuid,
+		Items:     req.Items,
+	}
+	createOrderBytes, err := json.Marshal(orderProducerMsg)
 	if err != nil {
 		return nil, err
 	}

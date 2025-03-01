@@ -15,6 +15,5 @@ const (
 )
 
 func Init() {
-	delayedCancelOrderConsumerInit()
-	markOrderPaidConsumerInit()
+	dbDecreaseStockConsumerInit()
 }

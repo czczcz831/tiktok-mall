@@ -17,6 +17,12 @@ import (
 
 var clearCartConsumer golang.SimpleConsumer
 
+type OrderProducerMsg struct {
+	OrderUuid string
+	UserUuid  string
+	Items     []*order.OrderItem
+}
+
 const (
 	// maximum waiting time for receive func
 	awaitDuration = time.Second * 5
@@ -39,7 +45,7 @@ func clearCartConsumerInit() {
 	},
 		golang.WithAwaitDuration(awaitDuration),
 		golang.WithSubscriptionExpressions(map[string]*golang.FilterExpression{
-			consts.RocketOrderTransactionTopic: golang.SUB_ALL,
+			consts.RocketOrderTransactionTopic: golang.NewFilterExpressionWithType(consts.RocketCreateOrderTag, golang.TAG),
 		}),
 	)
 
@@ -71,13 +77,13 @@ func clearCartOrderConsumerHandler() {
 		}
 		// ack message
 		for _, mv := range mvs {
-			err := clearCartConsumer.Ack(context.TODO(), mv)
-			if err != nil {
-				klog.Errorf("ack message failed: %v", err)
-			}
 			err = clearCartBiz(mv)
 			if err != nil {
 				klog.Errorf("clear cart failed: %v", err)
+			}
+			err = clearCartConsumer.Ack(context.TODO(), mv)
+			if err != nil {
+				klog.Errorf("ack message failed: %v", err)
 			}
 		}
 	}
@@ -86,8 +92,8 @@ func clearCartOrderConsumerHandler() {
 func clearCartBiz(mv *golang.MessageView) error {
 	// Unmarshal message
 
-	req := &order.CreateOrderReq{}
-	err := json.Unmarshal(mv.GetBody(), req)
+	var orderProducerMsg OrderProducerMsg
+	err := json.Unmarshal(mv.GetBody(), &orderProducerMsg)
 	if err != nil {
 		klog.Errorf("unmarshal message failed: %v", err)
 		return err
@@ -95,11 +101,11 @@ func clearCartBiz(mv *golang.MessageView) error {
 
 	// clear cart
 
-	userUuid := req.UserUuid
+	userUuid := orderProducerMsg.UserUuid
 
 	productIds := make([]string, 0)
 
-	for _, item := range req.Items {
+	for _, item := range orderProducerMsg.Items {
 		productId := item.ProductUuid
 		productIds = append(productIds, productId)
 	}

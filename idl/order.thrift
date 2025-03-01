@@ -53,9 +53,19 @@ struct MarkOrderPaidResp {
     Order order
 }
 
+struct GetUserOrdersReq{
+    string user_uuid
+}
+
+struct GetUserOrdersResp{
+    i64 total
+    list<Order> orders
+}
+
 service OrderService{
     CreateOrderResp CreateOrder(1: CreateOrderReq req)
     UpdateOrderAddressResp UpdateOrderAddress(1: UpdateOrderAddressReq req)
     MarkOrderPaidResp MarkOrderPaid(1: MarkOrderPaidReq req)
     GetOrderResp GetOrder(1: GetOrderReq req)
+    GetUserOrdersResp GetUserOrders(1: GetUserOrdersReq req)
 }

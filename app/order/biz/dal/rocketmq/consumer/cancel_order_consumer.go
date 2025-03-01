@@ -1,8 +1,6 @@
 package consumer
 
 import (
-	"time"
-
 	"context"
 	"errors"
 
@@ -20,16 +18,6 @@ import (
 
 var (
 	delayedCancelOrderConsumer golang.SimpleConsumer
-)
-
-const (
-	// maximum waiting time for receive func
-	awaitDuration = time.Second * 5
-	// maximum number of messages received at one time
-	maxMessageNum int32 = 16
-	// invisibleDuration should > 20s
-	invisibleDuration = time.Second * 20
-	// receive messages in a loop
 )
 
 func delayedCancelOrderConsumerInit() error {
@@ -79,13 +67,13 @@ func delayedCancelOrderConsumerHandler() {
 		}
 		// ack message
 		for _, mv := range mvs {
-			err := delayedCancelOrderConsumer.Ack(context.TODO(), mv)
-			if err != nil {
-				klog.Errorf("ack message failed: %v", err)
-			}
 			err = cancelOrderBiz(mv)
 			if err != nil {
 				klog.Errorf("clear cart failed: %v", err)
+			}
+			err = delayedCancelOrderConsumer.Ack(context.TODO(), mv)
+			if err != nil {
+				klog.Errorf("ack message failed: %v", err)
 			}
 		}
 	}

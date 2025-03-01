@@ -37,3 +37,10 @@ func (s *OrderServiceImpl) UpdateOrderAddress(ctx context.Context, req *order.Up
 
 	return resp, err
 }
+
+// GetUserOrders implements the OrderServiceImpl interface.
+func (s *OrderServiceImpl) GetUserOrders(ctx context.Context, req *order.GetUserOrdersReq) (resp *order.GetUserOrdersResp, err error) {
+	resp, err = service.NewGetUserOrdersService(ctx).Run(req)
+
+	return resp, err
+}

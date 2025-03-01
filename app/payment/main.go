@@ -21,8 +21,14 @@ import (
 )
 
 func main() {
-	opts := kitexInit()
+	// 初始化配置
+	_ = conf.GetConf()
 
+	// 初始化数据访问层
+	dal.Init()
+
+	// 初始化服务
+	opts := kitexInit()
 	svr := paymentservice.NewServer(new(PaymentServiceImpl), opts...)
 
 	err := svr.Run()
@@ -32,8 +38,10 @@ func main() {
 }
 
 func kitexInit() (opts []server.Option) {
+	config := conf.GetConf()
+
 	// address
-	addr, err := net.ResolveTCPAddr("tcp", conf.GetConf().Kitex.Address)
+	addr, err := net.ResolveTCPAddr("tcp", config.Kitex.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +49,7 @@ func kitexInit() (opts []server.Option) {
 
 	// service info
 	opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
-		ServiceName: conf.GetConf().Kitex.Service,
+		ServiceName: config.Kitex.Service,
 	}))
 	// thrift meta handler
 	opts = append(opts, server.WithMetaHandler(transmeta.ServerTTHeaderHandler))
@@ -53,18 +61,16 @@ func kitexInit() (opts []server.Option) {
 	}
 	opts = append(opts, server.WithRegistry(r))
 	//Metrics
-	opts = append(opts, server.WithTracer(prometheus.NewServerTracer(conf.GetConf().Metrics, "/metrics")))
-
-	dal.Init()
+	opts = append(opts, server.WithTracer(prometheus.NewServerTracer(config.Metrics, "/metrics")))
 
 	// klog
 	logger := kitexlogrus.NewLogger()
 	//Logstash
-	logstashConn, err := net.Dial("tcp", conf.GetConf().Logstash)
+	logstashConn, err := net.Dial("tcp", config.Logstash)
 	if err != nil {
 		klog.Infof("logstash connect error: %v", err)
 	} else {
-		logger.Logger().WithField("app", conf.GetConf().Kitex.Service)
+		logger.Logger().WithField("app", config.Kitex.Service)
 		hook := logrustash.New(logstashConn, logger.Logger().Formatter)
 		logger.Logger().AddHook(hook)
 	}
@@ -72,10 +78,10 @@ func kitexInit() (opts []server.Option) {
 	klog.SetLevel(conf.LogLevel())
 	asyncWriter := &zapcore.BufferedWriteSyncer{
 		WS: zapcore.AddSync(&lumberjack.Logger{
-			Filename:   conf.GetConf().Kitex.LogFileName,
-			MaxSize:    conf.GetConf().Kitex.LogMaxSize,
-			MaxBackups: conf.GetConf().Kitex.LogMaxBackups,
-			MaxAge:     conf.GetConf().Kitex.LogMaxAge,
+			Filename:   config.Kitex.LogFileName,
+			MaxSize:    config.Kitex.LogMaxSize,
+			MaxBackups: config.Kitex.LogMaxBackups,
+			MaxAge:     config.Kitex.LogMaxAge,
 		}),
 		FlushInterval: time.Minute,
 	}

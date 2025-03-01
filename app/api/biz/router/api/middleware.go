@@ -12,6 +12,8 @@ func rootMw() []app.HandlerFunc {
 	return nil
 }
 
+// 更新商品需要角色拥有SELLER_OBJECT权限
+
 func _userMw() []app.HandlerFunc {
 	// your code...
 	return nil
@@ -187,6 +189,14 @@ func _paymentMw() []app.HandlerFunc {
 
 // 登出需要角色拥有CUSTOMER_OBJECT权限
 func _logoutMw() []app.HandlerFunc {
+	// your code...
+	return []app.HandlerFunc{
+		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
+	}
+}
+
+// 获取用户订单需要角色拥有CUSTOMER_OBJECT权限
+func _getuserordersMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),

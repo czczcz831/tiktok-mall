@@ -18,6 +18,12 @@ var (
 	err           error
 )
 
+type OrderProducerMsg struct {
+	OrderUuid string
+	UserUuid  string
+	Items     []*order.OrderItem
+}
+
 func orderProducetInit() {
 	OrderProducer, err = golang.NewProducer(
 		&golang.Config{
@@ -48,15 +54,15 @@ func createOrderTxChecker(msg *golang.MessageView) golang.TransactionResolution 
 
 	var createOrder model.Order
 
-	var createOrderReq order.CreateOrderReq
+	var orderMsg OrderProducerMsg
 
-	err := json.Unmarshal(msg.GetBody(), &createOrderReq)
+	err := json.Unmarshal(msg.GetBody(), &orderMsg)
 
 	if err != nil {
 		klog.Errorf("CreateOrderTxChecker unmarshal error: %v", err)
 	}
 
-	orderResp := mysql.DB.Where("uuid = ?", createOrderReq.UserUuid).First(&createOrder)
+	orderResp := mysql.DB.Where("uuid = ?", orderMsg.OrderUuid).First(&createOrder)
 	if orderResp.Error != nil {
 		return golang.ROLLBACK
 	}

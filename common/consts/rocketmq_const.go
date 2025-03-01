@@ -8,7 +8,7 @@ const (
 	RocketOrderTransactionTopic = "order_tx"
 
 	RocketOrderDelayedTopic = "order_delay"
-	RocketOrderDelayedTime  = time.Minute * 1
+	RocketOrderDelayedTime  = time.Minute * 10
 
 	RocketOrderNormalTopic = "order_normal"
 
@@ -16,7 +16,9 @@ const (
 	RocketPaymentTransactionTopic = "payment_tx"
 
 	RocketPaymentDelayedTopic = "payment_delay"
-	RocketPaymentNormalTopic  = "payment_normal"
+	RocketPaymentDelayedTime  = time.Minute * 1
+
+	RocketPaymentNormalTopic = "payment_normal"
 )
 
 // Tag
@@ -27,6 +29,7 @@ const (
 
 	// Payment
 	RocketCreatePaymentTag = "create_payment"
+	RocketPaidSuccessTag   = "paid_success"
 )
 
 // ConsumerGroup
@@ -35,6 +38,8 @@ const (
 	RocketClearCartConsumer = "clear_cart_consumer"
 	// Order
 	RocketDelayOrderCancelOrderConsumerGroup = "delayed_cancel_order_consumer"
+	RocketMarkOrderPaidConsumerGroup         = "mark_order_paid_consumer"
 	// Payment
 	RocketDelayCancelPaymentConsumerGroup = "payment_consumer"
+	RocketDBDecreaseStockConsumerGroup    = "db_decrease_stock_consumer"
 )

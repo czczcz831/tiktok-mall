@@ -216,11 +216,37 @@ service CheckoutService {
     CheckoutResp Checkout(1: CheckoutReq req) (api.post="/checkout", api.body="json")
 }
 
-#************PAYMENT***********8
+#************ORDER*************#
+struct OrderItemWithPrice {
+    string product_uuid 
+    i64 price 
+    i64 quantity 
+}
+
+struct Order {
+    string uuid
+    string user_uuid
+    string address_uuid
+    i64 total
+    i32 status
+    i64 created_at
+    list<OrderItemWithPrice> items
+}
+struct GetUserOrdersReq {
+}
+
+struct GetUserOrdersResp {
+    i64 total
+    list<Order> orders;
+}
+
+service OrderService{
+    GetUserOrdersResp GetUserOrders(1: GetUserOrdersReq req) (api.get="/orders")
+}
+
+#************PAYMENT***********#
 
 struct CreditCard {
-    string uuid (api.body = "uuid")
-    string user_uuid (api.body = "user_uuid")
     string credit_card_number (api.body = "credit_card_number")
     i64 credit_card_cvv (api.body = "credit_card_cvv")
     i64 credit_card_exp_month (api.body = "credit_card_exp_month")
