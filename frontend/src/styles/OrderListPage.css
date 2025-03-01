@@ -1,0 +1,297 @@
+.order-list-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.order-list-page h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.empty-orders {
+  text-align: center;
+  padding: 40px 0;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.empty-orders p {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #666;
+}
+
+.empty-orders button {
+  padding: 10px 20px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.empty-orders button:hover {
+  background-color: #ff2a2a;
+}
+
+.orders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.order-card {
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.order-header {
+  padding: 15px 20px;
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.order-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.order-id {
+  font-weight: bold;
+  color: #333;
+}
+
+.order-date {
+  color: #666;
+  font-size: 14px;
+}
+
+.order-status {
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.status-unpaid {
+  background-color: #faad14;
+  color: white;
+}
+
+.status-paid {
+  background-color: #52c41a;
+  color: white;
+}
+
+.status-cancelled {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+.order-items {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.order-item {
+  display: flex;
+  gap: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.product-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.product-info {
+  flex-grow: 1;
+}
+
+.product-info h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #333;
+}
+
+.product-price, .product-quantity {
+  margin: 5px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.order-footer {
+  padding: 15px 20px;
+  border-top: 1px solid #e8e8e8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fafafa;
+}
+
+.order-total {
+  color: #333;
+}
+
+.total-price {
+  font-weight: bold;
+  color: #ff4d4f;
+  font-size: 18px;
+}
+
+.pay-button {
+  padding: 8px 16px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.pay-button:hover {
+  background-color: #ff2a2a;
+}
+
+/* 支付弹窗 */
+.payment-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.payment-modal {
+  background-color: white;
+  border-radius: 8px;
+  padding: 25px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.payment-modal h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.error-message {
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: #fff2f0;
+  border: 1px solid #ffccc7;
+  border-radius: 4px;
+  color: #ff4d4f;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-button {
+  padding: 8px 16px;
+  background-color: white;
+  color: #333;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.confirm-button {
+  padding: 8px 16px;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.confirm-button:disabled {
+  background-color: #ffccc7;
+  cursor: not-allowed;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .order-status {
+    align-self: flex-start;
+  }
+  
+  .order-footer {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+} 
