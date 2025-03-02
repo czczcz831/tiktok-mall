@@ -1,20 +1,22 @@
-go 1.23.0
+go 1.23.4
 
 use (
-	./app/auth
-	./app/user
 	./app/api
-	./app/product
+	./app/auth
 	./app/cart
 	./app/checkout
 	./app/order
 	./app/payment
-	./client/user
+	./app/product
+	./app/user
+	./app/eino
 	./client/auth
-	./client/product
 	./client/cart
+	./client/checkout
 	./client/order
 	./client/payment
-	./client/checkout
+	./client/product
+	./client/user
+	./client/eino
 	./common
 )

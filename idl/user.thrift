@@ -3,6 +3,8 @@ namespace go user
 service UserService {
     RegisterResp register(1: RegisterReq req)
     LoginResp login(1: LoginReq req)
+
+    GetUserInfoResp GetUserInfo(1:GetUserInfoReq req)
 }
 
 struct RegisterReq {
@@ -21,4 +23,12 @@ struct LoginReq {
 
 struct LoginResp {
     1: string user_uuid
+}
+
+struct GetUserInfoReq {
+    1: string user_uuid
+}
+
+struct GetUserInfoResp {
+    1: string email
 }

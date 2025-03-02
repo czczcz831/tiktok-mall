@@ -23,6 +23,7 @@ func Register(r *server.Hertz) {
 	root.GET("/orders", append(_getuserordersMw(), api.GetUserOrders)...)
 	root.PUT("/product", append(_updateproductMw(), api.UpdateProduct)...)
 	root.GET("/product", append(_getproductlistMw(), api.GetProductList)...)
+	root.GET("/user", append(_getuserinfoMw(), api.GetUserInfo)...)
 	{
 		_cart := root.Group("/cart", _cartMw()...)
 		_cart.POST("/add_product", append(_addproducttocartMw(), api.AddProductToCart)...)

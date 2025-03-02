@@ -202,3 +202,11 @@ func _getuserordersMw() []app.HandlerFunc {
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
+
+// 获取用户信息需要角色拥有CUSTOMER_OBJECT权限
+func _getuserinfoMw() []app.HandlerFunc {
+	// your code...
+	return []app.HandlerFunc{
+		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
+	}
+}

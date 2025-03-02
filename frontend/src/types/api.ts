@@ -8,6 +8,27 @@ export interface RefreshTokenReq {
   refresh_token: string;
 }
 
+// 用户角色枚举
+export enum UserRole {
+  Customer = "Customer",
+  Seller = "Seller",
+  Admin = "Admin",
+}
+
+// 用户信息接口
+export interface UserInfo {
+  uuid: string;
+  email: string;
+  role: UserRole;
+}
+
+// getUserInfo API类型
+export interface GetUserInfoReq {}
+
+export interface GetUserInfoResp {
+  user: UserInfo;
+}
+
 // 通用API响应格式
 export interface ApiResponse<T> {
   code: number;

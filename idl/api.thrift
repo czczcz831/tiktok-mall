@@ -32,12 +32,23 @@ struct LogoutResp{
     bool ok 
 }
 
+struct GetUserInfoReq{
+
+}
+
+struct GetUserInfoResp{
+    string email
+    list<string> roles
+}
+
 
 service UserService {
     LoginResp Login(1: LoginReq req) (api.post="/user/login", api.body="json")
     LogoutResp Logout(1: LogoutReq req) (api.post="/user/logout",)
     LoginResp RefreshToken(1: RefreshTokenReq req) (api.post="/user/refresh_token", api.body="json")
     RegisterResp Register(1: RegisterReq req) (api.post="/user/register", api.body="json")
+
+    GetUserInfoResp GetUserInfo(1: GetUserInfoReq req) (api.get="/user")
 }
 
 #*********Product*********#

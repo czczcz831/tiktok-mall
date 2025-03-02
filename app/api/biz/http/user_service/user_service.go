@@ -24,6 +24,8 @@ type Client interface {
 	RefreshToken(context context.Context, req *api.RefreshTokenReq, reqOpt ...config.RequestOption) (resp *api.LoginResp, rawResponse *protocol.Response, err error)
 
 	Register(context context.Context, req *api.RegisterReq, reqOpt ...config.RequestOption) (resp *api.RegisterResp, rawResponse *protocol.Response, err error)
+
+	GetUserInfo(context context.Context, req *api.GetUserInfoReq, reqOpt ...config.RequestOption) (resp *api.GetUserInfoResp, rawResponse *protocol.Response, err error)
 }
 
 type UserServiceClient struct {
@@ -131,6 +133,28 @@ func (s *UserServiceClient) Register(context context.Context, req *api.RegisterR
 	return resp, rawResponse, nil
 }
 
+func (s *UserServiceClient) GetUserInfo(context context.Context, req *api.GetUserInfoReq, reqOpt ...config.RequestOption) (resp *api.GetUserInfoResp, rawResponse *protocol.Response, err error) {
+	httpResp := &api.GetUserInfoResp{}
+	ret, err := s.client.r().
+		setContext(context).
+		setQueryParams(map[string]interface{}{}).
+		setPathParams(map[string]string{}).
+		setHeaders(map[string]string{}).
+		setFormParams(map[string]string{}).
+		setFormFileParams(map[string]string{}).
+		setBodyParam(req).
+		setRequestOption(reqOpt...).
+		setResult(httpResp).
+		execute("GET", "/user")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resp = httpResp
+	rawResponse = ret.rawResponse
+	return resp, rawResponse, nil
+}
+
 var defaultClient, _ = NewUserServiceClient("")
 
 func ConfigDefaultClient(ops ...Option) (err error) {
@@ -152,4 +176,8 @@ func RefreshToken(context context.Context, req *api.RefreshTokenReq, reqOpt ...c
 
 func Register(context context.Context, req *api.RegisterReq, reqOpt ...config.RequestOption) (resp *api.RegisterResp, rawResponse *protocol.Response, err error) {
 	return defaultClient.Register(context, req, reqOpt...)
+}
+
+func GetUserInfo(context context.Context, req *api.GetUserInfoReq, reqOpt ...config.RequestOption) (resp *api.GetUserInfoResp, rawResponse *protocol.Response, err error) {
+	return defaultClient.GetUserInfo(context, req, reqOpt...)
 }

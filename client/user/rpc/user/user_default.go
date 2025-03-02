@@ -24,3 +24,12 @@ func Login(ctx context.Context, req *user.LoginReq, callOptions ...callopt.Optio
 	}
 	return resp, nil
 }
+
+func GetUserInfo(ctx context.Context, req *user.GetUserInfoReq, callOptions ...callopt.Option) (resp *user.GetUserInfoResp, err error) {
+	resp, err = defaultClient.GetUserInfo(ctx, req, callOptions...)
+	if err != nil {
+		klog.CtxErrorf(ctx, "GetUserInfo call failed,err =%+v", err)
+		return nil, err
+	}
+	return resp, nil
+}

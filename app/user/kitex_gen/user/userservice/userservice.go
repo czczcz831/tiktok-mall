@@ -27,6 +27,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"GetUserInfo": kitex.NewMethodInfo(
+		getUserInfoHandler,
+		newUserServiceGetUserInfoArgs,
+		newUserServiceGetUserInfoResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -129,6 +136,24 @@ func newUserServiceLoginResult() interface{} {
 	return user.NewUserServiceLoginResult()
 }
 
+func getUserInfoHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*user.UserServiceGetUserInfoArgs)
+	realResult := result.(*user.UserServiceGetUserInfoResult)
+	success, err := handler.(user.UserService).GetUserInfo(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newUserServiceGetUserInfoArgs() interface{} {
+	return user.NewUserServiceGetUserInfoArgs()
+}
+
+func newUserServiceGetUserInfoResult() interface{} {
+	return user.NewUserServiceGetUserInfoResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -154,6 +179,16 @@ func (p *kClient) Login(ctx context.Context, req *user.LoginReq) (r *user.LoginR
 	_args.Req = req
 	var _result user.UserServiceLoginResult
 	if err = p.c.Call(ctx, "login", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) GetUserInfo(ctx context.Context, req *user.GetUserInfoReq) (r *user.GetUserInfoResp, err error) {
+	var _args user.UserServiceGetUserInfoArgs
+	_args.Req = req
+	var _result user.UserServiceGetUserInfoResult
+	if err = p.c.Call(ctx, "GetUserInfo", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

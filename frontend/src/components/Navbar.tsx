@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
+import { getUserInfo } from '../api/userApi';
+import { UserRole } from '../types/api';
 
 const Navbar: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
   const { items } = useCart();
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserInfo();
+    } else {
+      setUserRole(null);
+    }
+  }, [isAuthenticated]);
+
+  const fetchUserInfo = async () => {
+    try {
+      const response = await getUserInfo({});
+      if (response.data.user) {
+        setUserRole(response.data.user.role);
+      }
+    } catch (error) {
+      console.error('获取用户信息失败:', error);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -16,6 +38,8 @@ const Navbar: React.FC = () => {
       console.error('Logout failed:', error);
     }
   };
+
+  const isAdmin = userRole !== UserRole.Customer;
 
   return (
     <nav className="navbar">
@@ -31,6 +55,11 @@ const Navbar: React.FC = () => {
           <Link to="/products" className="navbar-item">
             商品
           </Link>
+          {isAuthenticated && isAdmin && (
+            <Link to="/admin" className="navbar-item">
+              管理后台
+            </Link>
+          )}
         </div>
         
         <div className="navbar-end">
