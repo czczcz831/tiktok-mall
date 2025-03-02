@@ -3,7 +3,6 @@ import axios, { AxiosRequestConfig } from 'axios';
 // 创建axios实例
 const api = axios.create({
   baseURL: 'http://192.168.3.25:11800', // 后端服务地址，根据实际情况修改
-  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },

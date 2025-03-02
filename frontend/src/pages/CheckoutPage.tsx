@@ -6,6 +6,16 @@ import { getAddress, createAddress, checkout } from '../api/checkoutApi';
 import { charge } from '../api/paymentApi';
 import { getProduct } from '../api/productApi';
 import { Address, OrderItem, CreditCard, Product } from '../types/api';
+import '../styles/CheckoutPage.css';
+// Material UI 图标导入
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import HomeIcon from '@mui/icons-material/Home';
+import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 interface CartItemWithDetails {
   product_uuid: string;
@@ -25,6 +35,8 @@ const CheckoutPage: React.FC = () => {
   const [orderUuid, setOrderUuid] = useState<string>('');
   const [cartItemsWithDetails, setCartItemsWithDetails] = useState<CartItemWithDetails[]>([]);
   const [calculatedTotal, setCalculatedTotal] = useState<number>(0);
+  const [transactionUuid, setTransactionUuid] = useState<string>('');
+  const [navigationPath, setNavigationPath] = useState<string>('');
   
   // 个人信息
   const [firstName, setFirstName] = useState<string>('');
@@ -195,13 +207,16 @@ const CheckoutPage: React.FC = () => {
         credit_card_exp_year: parseInt(creditCardExpYear)
       };
       
-      await charge({
+      const response = await charge({
         order_uuid: orderUuid,
         credit_card: creditCard
       });
       
+      // 设置支付成功状态和交易流水号
+      setTransactionUuid(response.data.transaction_uuid);
       setPaymentSuccess(true);
-      await clearCart(); // 清空购物车
+      
+      // 这里不立即清空购物车，而是在用户点击按钮离开支付成功页面时清空
     } catch (error) {
       console.error('Payment failed:', error);
       setError('支付失败');
@@ -209,64 +224,95 @@ const CheckoutPage: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="loading">加载中...</div>;
+    return (
+      <div className="checkout-page">
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          <span>正在加载结账信息...</span>
+        </div>
+      </div>
+    );
   }
 
   if (paymentSuccess) {
     return (
-      <div className="checkout-success">
-        <h2>支付成功！</h2>
-        <p>您的订单已完成。</p>
-        <button onClick={() => navigate('/')}>继续购物</button>
+      <div className="checkout-page">
+        <div className="checkout-success">
+          <CheckCircleOutlineIcon sx={{ fontSize: 60, color: '#52c41a', marginBottom: '1rem' }} />
+          <h2>支付成功！</h2>
+          <p>您的订单已完成，感谢您的购买。</p>
+          <p className="transaction-id">交易流水号: {transactionUuid}</p>
+          <button onClick={() => {
+            // 直接导航到订单页面，不清空购物车
+            // 将购物车清空操作存储在localStorage中，在目标页面加载时执行
+            localStorage.setItem('clear_cart_after_payment', 'true');
+            navigate('/orders');
+          }}>
+            查看我的订单
+          </button>
+          <button onClick={() => {
+            // 直接导航到商品页面，不清空购物车
+            // 将购物车清空操作存储在localStorage中，在目标页面加载时执行
+            localStorage.setItem('clear_cart_after_payment', 'true');
+            navigate('/products');
+          }} style={{ marginLeft: '1rem', background: 'linear-gradient(45deg, #36cfc9, #5cdbd3)' }}>
+            继续购物
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="checkout-page">
-      <h2>结账</h2>
+      <h2>订单结账</h2>
       {error && <div className="error-message">{error}</div>}
       
       {!orderPlaced ? (
         <div className="checkout-form">
-          <h3>订单信息</h3>
+          <h3>填写订单信息</h3>
           <form onSubmit={handlePlaceOrder}>
             <div className="personal-info">
-              <h4>个人信息</h4>
-              <div className="form-group">
-                <label htmlFor="firstName">名</label>
-                <input
-                  type="text"
-                  id="firstName"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  required
-                />
+              <h4><PersonIcon sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />个人信息</h4>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="firstName">名</label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    placeholder="请输入您的名"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="lastName">姓</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    placeholder="请输入您的姓"
+                  />
+                </div>
               </div>
               <div className="form-group">
-                <label htmlFor="lastName">姓</label>
-                <input
-                  type="text"
-                  id="lastName"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="email">邮箱</label>
+                <label htmlFor="email"><EmailIcon sx={{ verticalAlign: 'middle', marginRight: '0.5rem', fontSize: '1rem' }} />邮箱</label>
                 <input
                   type="email"
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  placeholder="请输入您的邮箱地址"
                 />
               </div>
             </div>
             
             <div className="address-selection">
-              <h4>送货地址</h4>
+              <h4><HomeIcon sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />送货地址</h4>
               {addresses.length > 0 ? (
                 <div className="saved-addresses">
                   <select
@@ -281,7 +327,7 @@ const CheckoutPage: React.FC = () => {
                   </select>
                 </div>
               ) : (
-                <p>没有保存的地址</p>
+                <p>没有保存的地址，请添加新地址</p>
               )}
               
               <button
@@ -294,7 +340,7 @@ const CheckoutPage: React.FC = () => {
               
               {showAddressForm && (
                 <div className="new-address-form">
-                  <h4>新地址</h4>
+                  <h4>新地址信息</h4>
                   <div className="form-group">
                     <label htmlFor="streetAddress">街道地址</label>
                     <input
@@ -302,45 +348,55 @@ const CheckoutPage: React.FC = () => {
                       id="streetAddress"
                       value={streetAddress}
                       onChange={(e) => setStreetAddress(e.target.value)}
+                      placeholder="请输入街道地址"
                     />
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="city">城市</label>
-                    <input
-                      type="text"
-                      id="city"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                    />
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="city">城市</label>
+                      <input
+                        type="text"
+                        id="city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="请输入城市"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="state">省/州</label>
+                      <input
+                        type="text"
+                        id="state"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                        placeholder="请输入省/州"
+                      />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="state">省/州</label>
-                    <input
-                      type="text"
-                      id="state"
-                      value={state}
-                      onChange={(e) => setState(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="country">国家</label>
-                    <input
-                      type="text"
-                      id="country"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="zipCode">邮编</label>
-                    <input
-                      type="text"
-                      id="zipCode"
-                      value={zipCode}
-                      onChange={(e) => setZipCode(e.target.value)}
-                    />
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="country">国家</label>
+                      <input
+                        type="text"
+                        id="country"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        placeholder="请输入国家"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="zipCode">邮编</label>
+                      <input
+                        type="text"
+                        id="zipCode"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        placeholder="请输入邮编"
+                      />
+                    </div>
                   </div>
                   <button type="button" onClick={handleAddAddress}>
+                    <AddCircleOutlineIcon sx={{ marginRight: '0.5rem' }} />
                     保存地址
                   </button>
                 </div>
@@ -348,21 +404,33 @@ const CheckoutPage: React.FC = () => {
             </div>
             
             <div className="order-summary">
-              <h4>订单摘要</h4>
-              <p>商品数量: {items.length}</p>
-              <p>总计: ¥{calculatedTotal.toFixed(2)}</p>
+              <h4><ShoppingCartIcon sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />订单摘要</h4>
+              <div className="cart-items-preview">
+                {cartItemsWithDetails.map((item, index) => (
+                  <div key={index} className="cart-item-preview">
+                    <span className="item-name">{item.product?.name}</span>
+                    <span className="item-quantity">x {item.quantity}</span>
+                    <span className="item-price">¥{item.product ? (item.product.price * item.quantity / 100).toFixed(2) : '0.00'}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="summary-total">
+                <p>商品数量: <strong>{items.reduce((sum, item) => sum + item.quantity, 0)}</strong></p>
+                <p className="total-price">总计: <LocalOfferIcon sx={{ verticalAlign: 'middle', marginRight: '0.5rem', color: '#ff4a6b' }} />¥{calculatedTotal.toFixed(2)}</p>
+              </div>
             </div>
             
             <button type="submit" className="place-order-btn">
-              下单
+              生成订单
             </button>
           </form>
         </div>
       ) : (
         <div className="payment-form">
-          <h3>支付信息</h3>
+          <h3><CreditCardIcon sx={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />支付信息</h3>
           <form onSubmit={handlePayment}>
             <div className="credit-card-info">
+              <h4>信用卡详情</h4>
               <div className="form-group">
                 <label htmlFor="creditCardNumber">信用卡号</label>
                 <input
@@ -371,37 +439,47 @@ const CheckoutPage: React.FC = () => {
                   value={creditCardNumber}
                   onChange={(e) => setCreditCardNumber(e.target.value)}
                   required
+                  placeholder="请输入16位卡号"
+                  maxLength={16}
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="creditCardCvv">CVV</label>
-                <input
-                  type="text"
-                  id="creditCardCvv"
-                  value={creditCardCvv}
-                  onChange={(e) => setCreditCardCvv(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="creditCardExpMonth">到期月份</label>
-                <input
-                  type="text"
-                  id="creditCardExpMonth"
-                  value={creditCardExpMonth}
-                  onChange={(e) => setCreditCardExpMonth(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="creditCardExpYear">到期年份</label>
-                <input
-                  type="text"
-                  id="creditCardExpYear"
-                  value={creditCardExpYear}
-                  onChange={(e) => setCreditCardExpYear(e.target.value)}
-                  required
-                />
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="creditCardCvv">CVV安全码</label>
+                  <input
+                    type="text"
+                    id="creditCardCvv"
+                    value={creditCardCvv}
+                    onChange={(e) => setCreditCardCvv(e.target.value)}
+                    required
+                    placeholder="请输入3位CVV码"
+                    maxLength={3}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="creditCardExpMonth">到期月份</label>
+                  <input
+                    type="text"
+                    id="creditCardExpMonth"
+                    value={creditCardExpMonth}
+                    onChange={(e) => setCreditCardExpMonth(e.target.value)}
+                    required
+                    placeholder="MM"
+                    maxLength={2}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="creditCardExpYear">到期年份</label>
+                  <input
+                    type="text"
+                    id="creditCardExpYear"
+                    value={creditCardExpYear}
+                    onChange={(e) => setCreditCardExpYear(e.target.value)}
+                    required
+                    placeholder="YYYY"
+                    maxLength={4}
+                  />
+                </div>
               </div>
             </div>
             
@@ -411,7 +489,7 @@ const CheckoutPage: React.FC = () => {
             </div>
             
             <button type="submit" className="pay-btn">
-              支付
+              {loading ? '处理中...' : '确认支付'}
             </button>
           </form>
         </div>

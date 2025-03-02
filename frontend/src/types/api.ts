@@ -221,4 +221,13 @@ export interface ChargeReq {
 
 export interface ChargeResp {
   transaction_uuid: string;
+}
+
+// AI助手相关类型
+export interface AIChatReq {
+  content: string;
+}
+
+export interface AIChatResp {
+  reply: string;
 } 

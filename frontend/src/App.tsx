@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavig
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
 import Navbar from './components/Navbar';
+import AIAssistant from './components/AIAssistant';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProductListPage from './pages/ProductListPage';
@@ -14,6 +15,11 @@ import AdminPage from './pages/AdminPage';
 import { getUserInfo } from './api/userApi';
 import { UserRole } from './types/api';
 import './index.css';
+import './styles/Navbar.css';
+import './styles/ProductList.css';
+import './styles/ProductDetail.css';
+import './styles/AIAssistant.css';
+import './styles/CartPage.css';
 
 // 需要登录的路由保护组件
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -105,6 +111,7 @@ const App: React.FC = () => {
                 } />
               </Routes>
             </div>
+            <AIAssistant />
           </div>
         </CartProvider>
       </AuthProvider>

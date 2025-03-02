@@ -1,0 +1,259 @@
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* 添加购物车图标动画 */
+@keyframes cartBounce {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.2); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+  padding: 0.8rem 2rem;
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+}
+
+.navbar:hover {
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.navbar-brand a {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 1px;
+  background: linear-gradient(to right, #ff4a6b, #ff9a8b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand a:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.navbar-brand::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, #ff4a6b, #ff9a8b);
+  transition: width 0.3s ease;
+}
+
+.navbar-brand:hover::after {
+  width: 100%;
+}
+
+.navbar-menu {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-left: 2rem;
+}
+
+.navbar-start, .navbar-end {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-start {
+  animation: slideIn 0.8s ease-out;
+}
+
+.navbar-end {
+  animation: slideIn 0.8s ease-out 0.2s backwards;
+}
+
+.navbar-item {
+  position: relative;
+  color: #e0e0e0;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-icon {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.navbar-item span {
+  position: relative;
+  z-index: 1;
+}
+
+.navbar-item::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, #ff4a6b, #ff9a8b);
+  transition: width 0.3s ease;
+  z-index: 0;
+}
+
+.navbar-item:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.navbar-item:hover .navbar-icon {
+  transform: scale(1.1);
+  color: #ff4a6b;
+}
+
+.navbar-item:hover::before {
+  width: 100%;
+}
+
+.navbar-item.active {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-item.active::before {
+  width: 100%;
+  height: 2px;
+}
+
+.navbar-item.active .navbar-icon {
+  color: #ff4a6b;
+}
+
+.cart-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cart-icon {
+  margin-right: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.cart-icon.cart-bounce {
+  animation: cartBounce 0.5s ease-in-out;
+  color: #ff4a6b !important;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(to bottom right, #ff4a6b, #ff9a8b);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: pulse 1.5s infinite;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e0e0e0;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn:hover {
+  color: #ff4a6b;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn:hover .navbar-icon {
+  transform: scale(1.1);
+  color: #ff4a6b;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  .navbar.scrolled {
+    padding: 0.8rem;
+  }
+  
+  .navbar-menu {
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+  
+  .navbar-start, .navbar-end {
+    justify-content: center;
+    margin: 0.5rem 0;
+  }
+  
+  .navbar-item {
+    margin: 0.3rem;
+    justify-content: center;
+  }
+} 
