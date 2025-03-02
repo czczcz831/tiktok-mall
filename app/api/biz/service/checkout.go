@@ -8,6 +8,7 @@ import (
 	api "github.com/czczcz831/tiktok-mall/app/api/hertz_gen/api"
 	checkout "github.com/czczcz831/tiktok-mall/client/checkout/kitex_gen/checkout"
 	checkoutAgent "github.com/czczcz831/tiktok-mall/client/checkout/rpc/checkout"
+	"github.com/czczcz831/tiktok-mall/common/errno"
 )
 
 type CheckoutService struct {
@@ -52,7 +53,20 @@ func (h *CheckoutService) Run(req *api.CheckoutReq) (resp *api.CheckoutResp, err
 		Items:       reqItems,
 	})
 	if err != nil {
-		return nil, err
+		switch err.Error() {
+		case errno.ErrProductNotFound:
+			return nil, &packer.MyError{
+				Code: packer.PRODUCT_NOT_FOUND_ERROR,
+			}
+		case errno.ErrStockNotEnough:
+			return nil, &packer.MyError{
+				Code: packer.STOCK_NOT_ENOUGH_ERROR,
+			}
+		default:
+			return nil, &packer.MyError{
+				Code: packer.UNKNOWN_SERVER_ERROR,
+			}
+		}
 	}
 
 	return &api.CheckoutResp{

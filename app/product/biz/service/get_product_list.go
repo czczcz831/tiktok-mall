@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/czczcz831/tiktok-mall/app/product/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/product/biz/model"
 	product "github.com/czczcz831/tiktok-mall/app/product/kitex_gen/product"
+	"github.com/czczcz831/tiktok-mall/common/errno"
+	"gorm.io/gorm"
 )
 
 type GetProductListService struct {
@@ -35,18 +38,19 @@ func (s *GetProductListService) Run(req *product.GetProductListReq) (resp *produ
 		query.Where("price <= ?", req.MaxPrice)
 	}
 
-	findRes := query.Offset(int(req.Page) - 1).Limit(int(req.Limit)).Find(&dbProducts)
-
-	if findRes.Error != nil {
-		return nil, findRes.Error
-	}
-
 	var total int64
-
 	cntRes := query.Count(&total)
-
 	if cntRes.Error != nil {
 		return nil, cntRes.Error
+	}
+
+	findRes := query.Offset((int(req.Page) - 1) * int(req.Limit)).Limit(int(req.Limit)).Find(&dbProducts)
+
+	if findRes.Error != nil {
+		if findRes.Error == gorm.ErrRecordNotFound {
+			return nil, errors.New(errno.ErrProductNotFound)
+		}
+		return nil, findRes.Error
 	}
 
 	var productResp []*product.Product

@@ -7,6 +7,7 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/product/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/product/biz/model"
 	product "github.com/czczcz831/tiktok-mall/app/product/kitex_gen/product"
+	"github.com/czczcz831/tiktok-mall/common/errno"
 	_ "github.com/joho/godotenv/autoload"
 )
 
@@ -28,7 +29,7 @@ func (s *DeleteProductService) Run(req *product.DeleteProductReq) (resp *product
 	}
 
 	if res.RowsAffected == 0 {
-		return nil, errors.New("product not found")
+		return nil, errors.New(errno.ErrProductNotFound)
 	}
 
 	return &product.DeleteProductResp{

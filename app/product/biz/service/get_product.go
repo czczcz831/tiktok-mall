@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
-
+	"errors"
 	"github.com/czczcz831/tiktok-mall/app/product/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/product/biz/model"
 	product "github.com/czczcz831/tiktok-mall/app/product/kitex_gen/product"
+	"github.com/czczcz831/tiktok-mall/common/errno"
 	_ "github.com/joho/godotenv/autoload"
+	"gorm.io/gorm"
 )
 
 type GetProductService struct {
@@ -23,7 +25,10 @@ func (s *GetProductService) Run(req *product.GetProductReq) (resp *product.GetPr
 	res := mysql.DB.Model(dbProdcut).Where("uuid = ?", req.Uuid).First(dbProdcut)
 
 	if res.Error != nil {
-		return nil, res.Error
+		if res.Error == gorm.ErrRecordNotFound {
+			return nil, errors.New(errno.ErrProductNotFound)
+		}
+		return nil, errors.New(errno.ErrDatabaseSystem)
 	}
 
 	return &product.GetProductResp{

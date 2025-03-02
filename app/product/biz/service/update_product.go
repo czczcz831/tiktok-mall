@@ -11,6 +11,7 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/product/biz/model"
 
 	product "github.com/czczcz831/tiktok-mall/app/product/kitex_gen/product"
+	"github.com/czczcz831/tiktok-mall/common/errno"
 )
 
 type UpdateProductService struct {
@@ -26,7 +27,7 @@ func (s *UpdateProductService) Run(req *product.UpdateProductReq) (resp *product
 	oldProduct := &model.Product{}
 	result := mysql.DB.Where("uuid = ?", req.Product.Uuid).First(oldProduct)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, errors.New(errno.ErrProductNotFound)
 	}
 
 	oldStock := oldProduct.Stock
@@ -46,7 +47,7 @@ func (s *UpdateProductService) Run(req *product.UpdateProductReq) (resp *product
 	}
 
 	if updateResp.RowsAffected == 0 {
-		return nil, errors.New("product not found")
+		return nil, errors.New(errno.ErrDatabaseConsistent)
 	}
 
 	//计算库存diff

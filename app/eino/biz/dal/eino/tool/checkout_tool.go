@@ -7,8 +7,10 @@ import (
 	"github.com/cloudwego/eino/components/tool"
 	"github.com/cloudwego/eino/components/tool/utils"
 	"github.com/cloudwego/kitex/pkg/klog"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/utils/packer"
 	checkout "github.com/czczcz831/tiktok-mall/client/checkout/kitex_gen/checkout"
 	checkoutAgent "github.com/czczcz831/tiktok-mall/client/checkout/rpc/checkout"
+	"github.com/czczcz831/tiktok-mall/common/errno"
 )
 
 var (
@@ -58,7 +60,18 @@ func CheckoutFunc(_ context.Context, params *CheckoutParams) (string, error) {
 
 	checkoutResp, err := checkoutAgent.Checkout(context.Background(), req)
 	if err != nil {
-		return "", err
+		switch err.Error() {
+		case errno.ErrProductNotFound:
+			return "", &packer.MyError{
+				Code: packer.PRODUCT_NOT_FOUND_ERROR,
+			}
+		case errno.ErrStockNotEnough:
+			return "", &packer.MyError{
+				Code: packer.STOCK_NOT_ENOUGH_ERROR,
+			}
+		default:
+			return "", err
+		}
 	}
 
 	res, err := json.Marshal(checkoutResp)

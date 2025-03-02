@@ -7,8 +7,10 @@ import (
 	"github.com/cloudwego/eino/components/tool"
 	"github.com/cloudwego/eino/components/tool/utils"
 	"github.com/cloudwego/kitex/pkg/klog"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/utils/packer"
 	product "github.com/czczcz831/tiktok-mall/client/product/kitex_gen/product"
 	productAgent "github.com/czczcz831/tiktok-mall/client/product/rpc/product"
+	"github.com/czczcz831/tiktok-mall/common/errno"
 )
 
 var (
@@ -43,7 +45,14 @@ func GetProductsFunc(_ context.Context, params *GetProductsParams) (string, erro
 
 	productList, err := productAgent.GetProductList(context.Background(), req)
 	if err != nil {
-		return "", err
+		switch err.Error() {
+		case errno.ErrProductNotFound:
+			return "", &packer.MyError{
+				Code: packer.PRODUCT_NOT_FOUND_ERROR,
+			}
+		default:
+			return "", err
+		}
 	}
 
 	res, err := json.Marshal(productList)

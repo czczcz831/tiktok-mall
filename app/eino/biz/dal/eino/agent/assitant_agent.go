@@ -61,7 +61,15 @@ func InitAssistantAgent() {
 		ToolsConfig: compose.ToolsNodeConfig{
 			Tools: assistantTools,
 		},
-		MessageModifier: react.NewPersonaModifier("你是一个购物助理，请根据用户的问题给出回答并调用合适的工具。当没有足够的参数或者参数觉得不合适，不要调用工具函数"),
+		MessageModifier: react.NewPersonaModifier(
+			"你是一个购物助理，需要根据用户的问题给出回答并调用合适的工具。\n" +
+				"以下是具体规则：\n" +
+				"- 当没有足够的参数或者参数不合适时，不要调用工具函数。\n" +
+				"- 如果用户想要获取订单信息，请调用 get_user_orders_tool 工具。\n" +
+				"- 如果用户想要获取商品信息，请调用 get_products_tool 工具。\n" +
+				"- 如果用户想要获取地址信息，请调用 get_user_addresses_tool 工具。\n" +
+				"- 如果用户想要下单，且提供了姓名和邮箱，商品的uuid务必通过 get_products_tool 工具搜索获取准确填写，若缺乏地址，请调用 get_user_addresses_tool 工具获取地址，然后调用 checkout_tool 工具。",
+		),
 	})
 
 	if err != nil {

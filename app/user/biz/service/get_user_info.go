@@ -3,9 +3,12 @@ package service
 import (
 	"context"
 
+	"errors"
 	"github.com/czczcz831/tiktok-mall/app/user/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/user/biz/model"
 	user "github.com/czczcz831/tiktok-mall/app/user/kitex_gen/user"
+	"github.com/czczcz831/tiktok-mall/common/errno"
+	"gorm.io/gorm"
 )
 
 type GetUserInfoService struct {
@@ -22,6 +25,9 @@ func (s *GetUserInfoService) Run(req *user.GetUserInfoReq) (resp *user.GetUserIn
 	userIns := &model.User{}
 	result := mysql.DB.Where("uuid = ?", req.UserUuid).First(userIns)
 	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, errors.New(errno.ErrUserNotFound)
+		}
 		return nil, result.Error
 	}
 

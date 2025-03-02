@@ -9,6 +9,7 @@ import (
 
 	"github.com/czczcz831/tiktok-mall/app/product/biz/dal/redis"
 	product "github.com/czczcz831/tiktok-mall/app/product/kitex_gen/product"
+	"github.com/czczcz831/tiktok-mall/common/errno"
 	goredis "github.com/redis/go-redis/v9"
 )
 
@@ -76,7 +77,7 @@ func PreStockDeduct(item *product.OrderItem, retry int) error {
 
 	res, err := luaScript.Run(context.Background(), redis.RedisClient, []string{redisKey, strconv.Itoa(int(item.Quantity))}).Result()
 	if err != nil {
-		return err
+		return errors.New(errno.ErrRedisSystem)
 	}
 
 	switch res.(int64) {
@@ -101,7 +102,7 @@ func PreStockDeduct(item *product.OrderItem, retry int) error {
 		// 重试扣减
 		return PreStockDeduct(item, retry)
 	case -2:
-		return errors.New("stock not enough")
+		return errors.New(errno.ErrStockNotEnough)
 	default:
 		return nil
 	}
