@@ -10,9 +10,9 @@ import (
 // EinoServiceImpl implements the last service interface defined in the IDL.
 type EinoServiceImpl struct{}
 
-// QueryUserOrders implements the EinoServiceImpl interface.
-func (s *EinoServiceImpl) QueryUserOrders(ctx context.Context, req *eino.QueryUserOrdersReq) (resp *eino.QueryUserOrdersResp, err error) {
-	resp, err = service.NewQueryUserOrdersService(ctx).Run(req)
+// CallAssistantAgent implements the EinoServiceImpl interface.
+func (s *EinoServiceImpl) CallAssistantAgent(ctx context.Context, req *eino.CallAssistantAgentReq) (resp *eino.CallAssistantAgentResp, err error) {
+	resp, err = service.NewCallAssistantAgentService(ctx).Run(req)
 
 	return resp, err
 }

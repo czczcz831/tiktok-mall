@@ -1,33 +1,17 @@
 namespace go eino
 
-struct OrderItem{
-    string product_uuid
-    i64 price
-    i64 quantity
-}
 
-struct Order {
-    string uuid
+struct CallAssistantAgentReq{
     string user_uuid
-    string address_uuid
-    i64 total
-    i32 status
-    i64 created_at
-    list<OrderItem> items
+    string content
 }
 
-struct QueryUserOrdersReq{
-    string user_uuid
-    string query_content
-}
-
-struct QueryUserOrdersResp{
-    i64 total
-    list<Order> orders;
+struct CallAssistantAgentResp{
+    string reply
 }
 
 service EinoService{
-    QueryUserOrdersResp QueryUserOrders(1: QueryUserOrdersReq req)
+    CallAssistantAgentResp CallAssistantAgent(1: CallAssistantAgentReq req)
 }
 
 

@@ -210,3 +210,15 @@ func _getuserinfoMw() []app.HandlerFunc {
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
+
+func _einoMw() []app.HandlerFunc {
+	// 需要登录
+	return []app.HandlerFunc{
+		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
+	}
+}
+
+func _callassistantagentMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

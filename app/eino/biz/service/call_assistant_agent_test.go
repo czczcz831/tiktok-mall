@@ -2,18 +2,16 @@ package service
 
 import (
 	"context"
-
-	"testing"
-
 	eino "github.com/czczcz831/tiktok-mall/app/eino/kitex_gen/eino"
+	"testing"
 )
 
-func TestQueryUserOrders_Run(t *testing.T) {
+func TestCallAssistantAgent_Run(t *testing.T) {
 	ctx := context.Background()
-	s := NewQueryUserOrdersService(ctx)
+	s := NewCallAssistantAgentService(ctx)
 	// init req and assert value
 
-	req := &eino.QueryUserOrdersReq{}
+	req := &eino.CallAssistantAgentReq{}
 	resp, err := s.Run(req)
 	t.Logf("err: %v", err)
 	t.Logf("resp: %v", resp)

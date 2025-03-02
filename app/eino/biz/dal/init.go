@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"github.com/czczcz831/tiktok-mall/app/eino/biz/dal/eino"
 	"github.com/czczcz831/tiktok-mall/app/eino/biz/dal/mysql"
 	"github.com/czczcz831/tiktok-mall/app/eino/biz/dal/redis"
 )
@@ -8,4 +9,5 @@ import (
 func Init() {
 	redis.Init()
 	mysql.Init()
+	eino.Init()
 }

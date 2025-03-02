@@ -9,6 +9,7 @@ import (
 	"github.com/cloudwego/kitex/pkg/rpcinfo"
 	"github.com/cloudwego/kitex/pkg/transmeta"
 	"github.com/cloudwego/kitex/server"
+	"github.com/czczcz831/tiktok-mall/app/eino/biz/dal"
 	"github.com/czczcz831/tiktok-mall/app/eino/conf"
 	"github.com/czczcz831/tiktok-mall/app/eino/kitex_gen/eino/einoservice"
 	_ "github.com/joho/godotenv/autoload"
@@ -81,5 +82,8 @@ func kitexInit() (opts []server.Option) {
 	server.RegisterShutdownHook(func() {
 		asyncWriter.Sync()
 	})
+
+	dal.Init()
+
 	return
 }

@@ -13,10 +13,10 @@ import (
 var errInvalidMessageType = errors.New("invalid message type for service method handler")
 
 var serviceMethods = map[string]kitex.MethodInfo{
-	"QueryUserOrders": kitex.NewMethodInfo(
-		queryUserOrdersHandler,
-		newEinoServiceQueryUserOrdersArgs,
-		newEinoServiceQueryUserOrdersResult,
+	"CallAssistantAgent": kitex.NewMethodInfo(
+		callAssistantAgentHandler,
+		newEinoServiceCallAssistantAgentArgs,
+		newEinoServiceCallAssistantAgentResult,
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
@@ -86,22 +86,22 @@ func newServiceInfo(hasStreaming bool, keepStreamingMethods bool, keepNonStreami
 	return svcInfo
 }
 
-func queryUserOrdersHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
-	realArg := arg.(*eino.EinoServiceQueryUserOrdersArgs)
-	realResult := result.(*eino.EinoServiceQueryUserOrdersResult)
-	success, err := handler.(eino.EinoService).QueryUserOrders(ctx, realArg.Req)
+func callAssistantAgentHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*eino.EinoServiceCallAssistantAgentArgs)
+	realResult := result.(*eino.EinoServiceCallAssistantAgentResult)
+	success, err := handler.(eino.EinoService).CallAssistantAgent(ctx, realArg.Req)
 	if err != nil {
 		return err
 	}
 	realResult.Success = success
 	return nil
 }
-func newEinoServiceQueryUserOrdersArgs() interface{} {
-	return eino.NewEinoServiceQueryUserOrdersArgs()
+func newEinoServiceCallAssistantAgentArgs() interface{} {
+	return eino.NewEinoServiceCallAssistantAgentArgs()
 }
 
-func newEinoServiceQueryUserOrdersResult() interface{} {
-	return eino.NewEinoServiceQueryUserOrdersResult()
+func newEinoServiceCallAssistantAgentResult() interface{} {
+	return eino.NewEinoServiceCallAssistantAgentResult()
 }
 
 type kClient struct {
@@ -114,11 +114,11 @@ func newServiceClient(c client.Client) *kClient {
 	}
 }
 
-func (p *kClient) QueryUserOrders(ctx context.Context, req *eino.QueryUserOrdersReq) (r *eino.QueryUserOrdersResp, err error) {
-	var _args eino.EinoServiceQueryUserOrdersArgs
+func (p *kClient) CallAssistantAgent(ctx context.Context, req *eino.CallAssistantAgentReq) (r *eino.CallAssistantAgentResp, err error) {
+	var _args eino.EinoServiceCallAssistantAgentArgs
 	_args.Req = req
-	var _result eino.EinoServiceQueryUserOrdersResult
-	if err = p.c.Call(ctx, "QueryUserOrders", &_args, &_result); err != nil {
+	var _result eino.EinoServiceCallAssistantAgentResult
+	if err = p.c.Call(ctx, "CallAssistantAgent", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

@@ -11,7 +11,7 @@ import (
 
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
-	QueryUserOrders(ctx context.Context, req *eino.QueryUserOrdersReq, callOptions ...callopt.Option) (r *eino.QueryUserOrdersResp, err error)
+	CallAssistantAgent(ctx context.Context, req *eino.CallAssistantAgentReq, callOptions ...callopt.Option) (r *eino.CallAssistantAgentResp, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -43,7 +43,7 @@ type kEinoServiceClient struct {
 	*kClient
 }
 
-func (p *kEinoServiceClient) QueryUserOrders(ctx context.Context, req *eino.QueryUserOrdersReq, callOptions ...callopt.Option) (r *eino.QueryUserOrdersResp, err error) {
+func (p *kEinoServiceClient) CallAssistantAgent(ctx context.Context, req *eino.CallAssistantAgentReq, callOptions ...callopt.Option) (r *eino.CallAssistantAgentResp, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
-	return p.kClient.QueryUserOrders(ctx, req)
+	return p.kClient.CallAssistantAgent(ctx, req)
 }

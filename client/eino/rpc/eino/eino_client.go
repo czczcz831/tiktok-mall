@@ -12,7 +12,7 @@ import (
 type RPCClient interface {
 	KitexClient() einoservice.Client
 	Service() string
-	QueryUserOrders(ctx context.Context, req *eino.QueryUserOrdersReq, callOptions ...callopt.Option) (r *eino.QueryUserOrdersResp, err error)
+	CallAssistantAgent(ctx context.Context, req *eino.CallAssistantAgentReq, callOptions ...callopt.Option) (r *eino.CallAssistantAgentResp, err error)
 }
 
 func NewRPCClient(dstService string, opts ...client.Option) (RPCClient, error) {
@@ -41,6 +41,6 @@ func (c *clientImpl) KitexClient() einoservice.Client {
 	return c.kitexClient
 }
 
-func (c *clientImpl) QueryUserOrders(ctx context.Context, req *eino.QueryUserOrdersReq, callOptions ...callopt.Option) (r *eino.QueryUserOrdersResp, err error) {
-	return c.kitexClient.QueryUserOrders(ctx, req, callOptions...)
+func (c *clientImpl) CallAssistantAgent(ctx context.Context, req *eino.CallAssistantAgentReq, callOptions ...callopt.Option) (r *eino.CallAssistantAgentResp, err error) {
+	return c.kitexClient.CallAssistantAgent(ctx, req, callOptions...)
 }

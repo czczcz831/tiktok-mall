@@ -35,13 +35,15 @@ type OsEnvConf struct {
 }
 
 type Config struct {
-	Kitex    Kitex    `mapstructure:"kitex"`
-	MySQL    MySQL    `mapstructure:"mysql"`
-	Redis    Redis    `mapstructure:"redis"`
-	Registry Registry `mapstructure:"registry"`
-	JWT      JWT      `mapstructure:"jwt"`
-	Logstash string   `mapstructure:"logstash"`
-	Metrics  string   `mapstructure:"metrics"`
+	Kitex     Kitex    `mapstructure:"kitex"`
+	MySQL     MySQL    `mapstructure:"mysql"`
+	Redis     Redis    `mapstructure:"redis"`
+	Registry  Registry `mapstructure:"registry"`
+	JWT       JWT      `mapstructure:"jwt"`
+	Logstash  string   `mapstructure:"logstash"`
+	Metrics   string   `mapstructure:"metrics"`
+	ArkModel  string   `mapstructure:"ark_model"`
+	ArkApiKey string   `mapstructure:"ark_api_key"`
 
 	OsConf *OsEnvConf
 	NodeID int64

@@ -276,3 +276,16 @@ struct ChargeResp {
 service PaymentService{
     ChargeResp Charge(1: ChargeReq req) (api.post="/payment/charge", api.body="json")
 }
+
+#************EINO***********#
+struct CallAssistantAgentReq{
+    string content
+}
+
+struct CallAssistantAgentResp{
+    string reply
+}
+
+service EinoService{
+    CallAssistantAgentResp CallAssistantAgent(1: CallAssistantAgentReq req) (api.post="/eino/chat",api.body="json")
+}

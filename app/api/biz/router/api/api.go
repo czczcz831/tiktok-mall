@@ -37,6 +37,10 @@ func Register(r *server.Hertz) {
 		_address.DELETE("/:uuid", append(_deleteaddressMw(), api.DeleteAddress)...)
 	}
 	{
+		_eino := root.Group("/eino", _einoMw()...)
+		_eino.POST("/chat", append(_callassistantagentMw(), api.CallAssistantAgent)...)
+	}
+	{
 		_payment := root.Group("/payment", _paymentMw()...)
 		_payment.POST("/charge", append(_chargeMw(), api.Charge)...)
 	}
