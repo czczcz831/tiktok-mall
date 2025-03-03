@@ -24,13 +24,13 @@ jobs:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ALI_TIKTOK_API_REPO }}
+          registry: ${{ secrets.ALI_REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: Build and Push API Service
         run: |
-          IMAGE_NAME="${{ secrets.ALI_TIKTOK_API_REPO }}/tiktok-mall/api"
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-api"
           docker buildx build \
             --file "docker/Dockerfile.api" \
             --tag "${IMAGE_NAME}:latest" \
@@ -54,13 +54,13 @@ jobs:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ALI_TIKTOK_AUTH_REPO }}
+          registry: ${{ secrets.ALI_REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: Build and Push Auth Service
         run: |
-          IMAGE_NAME="${{ secrets.ALI_TIKTOK_AUTH_REPO }}/tiktok-mall/auth"
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-auth"
           docker buildx build \
             --file "docker/Dockerfile.auth" \
             --tag "${IMAGE_NAME}:latest" \
@@ -84,13 +84,13 @@ jobs:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ALI_TIKTOK_CART_REPO }}
+          registry: ${{ secrets.ALI_REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: Build and Push Cart Service
         run: |
-          IMAGE_NAME="${{ secrets.ALI_TIKTOK_CART_REPO }}/tiktok-mall/cart"
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-cart"
           docker buildx build \
             --file "docker/Dockerfile.cart" \
             --tag "${IMAGE_NAME}:latest" \
@@ -114,13 +114,13 @@ jobs:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ALI_TIKTOK_CHECKOUT_REPO }}
+          registry: ${{ secrets.ALI_REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: Build and Push Checkout Service
         run: |
-          IMAGE_NAME="${{ secrets.ALI_TIKTOK_CHECKOUT_REPO }}/tiktok-mall/checkout"
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-checkout"
           docker buildx build \
             --file "docker/Dockerfile.checkout" \
             --tag "${IMAGE_NAME}:latest" \
@@ -144,13 +144,13 @@ jobs:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ALI_TIKTOK_EINO_REPO }}
+          registry: ${{ secrets.ALI_REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: Build and Push Eino Service
         run: |
-          IMAGE_NAME="${{ secrets.ALI_TIKTOK_EINO_REPO }}/tiktok-mall/eino"
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-eino"
           docker buildx build \
             --file "docker/Dockerfile.eino" \
             --tag "${IMAGE_NAME}:latest" \
@@ -174,13 +174,13 @@ jobs:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ALI_TIKTOK_ORDER_REPO }}
+          registry: ${{ secrets.ALI_REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: Build and Push Order Service
         run: |
-          IMAGE_NAME="${{ secrets.ALI_TIKTOK_ORDER_REPO }}/tiktok-mall/order"
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-order"
           docker buildx build \
             --file "docker/Dockerfile.order" \
             --tag "${IMAGE_NAME}:latest" \
@@ -204,13 +204,13 @@ jobs:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ALI_TIKTOK_PAYMENT_REPO }}
+          registry: ${{ secrets.ALI_REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: Build and Push Payment Service
         run: |
-          IMAGE_NAME="${{ secrets.ALI_TIKTOK_PAYMENT_REPO }}/tiktok-mall/payment"
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-payment"
           docker buildx build \
             --file "docker/Dockerfile.payment" \
             --tag "${IMAGE_NAME}:latest" \
@@ -234,13 +234,13 @@ jobs:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ALI_TIKTOK_PRODUCT_REPO }}
+          registry: ${{ secrets.ALI_REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: Build and Push Product Service
         run: |
-          IMAGE_NAME="${{ secrets.ALI_TIKTOK_PRODUCT_REPO }}/tiktok-mall/product"
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-product"
           docker buildx build \
             --file "docker/Dockerfile.product" \
             --tag "${IMAGE_NAME}:latest" \
@@ -264,13 +264,13 @@ jobs:
       - name: Login to Aliyun Container Registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ secrets.ALI_TIKTOK_USER_REPO }}
+          registry: ${{ secrets.ALI_REGISTRY }}
           username: ${{ secrets.ALIYUN_USERNAME }}
           password: ${{ secrets.ALIYUN_PASSWORD }}
 
       - name: Build and Push User Service
         run: |
-          IMAGE_NAME="${{ secrets.ALI_TIKTOK_USER_REPO }}/tiktok-mall/user"
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-user"
           docker buildx build \
             --file "docker/Dockerfile.user" \
             --tag "${IMAGE_NAME}:latest" \
