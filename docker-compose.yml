@@ -1,0 +1,158 @@
+version: '3'
+
+services:
+  # API服务 - 作为网关，唯一暴露端口的服务
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+      target: runner
+    ports:
+      - "11800:11800"
+    depends_on:
+      - auth
+      - user
+      - product
+      - order
+      - cart
+      - checkout
+      - payment
+      - eino
+      - builder
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - tiktok_mall_network
+    restart: unless-stopped
+
+  # 用户认证服务
+  auth:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.auth
+      target: runner
+    ports:
+      - "11801:11801"
+    depends_on:
+      - builder
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - tiktok_mall_network
+    restart: unless-stopped
+
+  # 用户服务
+  user:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.user
+      target: runner
+    ports:
+      - "11807:11807"
+    depends_on:
+      - builder
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - tiktok_mall_network
+    restart: unless-stopped
+
+  # 商品服务
+  product:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.product
+      target: runner
+    ports:
+      - "11806:11806"
+    depends_on:
+      - builder
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - tiktok_mall_network
+    restart: unless-stopped
+
+  # 订单服务
+  order:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.order
+      target: runner
+    ports:
+      - "11804:11804"
+    depends_on:
+      - builder
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - tiktok_mall_network
+    restart: unless-stopped
+
+  # 购物车服务
+  cart:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.cart
+      target: runner
+    ports:
+      - "11802:11802"
+    depends_on:
+      - builder
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - tiktok_mall_network
+    restart: unless-stopped
+
+  # 结账服务
+  checkout:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.checkout
+      target: runner
+    ports:
+      - "11803:11803"
+    depends_on:
+      - builder
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - tiktok_mall_network
+    restart: unless-stopped
+
+  # 支付服务
+  payment:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.payment
+      target: runner
+    ports:
+      - "11805:11805"
+    depends_on:
+      - builder
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - tiktok_mall_network
+    restart: unless-stopped
+
+  # eino服务
+  eino:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.eino
+      target: runner
+    ports:
+      - "11808:11808"
+    depends_on:
+      - builder
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - tiktok_mall_network
+    restart: unless-stopped
+
+networks:
+  tiktok_mall_network:
+    driver: bridge

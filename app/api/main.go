@@ -19,6 +19,7 @@ import (
 	"github.com/czczcz831/tiktok-mall/app/api/biz/router"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/sentinel"
 	"github.com/czczcz831/tiktok-mall/app/api/conf"
+	commonUtils "github.com/czczcz831/tiktok-mall/common/utils"
 	"github.com/hertz-contrib/cors"
 	"github.com/hertz-contrib/gzip"
 	"github.com/hertz-contrib/logger/accesslog"
@@ -29,6 +30,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"strings"
 )
 
 func main() {
@@ -37,11 +39,18 @@ func main() {
 
 	r := conf.GetRegister()
 
+	ip, err := commonUtils.GetFirstInterfaceIp()
+	if err != nil {
+		hlog.Infof("get first interface ip error: %v", err)
+	}
+
+	port := address[strings.Index(address, ":")+1:]
+
 	h := server.New(
 		server.WithHostPorts(address),
 		server.WithRegistry(r, &registry.Info{
 			ServiceName: conf.GetConf().Hertz.Service,
-			Addr:        utils.NewNetAddr("tcp", address),
+			Addr:        utils.NewNetAddr("tcp", ip.String()+":"+port),
 			Weight:      10,
 			Tags:        nil,
 		}),
