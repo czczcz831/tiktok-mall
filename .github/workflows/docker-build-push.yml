@@ -1,0 +1,280 @@
+name: Docker Build Image and Push
+
+on:
+  workflow_dispatch:
+    inputs:
+      services:
+        description: 'Select services to build (comma-separated: api, auth, cart, etc.)'
+        required: false
+        default: 'api'  # 默认只构建 api
+
+jobs:
+  build-api-push:
+    runs-on: ubuntu-latest
+    if: contains(github.event.inputs.services, 'api') || github.event.inputs.services == ''
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALI_REGISTRY }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - name: Build and Push API Service
+        run: |
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-api"
+          docker buildx build \
+            --file "docker/Dockerfile.api" \
+            --tag "${IMAGE_NAME}:latest" \
+            --tag "${IMAGE_NAME}:${{ github.sha }}" \
+            --push \
+            .
+          echo "Successfully built and pushed API service"
+
+  build-auth-push:
+    runs-on: ubuntu-latest
+    if: contains(github.event.inputs.services, 'auth')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALI_REGISTRY }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - name: Build and Push Auth Service
+        run: |
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-auth"
+          docker buildx build \
+            --file "docker/Dockerfile.auth" \
+            --tag "${IMAGE_NAME}:latest" \
+            --tag "${IMAGE_NAME}:${{ github.sha }}" \
+            --push \
+            .
+          echo "Successfully built and pushed Auth service"
+
+  build-cart-push:
+    runs-on: ubuntu-latest
+    if: contains(github.event.inputs.services, 'cart')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALI_REGISTRY }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - name: Build and Push Cart Service
+        run: |
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-cart"
+          docker buildx build \
+            --file "docker/Dockerfile.cart" \
+            --tag "${IMAGE_NAME}:latest" \
+            --tag "${IMAGE_NAME}:${{ github.sha }}" \
+            --push \
+            .
+          echo "Successfully built and pushed Cart service"
+
+  build-checkout-push:
+    runs-on: ubuntu-latest
+    if: contains(github.event.inputs.services, 'checkout')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALI_REGISTRY }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - name: Build and Push Checkout Service
+        run: |
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-checkout"
+          docker buildx build \
+            --file "docker/Dockerfile.checkout" \
+            --tag "${IMAGE_NAME}:latest" \
+            --tag "${IMAGE_NAME}:${{ github.sha }}" \
+            --push \
+            .
+          echo "Successfully built and pushed Checkout service"
+
+  build-eino-push:
+    runs-on: ubuntu-latest
+    if: contains(github.event.inputs.services, 'eino')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALI_REGISTRY }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - name: Build and Push Eino Service
+        run: |
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-eino"
+          docker buildx build \
+            --file "docker/Dockerfile.eino" \
+            --tag "${IMAGE_NAME}:latest" \
+            --tag "${IMAGE_NAME}:${{ github.sha }}" \
+            --push \
+            .
+          echo "Successfully built and pushed Eino service"
+
+  build-order-push:
+    runs-on: ubuntu-latest
+    if: contains(github.event.inputs.services, 'order')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALI_REGISTRY }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - name: Build and Push Order Service
+        run: |
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-order"
+          docker buildx build \
+            --file "docker/Dockerfile.order" \
+            --tag "${IMAGE_NAME}:latest" \
+            --tag "${IMAGE_NAME}:${{ github.sha }}" \
+            --push \
+            .
+          echo "Successfully built and pushed Order service"
+
+  build-payment-push:
+    runs-on: ubuntu-latest
+    if: contains(github.event.inputs.services, 'payment')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALI_REGISTRY }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - name: Build and Push Payment Service
+        run: |
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-payment"
+          docker buildx build \
+            --file "docker/Dockerfile.payment" \
+            --tag "${IMAGE_NAME}:latest" \
+            --tag "${IMAGE_NAME}:${{ github.sha }}" \
+            --push \
+            .
+          echo "Successfully built and pushed Payment service"
+
+  build-product-push:
+    runs-on: ubuntu-latest
+    if: contains(github.event.inputs.services, 'product')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALI_REGISTRY }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - name: Build and Push Product Service
+        run: |
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-product"
+          docker buildx build \
+            --file "docker/Dockerfile.product" \
+            --tag "${IMAGE_NAME}:latest" \
+            --tag "${IMAGE_NAME}:${{ github.sha }}" \
+            --push \
+            .
+          echo "Successfully built and pushed Product service"
+
+  build-user-push:
+    runs-on: ubuntu-latest
+    if: contains(github.event.inputs.services, 'user')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Aliyun Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ALI_REGISTRY }}
+          username: ${{ secrets.ALIYUN_USERNAME }}
+          password: ${{ secrets.ALIYUN_PASSWORD }}
+
+      - name: Build and Push User Service
+        run: |
+          IMAGE_NAME="${{ secrets.ALI_REGISTRY }}/czczcz/tiktok-mall-user"
+          docker buildx build \
+            --file "docker/Dockerfile.user" \
+            --tag "${IMAGE_NAME}:latest" \
+            --tag "${IMAGE_NAME}:${{ github.sha }}" \
+            --push \
+            .
+          echo "Successfully built and pushed User service"
