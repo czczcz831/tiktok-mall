@@ -73,7 +73,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-brand">
-        <Link to="/">TikTok商城</Link>
+        <Link to="/">TikTok Mall</Link>
       </div>
       
       <div className="navbar-menu">

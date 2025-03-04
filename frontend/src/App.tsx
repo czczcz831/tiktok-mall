@@ -12,6 +12,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderListPage from './pages/OrderListPage';
 import AdminPage from './pages/AdminPage';
+import HomePage from './pages/HomePage';
 import { getUserInfo } from './api/userApi';
 import { UserRole } from './types/api';
 import './index.css';
@@ -82,35 +83,34 @@ const App: React.FC = () => {
         <CartProvider>
           <div className="app">
             <Navbar />
-            <div className="container">
-              <Routes>
-                <Route path="/" element={<Navigate to="/products" />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/products" element={<ProductListPage />} />
-                <Route path="/product/:uuid" element={<ProductDetailPage />} />
-                <Route path="/cart" element={
-                  <PrivateRoute>
-                    <CartPage />
-                  </PrivateRoute>
-                } />
-                <Route path="/checkout" element={
-                  <PrivateRoute>
-                    <CheckoutPage />
-                  </PrivateRoute>
-                } />
-                <Route path="/orders" element={
-                  <PrivateRoute>
-                    <OrderListPage />
-                  </PrivateRoute>
-                } />
-                <Route path="/admin" element={
-                  <AdminRoute>
-                    <AdminPage />
-                  </AdminRoute>
-                } />
-              </Routes>
-            </div>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/products" element={<ProductListPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/products" element={<ProductListPage />} />
+              <Route path="/product/:uuid" element={<ProductDetailPage />} />
+              <Route path="/cart" element={
+                <PrivateRoute>
+                  <CartPage />
+                </PrivateRoute>
+              } />
+              <Route path="/checkout" element={
+                <PrivateRoute>
+                  <CheckoutPage />
+                </PrivateRoute>
+              } />
+              <Route path="/orders" element={
+                <PrivateRoute>
+                  <OrderListPage />
+                </PrivateRoute>
+              } />
+              <Route path="/admin" element={
+                <AdminRoute>
+                  <AdminPage />
+                </AdminRoute>
+              } />
+            </Routes>
             <AIAssistant />
           </div>
         </CartProvider>
