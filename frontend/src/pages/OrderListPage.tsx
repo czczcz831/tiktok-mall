@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
@@ -58,11 +58,14 @@ const OrderListPage: React.FC = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<OrderWithProducts[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
   const [selectedOrderUuid, setSelectedOrderUuid] = useState<string>('');
   const [paymentSuccess, setPaymentSuccess] = useState<boolean>(false);
   const [transactionUuid, setTransactionUuid] = useState<string>('');
+  const [loadedProductsMap, setLoadedProductsMap] = useState<Record<string, boolean>>({});
+  const observerRef = useRef<IntersectionObserver | null>(null);
   
   // 支付表单状态
   const [creditCardNumber, setCreditCardNumber] = useState<string>('');
@@ -72,25 +75,6 @@ const OrderListPage: React.FC = () => {
   const [paymentError, setPaymentError] = useState<string>('');
   const [paymentLoading, setPaymentLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    
-    fetchOrders();
-    
-    // 检查是否需要清空购物车（从支付成功页面跳转过来）
-    const shouldClearCart = localStorage.getItem('clear_cart_after_payment');
-    if (shouldClearCart === 'true') {
-      clearCart().then(() => {
-        localStorage.removeItem('clear_cart_after_payment');
-      }).catch(error => {
-        console.error('Failed to clear cart:', error);
-      });
-    }
-  }, [isAuthenticated, navigate]);
-
   const fetchOrders = async () => {
     setLoading(true);
     setError('');
@@ -98,47 +82,12 @@ const OrderListPage: React.FC = () => {
       const response = await getOrders();
       
       if (response.code === 0 && response.data) {
-        // 获取每个订单中商品的详细信息
-        const ordersWithProducts = await Promise.all(
-          response.data.orders.map(async (order) => {
-            const productDetailsPromises = order.items.map(async (item) => {
-              try {
-                const productResponse = await getProduct({ uuid: item.product_uuid });
-                if (productResponse.code === 0 && productResponse.data && productResponse.data.product) {
-                  // 创建包含必要字段的OrderItemWithProduct对象
-                  const productWithDetails: OrderItemWithProduct = {
-                    ...productResponse.data.product,
-                    quantity: item.quantity,
-                    price: item.price,
-                    description: productResponse.data.product.description || '暂无描述'
-                  };
-                  return productWithDetails;
-                }
-                return null;
-              } catch (error) {
-                console.error(`Failed to fetch product ${item.product_uuid}:`, error);
-                return null;
-              }
-            });
-            
-            // 等待所有商品信息获取完成
-            const productDetailsResults = await Promise.all(productDetailsPromises);
-            
-            // 过滤掉null值并确保类型正确
-            const validProductDetails: OrderItemWithProduct[] = productDetailsResults
-              .filter((product): product is OrderItemWithProduct => product !== null);
-            
-            // 创建包含商品详情的订单对象
-            const orderWithProducts: OrderWithProducts = {
-              ...order,
-              productDetails: validProductDetails
-            };
-            
-            return orderWithProducts;
-          })
-        );
-        
-        setOrders(ordersWithProducts);
+        // 初始化订单数据，但不包含产品详情
+        const ordersWithoutProducts = response.data.orders.map(order => ({
+          ...order,
+          productDetails: []
+        }));
+        setOrders(ordersWithoutProducts);
       } else {
         setError('获取订单失败: ' + response.msg);
       }
@@ -149,6 +98,110 @@ const OrderListPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const fetchProductDetails = async (order: OrderWithProducts) => {
+    if (loadedProductsMap[order.uuid]) return; // 如果已经加载过，直接返回
+    
+    setLoadingProducts(true);
+    try {
+      const productDetailsPromises = order.items.map(async (item) => {
+        try {
+          const productResponse = await getProduct({ uuid: item.product_uuid });
+          if (productResponse.code === 0 && productResponse.data && productResponse.data.product) {
+            return {
+              ...productResponse.data.product,
+              quantity: item.quantity,
+              price: item.price,
+              description: productResponse.data.product.description || '暂无描述'
+            };
+          }
+          return null;
+        } catch (error) {
+          console.error(`Failed to fetch product ${item.product_uuid}:`, error);
+          return null;
+        }
+      });
+
+      const productDetailsResults = await Promise.all(productDetailsPromises);
+      const validProductDetails = productDetailsResults.filter((product): product is OrderItemWithProduct => product !== null);
+
+      setOrders(prevOrders => 
+        prevOrders.map(prevOrder => 
+          prevOrder.uuid === order.uuid 
+            ? { ...prevOrder, productDetails: validProductDetails }
+            : prevOrder
+        )
+      );
+
+      setLoadedProductsMap(prev => ({
+        ...prev,
+        [order.uuid]: true
+      }));
+    } catch (error) {
+      console.error('Failed to fetch product details:', error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  const setupIntersectionObserver = useCallback(() => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const orderUuid = entry.target.getAttribute('data-order-uuid');
+            if (orderUuid) {
+              const order = orders.find(o => o.uuid === orderUuid);
+              if (order && !loadedProductsMap[orderUuid]) {
+                fetchProductDetails(order);
+              }
+            }
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: '50px',
+        threshold: 0.1
+      }
+    );
+
+    // 为每个订单添加观察
+    document.querySelectorAll('.order-card').forEach(orderCard => {
+      observerRef.current?.observe(orderCard);
+    });
+  }, [orders, loadedProductsMap]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    
+    fetchOrders();
+    
+    const shouldClearCart = localStorage.getItem('clear_cart_after_payment');
+    if (shouldClearCart === 'true') {
+      clearCart().then(() => {
+        localStorage.removeItem('clear_cart_after_payment');
+      }).catch(error => {
+        console.error('Failed to clear cart:', error);
+      });
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (!loading && orders.length > 0) {
+      setupIntersectionObserver();
+    }
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [loading, orders, setupIntersectionObserver]);
 
   const handlePayClick = (orderUuid: string) => {
     setSelectedOrderUuid(orderUuid);
@@ -248,8 +301,12 @@ const OrderListPage: React.FC = () => {
         </div>
       ) : (
         <div className="orders-container">
-          {orders.map((order) => (
-            <div key={order.uuid} className="order-card">
+          {orders.map((order, orderIndex) => (
+            <div 
+              key={order.uuid} 
+              className="order-card"
+              data-order-uuid={order.uuid}
+            >
               <div className="order-header">
                 <div className="order-info">
                   <span className="order-id">订单号: {order.uuid}</span>
@@ -267,28 +324,40 @@ const OrderListPage: React.FC = () => {
               </div>
               
               <div className="order-items">
-                {order.productDetails.map((product, index) => (
-                  <div key={index} className={`order-item ${getProductColorClass(index)}`}>
-                    <div className="product-icon">
-                      <ShoppingCartIcon />
-                    </div>
-                    <div className="product-info">
-                      <h4><AddShoppingCartIcon sx={{ fontSize: '1.1rem', marginRight: '0.5rem' }} />{product.name}</h4>
-                      <p className="product-description">
-                        <DescriptionIcon sx={{ fontSize: '0.9rem', verticalAlign: 'middle', marginRight: '0.5rem' }} />
-                        {product.description}
-                      </p>
-                      <div className="product-details">
-                        <p className="product-price">
-                          <LocalOfferIcon sx={{ fontSize: '0.9rem', verticalAlign: 'middle', marginRight: '0.2rem', color: '#ff4a6b' }} />
-                          单价: ¥{(product.price / 100).toFixed(2)}
-                        </p>
-                        <p className="product-quantity">数量: {product.quantity}</p>
-                        <p className="product-subtotal">小计: ¥{((product.price * product.quantity) / 100).toFixed(2)}</p>
-                      </div>
+                {!loadedProductsMap[order.uuid] ? (
+                  <div className="product-loading-container">
+                    <div className="product-loading">
+                      <div className="loading-spinner"></div>
+                      <span>正在加载商品信息...</span>
                     </div>
                   </div>
-                ))}
+                ) : (
+                  order.productDetails.map((product, index) => (
+                    <div key={index} className={`order-item ${getProductColorClass(index)}`}>
+                      <div className="product-icon">
+                        <ShoppingCartIcon />
+                      </div>
+                      <div className="product-info">
+                        <h4>
+                          <AddShoppingCartIcon sx={{ fontSize: '1.1rem', marginRight: '0.5rem' }} />
+                          {product.name}
+                        </h4>
+                        <p className="product-description">
+                          <DescriptionIcon sx={{ fontSize: '0.9rem', verticalAlign: 'middle', marginRight: '0.5rem' }} />
+                          {product.description}
+                        </p>
+                        <div className="product-details">
+                          <p className="product-price">
+                            <LocalOfferIcon sx={{ fontSize: '0.9rem', verticalAlign: 'middle', marginRight: '0.2rem', color: '#ff4a6b' }} />
+                            单价: ¥{(product.price / 100).toFixed(2)}
+                          </p>
+                          <p className="product-quantity">数量: {product.quantity}</p>
+                          <p className="product-subtotal">小计: ¥{((product.price * product.quantity) / 100).toFixed(2)}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
               
               <div className="order-footer">

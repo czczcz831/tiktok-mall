@@ -690,4 +690,69 @@
 .payment-success .confirm-button {
   margin-top: 1.5rem;
   min-width: 120px;
+}
+
+.product-loading-container {
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(120deg, rgba(249, 249, 249, 0.8), rgba(245, 245, 245, 0.8));
+  border-radius: 12px;
+  margin: 0.5rem 0;
+  animation: fadeIn 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+.product-loading .loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #ff4a6b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.product-loading span {
+  color: #666;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.product-loading-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2s infinite;
+  z-index: 1;
 } 
