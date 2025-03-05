@@ -1,0 +1,91 @@
+# tiktok-mall-chart/values.yaml
+replicaCount: 1
+
+services:
+  api:
+    enabled: true
+    image:
+      repository: ""
+      tag: latest
+      pullPolicy: Always
+    port: 11800
+    mport: 12800
+    consulConfigKey: tiktok-dev/api
+  auth:
+    enabled: true
+    image:
+      repository: ""
+      tag: latest
+      pullPolicy: Always
+    port: 11801
+    mport: 12801
+    consulConfigKey: tiktok-dev/auth
+  cart:
+    enabled: true
+    image:
+      repository: ""
+      tag: latest
+      pullPolicy: Always
+    port: 11802
+    mport: 12802
+    consulConfigKey: tiktok-dev/cart
+  checkout:
+    enabled: true
+    image:
+      repository: ""
+      tag: latest
+      pullPolicy: Always
+    port: 11803
+    mport: 12803
+    consulConfigKey: tiktok-dev/checkout
+  eino:
+    enabled: true
+    image:
+      repository: ""
+      tag: latest
+      pullPolicy: Always
+    port: 11808
+    mport: 12808
+    consulConfigKey: tiktok-dev/eino
+  order:
+    enabled: true
+    image:
+      repository: ""
+      tag: latest
+      pullPolicy: Always
+    port: 11804
+    mport: 12804
+    consulConfigKey: tiktok-dev/order
+  payment:
+    enabled: true
+    image:
+      repository: ""
+      tag: latest
+      pullPolicy: Always
+    port: 11805
+    mport: 12805
+    consulConfigKey: tiktok-dev/payment
+  product:
+    enabled: true
+    image:
+      repository: ""
+      tag: latest
+      pullPolicy: Always
+    port: 11806
+    mport: 12806
+    consulConfigKey: tiktok-dev/product
+  user:
+    enabled: true
+    image:
+      repository: ""
+      tag: latest
+      pullPolicy: Always
+    port: 11807
+    mport: 12807
+    consulConfigKey: tiktok-dev/user
+
+env:
+  CONSUL_HOST: ""
+  CONSUL_PORT: ""
+  CONSUL_TOKEN: ""
+  mq_consoleAppender_enabled: "true"

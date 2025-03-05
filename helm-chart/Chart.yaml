@@ -1,0 +1,5 @@
+apiVersion: v2
+name: tiktok-mall
+description: A Helm chart for deploying TikTok Mall microservices
+version: 0.1.0
+appVersion: "1.0"

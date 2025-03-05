@@ -1,0 +1,43 @@
+# tiktok-mall-chart/templates/deployment.yaml
+{{- range $serviceName, $config := .Values.services }}
+{{- if $config.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tiktok-mall.serviceName" (dict "Release" $.Release "Values" (dict "serviceName" $serviceName)) }}
+  labels:
+    app: {{ $serviceName }}
+    release: {{ $.Release.Name }}
+spec:
+  replicas: {{ $.Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $serviceName }}
+      release: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $serviceName }}
+        release: {{ $.Release.Name }}
+    spec:
+      containers:
+      - name: {{ $serviceName }}
+        image: {{ $config.image.repository }}:{{ $config.image.tag }}
+        imagePullPolicy: {{ $config.image.pullPolicy }}
+        env:
+        - name: CONSUL_HOST
+          value: {{ $.Values.env.CONSUL_HOST | quote }}
+        - name: CONSUL_PORT
+          value: {{ $.Values.env.CONSUL_PORT | quote }}
+        - name: CONSUL_TOKEN
+          value: {{ $.Values.env.CONSUL_TOKEN | quote }}
+        - name: CONSUL_CONFIG_KEY
+          value: {{ $config.consulConfigKey | quote }}
+        - name: mq.consoleAppender.enabled
+          value: {{ $.Values.env.mq_consoleAppender_enabled | quote }}
+        ports:
+        - containerPort: {{ $config.port }}
+          protocol: TCP
+{{- end }}
+{{- end }}

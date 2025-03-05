@@ -1,0 +1,30 @@
+# tiktok-mall-chart/templates/service.yaml
+{{- range $serviceName, $config := .Values.services }}
+{{- if $config.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tiktok-mall.serviceName" (dict "Release" $.Release "Values" (dict "serviceName" $serviceName)) }}
+  labels:
+    app: {{ $serviceName }}
+    release: {{ $.Release.Name }}
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ $config.mport }}"
+    prometheus.io/path: "/metrics"
+spec:
+  ports:
+  - name: http
+    port: {{ $config.port }}
+    targetPort: {{ $config.port }}
+    protocol: TCP
+  - name: metrics
+    port: {{ $config.mport }}
+    targetPort: {{ $config.mport }}
+    protocol: TCP
+  selector:
+    app: {{ $serviceName }}
+    release: {{ $.Release.Name }}
+{{- end }}
+{{- end }}

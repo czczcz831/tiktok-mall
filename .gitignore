@@ -34,6 +34,6 @@ _testmain.go
 /output
 tmp/
 *.local.yml
-*.yaml
 *.env
 activate.sh
+conf.yaml
