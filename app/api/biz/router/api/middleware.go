@@ -15,7 +15,7 @@ import (
 	"github.com/czczcz831/tiktok-mall/common/utils"
 )
 
-func RootMiddleware() app.HandlerFunc {
+func BaseMiddleware() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
 		token := c.GetRequest().Header.Get("Authorization")
 		if token == "" {
@@ -65,7 +65,7 @@ func RootMiddleware() app.HandlerFunc {
 
 func rootMw() []app.HandlerFunc {
 	// your code...
-	return []app.HandlerFunc{RootMiddleware()}
+	return nil
 }
 
 // 更新商品需要角色拥有SELLER_OBJECT权限
@@ -94,6 +94,7 @@ func _registerMw() []app.HandlerFunc {
 func _updateproductMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.SELLER_OBJECT),
 	}
 }
@@ -112,6 +113,7 @@ func _productMw() []app.HandlerFunc {
 func _createproductMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.SELLER_OBJECT),
 	}
 }
@@ -120,6 +122,7 @@ func _createproductMw() []app.HandlerFunc {
 func _deleteproductMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.SELLER_OBJECT),
 	}
 }
@@ -133,6 +136,7 @@ func _getproductMw() []app.HandlerFunc {
 func _cartMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -140,6 +144,7 @@ func _cartMw() []app.HandlerFunc {
 func _clearcartMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -147,6 +152,7 @@ func _clearcartMw() []app.HandlerFunc {
 func _getcartMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -160,6 +166,7 @@ func _addproducttocartMw() []app.HandlerFunc {
 func _checkoutMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -168,6 +175,7 @@ func _checkoutMw() []app.HandlerFunc {
 func _checkout0Mw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -216,6 +224,7 @@ func _updatecreditcardMw() []app.HandlerFunc {
 func _addressMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -239,6 +248,7 @@ func _deleteaddressMw() []app.HandlerFunc {
 func _paymentMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -247,6 +257,7 @@ func _paymentMw() []app.HandlerFunc {
 func _logoutMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -255,6 +266,7 @@ func _logoutMw() []app.HandlerFunc {
 func _getuserordersMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -263,6 +275,7 @@ func _getuserordersMw() []app.HandlerFunc {
 func _getuserinfoMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -270,6 +283,7 @@ func _getuserinfoMw() []app.HandlerFunc {
 func _einoMw() []app.HandlerFunc {
 	// 需要登录
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -282,6 +296,7 @@ func _callassistantagentMw() []app.HandlerFunc {
 func _orderMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
 	}
 }
@@ -299,6 +314,7 @@ func _cancelchargeMw() []app.HandlerFunc {
 func _adduserblacklistMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
+		BaseMiddleware(),
 		casbin.CasbinHertzMiddleware.RequiresRoles(casbin.ADMIN_ROLE),
 	}
 }
