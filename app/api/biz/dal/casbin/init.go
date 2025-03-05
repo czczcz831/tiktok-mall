@@ -1,19 +1,14 @@
 package casbin
 
 import (
-	"context"
-
-	"fmt"
-
 	"github.com/casbin/casbin/v2"
-	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/mysql"
-	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/redis"
-	"github.com/czczcz831/tiktok-mall/app/api/conf"
-	"github.com/czczcz831/tiktok-mall/common/utils"
+
+	"context"
 
 	gormadapter "github.com/casbin/gorm-adapter/v3"
+	"github.com/cloudwego/hertz/pkg/app"
 	casbinHertz "github.com/hertz-contrib/casbin"
 )
 
@@ -26,43 +21,13 @@ const (
 	ADMIN_ROLE    = "Admin"
 	CUSTOMER_ROLE = "Customer"
 	SELLER_ROLE   = "Seller"
+	BANNED_ROLE   = "Banned"
 )
 
 const (
 	CUSTOMER_OBJECT = "customer_obj"
 	SELLER_OBJECT   = "seller_obj"
 )
-
-func SubjectFromToken(ctx context.Context, c *app.RequestContext) string {
-	token := c.GetRequest().Header.Get("Authorization")
-	if token == "" {
-		return ""
-	}
-
-	publicKeyHexString := conf.GetConf().JWT.PublicSecret
-
-	//Verify token in redis
-	redisKey := fmt.Sprintf("token:%s", token)
-	exists, err := redis.RedisClient.Exists(context.Background(), redisKey).Result()
-	if err != nil {
-		return ""
-	}
-	if exists == 0 {
-		return ""
-	}
-
-	//这一步其实没必要了，uuid可以存redis里，但还是双重验证一下吧
-	//这一步其实没必要了，uuid可以存redis里，但还是双重验证一下吧
-	uuid, _, err := utils.VerifyToken(token, publicKeyHexString)
-	if err != nil {
-		return ""
-	}
-	// 设置uuid和token到上下文
-	c.Set("uuid", uuid)
-	c.Set("token", token)
-
-	return uuid
-}
 
 func Init() {
 	a, err := gormadapter.NewAdapterByDB(mysql.DB)
@@ -91,19 +56,21 @@ func Init() {
 	CasbinEnforcer.AddPolicy(SELLER_ROLE, CUSTOMER_OBJECT) // Seller 也可以访问 customer_obj
 
 	// Superuser
-	CasbinEnforcer.AddRoleForUser("superuser-uuid", ADMIN_ROLE)
+	CasbinEnforcer.AddRoleForUser("0000000000000000000", ADMIN_ROLE)
 
 	CasbinEnforcer.SavePolicy()
-	ok, err := CasbinEnforcer.Enforce("superuser-uuid", SELLER_OBJECT)
-	if !ok {
-		hlog.Fatalf("enforce failed: %v", err)
-	}
 
 	if err != nil {
 		hlog.Fatalf("load policy failed: %v", err)
 	}
 
-	CasbinHertzMiddleware, err = casbinHertz.NewCasbinMiddlewareFromEnforcer(CasbinEnforcer, SubjectFromToken)
+	CasbinHertzMiddleware, err = casbinHertz.NewCasbinMiddlewareFromEnforcer(CasbinEnforcer, func(ctx context.Context, c *app.RequestContext) string {
+		uuid, ok := c.Get("uuid")
+		if !ok {
+			return ""
+		}
+		return uuid.(string)
+	})
 	if err != nil {
 		hlog.Fatalf("new casbin middleware failed: %v", err)
 	}

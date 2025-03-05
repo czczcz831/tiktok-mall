@@ -18,6 +18,8 @@ var (
 
 type Client interface {
 	GetUserOrders(context context.Context, req *api.GetUserOrdersReq, reqOpt ...config.RequestOption) (resp *api.GetUserOrdersResp, rawResponse *protocol.Response, err error)
+
+	UpdateOrderAddress(context context.Context, req *api.UpdateOrderAddressReq, reqOpt ...config.RequestOption) (resp *api.UpdateOrderAddressResp, rawResponse *protocol.Response, err error)
 }
 
 type OrderServiceClient struct {
@@ -57,6 +59,28 @@ func (s *OrderServiceClient) GetUserOrders(context context.Context, req *api.Get
 	return resp, rawResponse, nil
 }
 
+func (s *OrderServiceClient) UpdateOrderAddress(context context.Context, req *api.UpdateOrderAddressReq, reqOpt ...config.RequestOption) (resp *api.UpdateOrderAddressResp, rawResponse *protocol.Response, err error) {
+	httpResp := &api.UpdateOrderAddressResp{}
+	ret, err := s.client.r().
+		setContext(context).
+		setQueryParams(map[string]interface{}{}).
+		setPathParams(map[string]string{}).
+		setHeaders(map[string]string{}).
+		setFormParams(map[string]string{}).
+		setFormFileParams(map[string]string{}).
+		setBodyParam(req).
+		setRequestOption(reqOpt...).
+		setResult(httpResp).
+		execute("POST", "/order/address")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resp = httpResp
+	rawResponse = ret.rawResponse
+	return resp, rawResponse, nil
+}
+
 var defaultClient, _ = NewOrderServiceClient("")
 
 func ConfigDefaultClient(ops ...Option) (err error) {
@@ -66,4 +90,8 @@ func ConfigDefaultClient(ops ...Option) (err error) {
 
 func GetUserOrders(context context.Context, req *api.GetUserOrdersReq, reqOpt ...config.RequestOption) (resp *api.GetUserOrdersResp, rawResponse *protocol.Response, err error) {
 	return defaultClient.GetUserOrders(context, req, reqOpt...)
+}
+
+func UpdateOrderAddress(context context.Context, req *api.UpdateOrderAddressReq, reqOpt ...config.RequestOption) (resp *api.UpdateOrderAddressResp, rawResponse *protocol.Response, err error) {
+	return defaultClient.UpdateOrderAddress(context, req, reqOpt...)
 }

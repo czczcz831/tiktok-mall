@@ -23,7 +23,6 @@ func Register(r *server.Hertz) {
 	root.GET("/orders", append(_getuserordersMw(), api.GetUserOrders)...)
 	root.PUT("/product", append(_updateproductMw(), api.UpdateProduct)...)
 	root.GET("/product", append(_getproductlistMw(), api.GetProductList)...)
-	root.GET("/user", append(_getuserinfoMw(), api.GetUserInfo)...)
 	{
 		_cart := root.Group("/cart", _cartMw()...)
 		_cart.POST("/add_product", append(_addproducttocartMw(), api.AddProductToCart)...)
@@ -41,18 +40,26 @@ func Register(r *server.Hertz) {
 		_eino.POST("/chat", append(_callassistantagentMw(), api.CallAssistantAgent)...)
 	}
 	{
+		_order := root.Group("/order", _orderMw()...)
+		_order.POST("/address", append(_updateorderaddressMw(), api.UpdateOrderAddress)...)
+	}
+	{
 		_payment := root.Group("/payment", _paymentMw()...)
+		_payment.POST("/cancel", append(_cancelchargeMw(), api.CancelCharge)...)
 		_payment.POST("/charge", append(_chargeMw(), api.Charge)...)
 	}
 	root.POST("/product", append(_createproductMw(), api.CreateProduct)...)
 	_product := root.Group("/product", _productMw()...)
 	_product.DELETE("/:uuid", append(_deleteproductMw(), api.DeleteProduct)...)
 	_product.GET("/:uuid", append(_getproductMw(), api.GetProduct)...)
+	root.GET("/user", append(_getuserinfoMw(), api.GetUserInfo)...)
+	_user := root.Group("/user", _userMw()...)
+	_user.POST("/blacklist", append(_adduserblacklistMw(), api.AddUserBlacklist)...)
 	{
-		_user := root.Group("/user", _userMw()...)
-		_user.POST("/login", append(_loginMw(), api.Login)...)
-		_user.POST("/logout", append(_logoutMw(), api.Logout)...)
-		_user.POST("/refresh_token", append(_refreshtokenMw(), api.RefreshToken)...)
-		_user.POST("/register", append(_registerMw(), api.Register)...)
+		_user0 := root.Group("/user", _user0Mw()...)
+		_user0.POST("/login", append(_loginMw(), api.Login)...)
+		_user0.POST("/logout", append(_logoutMw(), api.Logout)...)
+		_user0.POST("/refresh_token", append(_refreshtokenMw(), api.RefreshToken)...)
+		_user0.POST("/register", append(_registerMw(), api.Register)...)
 	}
 }

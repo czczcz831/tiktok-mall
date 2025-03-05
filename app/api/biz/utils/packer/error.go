@@ -18,6 +18,7 @@ const (
 	CHARGE_FAILED_ERROR            = 40005
 	STOCK_NOT_ENOUGH_ERROR         = 40006
 	PRODUCT_NOT_FOUND_ERROR        = 40007
+	TRANSACTION_NOT_FOUND_ERROR    = 40008
 
 	//Server Error
 	UNKNOWN_SERVER_ERROR     = 50000
@@ -38,6 +39,7 @@ var ErrorMessages = map[int]string{
 	40005: "Charge Failed. Plz Try again",
 	40006: "Stock Not Enough. Plz Try again later",
 	40007: "Product Not Found",
+	40008: "Transaction Not Found",
 
 	//Server Error
 	50000: "Unknow Server Error",

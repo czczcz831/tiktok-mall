@@ -20,6 +20,13 @@ var serviceMethods = map[string]kitex.MethodInfo{
 		false,
 		kitex.WithStreamingMode(kitex.StreamingNone),
 	),
+	"CancelCharge": kitex.NewMethodInfo(
+		cancelChargeHandler,
+		newPaymentServiceCancelChargeArgs,
+		newPaymentServiceCancelChargeResult,
+		false,
+		kitex.WithStreamingMode(kitex.StreamingNone),
+	),
 }
 
 var (
@@ -104,6 +111,24 @@ func newPaymentServiceChargeResult() interface{} {
 	return payment.NewPaymentServiceChargeResult()
 }
 
+func cancelChargeHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	realArg := arg.(*payment.PaymentServiceCancelChargeArgs)
+	realResult := result.(*payment.PaymentServiceCancelChargeResult)
+	success, err := handler.(payment.PaymentService).CancelCharge(ctx, realArg.Req)
+	if err != nil {
+		return err
+	}
+	realResult.Success = success
+	return nil
+}
+func newPaymentServiceCancelChargeArgs() interface{} {
+	return payment.NewPaymentServiceCancelChargeArgs()
+}
+
+func newPaymentServiceCancelChargeResult() interface{} {
+	return payment.NewPaymentServiceCancelChargeResult()
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -119,6 +144,16 @@ func (p *kClient) Charge(ctx context.Context, req *payment.ChargeReq) (r *paymen
 	_args.Req = req
 	var _result payment.PaymentServiceChargeResult
 	if err = p.c.Call(ctx, "Charge", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) CancelCharge(ctx context.Context, req *payment.CancelChargeReq) (r *payment.CancelChargeResp, err error) {
+	var _args payment.PaymentServiceCancelChargeArgs
+	_args.Req = req
+	var _result payment.PaymentServiceCancelChargeResult
+	if err = p.c.Call(ctx, "CancelCharge", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

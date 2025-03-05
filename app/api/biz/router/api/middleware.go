@@ -3,13 +3,69 @@
 package api
 
 import (
+	"context"
+
+	"fmt"
+
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/casbin"
+	"github.com/czczcz831/tiktok-mall/app/api/biz/dal/redis"
+	"github.com/czczcz831/tiktok-mall/app/api/conf"
+	"github.com/czczcz831/tiktok-mall/common/utils"
 )
+
+func RootMiddleware() app.HandlerFunc {
+	return func(ctx context.Context, c *app.RequestContext) {
+		token := c.GetRequest().Header.Get("Authorization")
+		if token == "" {
+			c.AbortWithMsg("token is empty", consts.StatusUnauthorized)
+			return
+		}
+
+		publicKeyHexString := conf.GetConf().JWT.PublicSecret
+
+		//Verify token in redis
+		redisKey := fmt.Sprintf("token:%s", token)
+		exists, err := redis.RedisClient.Exists(context.Background(), redisKey).Result()
+		if err != nil {
+			c.AbortWithStatus(consts.StatusInternalServerError)
+			return
+		}
+
+		if exists == 0 {
+			c.AbortWithMsg("Not login", consts.StatusUnauthorized)
+			return
+		}
+
+		//这一步其实没必要了，uuid可以存redis里，但还是双重验证一下吧
+		//这一步其实没必要了，uuid可以存redis里，但还是双重验证一下吧
+		uuid, _, err := utils.VerifyToken(token, publicKeyHexString)
+		if err != nil {
+			c.AbortWithMsg("Invalid token", consts.StatusUnauthorized)
+			return
+		}
+
+		//Blacklist
+		banned, err := casbin.CasbinEnforcer.HasRoleForUser(uuid, casbin.BANNED_ROLE)
+		if err != nil {
+			c.AbortWithStatus(consts.StatusInternalServerError)
+			return
+		}
+		if banned {
+			c.AbortWithMsg("Banned", consts.StatusUnauthorized)
+			return
+		}
+
+		// 设置uuid和token到上下文
+		c.Set("uuid", uuid)
+		c.Set("token", token)
+	}
+}
 
 func rootMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{RootMiddleware()}
 }
 
 // 更新商品需要角色拥有SELLER_OBJECT权限
@@ -219,6 +275,35 @@ func _einoMw() []app.HandlerFunc {
 }
 
 func _callassistantagentMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _orderMw() []app.HandlerFunc {
+	// your code...
+	return []app.HandlerFunc{
+		casbin.CasbinHertzMiddleware.RequiresPermissions(casbin.CUSTOMER_OBJECT),
+	}
+}
+
+func _updateorderaddressMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _cancelchargeMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _adduserblacklistMw() []app.HandlerFunc {
+	// your code...
+	return []app.HandlerFunc{
+		casbin.CasbinHertzMiddleware.RequiresRoles(casbin.ADMIN_ROLE),
+	}
+}
+
+func _user0Mw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

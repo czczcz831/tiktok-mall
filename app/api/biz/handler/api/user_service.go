@@ -111,3 +111,23 @@ func GetUserInfo(ctx context.Context, c *app.RequestContext) {
 	}
 	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
 }
+
+// AddUserBlacklist .
+// @router /user/blacklist [POST]
+func AddUserBlacklist(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req api.AddProductToCartReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+
+	resp, err := service.NewAddUserBlacklistService(ctx, c).Run(&req)
+
+	if err != nil {
+		utils.SendErrResponse(ctx, c, consts.StatusOK, err)
+		return
+	}
+	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
+}

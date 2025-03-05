@@ -20,6 +20,16 @@ struct ChargeResp {
   bool success
 }
 
+struct CancelChargeReq{
+    string user_uuid
+    string transaction_uuid    
+}
+
+struct CancelChargeResp{
+    bool success
+}
+
 service PaymentService {
     ChargeResp Charge(1: ChargeReq req)
+    CancelChargeResp CancelCharge(1: CancelChargeReq req)
 }

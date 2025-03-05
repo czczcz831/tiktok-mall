@@ -18,6 +18,8 @@ var (
 
 type Client interface {
 	Charge(context context.Context, req *api.ChargeReq, reqOpt ...config.RequestOption) (resp *api.ChargeResp, rawResponse *protocol.Response, err error)
+
+	CancelCharge(context context.Context, req *api.CancelChargeReq, reqOpt ...config.RequestOption) (resp *api.CancelChargeResp, rawResponse *protocol.Response, err error)
 }
 
 type PaymentServiceClient struct {
@@ -57,6 +59,28 @@ func (s *PaymentServiceClient) Charge(context context.Context, req *api.ChargeRe
 	return resp, rawResponse, nil
 }
 
+func (s *PaymentServiceClient) CancelCharge(context context.Context, req *api.CancelChargeReq, reqOpt ...config.RequestOption) (resp *api.CancelChargeResp, rawResponse *protocol.Response, err error) {
+	httpResp := &api.CancelChargeResp{}
+	ret, err := s.client.r().
+		setContext(context).
+		setQueryParams(map[string]interface{}{}).
+		setPathParams(map[string]string{}).
+		setHeaders(map[string]string{}).
+		setFormParams(map[string]string{}).
+		setFormFileParams(map[string]string{}).
+		setBodyParam(req).
+		setRequestOption(reqOpt...).
+		setResult(httpResp).
+		execute("POST", "/payment/cancel")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resp = httpResp
+	rawResponse = ret.rawResponse
+	return resp, rawResponse, nil
+}
+
 var defaultClient, _ = NewPaymentServiceClient("")
 
 func ConfigDefaultClient(ops ...Option) (err error) {
@@ -66,4 +90,8 @@ func ConfigDefaultClient(ops ...Option) (err error) {
 
 func Charge(context context.Context, req *api.ChargeReq, reqOpt ...config.RequestOption) (resp *api.ChargeResp, rawResponse *protocol.Response, err error) {
 	return defaultClient.Charge(context, req, reqOpt...)
+}
+
+func CancelCharge(context context.Context, req *api.CancelChargeReq, reqOpt ...config.RequestOption) (resp *api.CancelChargeResp, rawResponse *protocol.Response, err error) {
+	return defaultClient.CancelCharge(context, req, reqOpt...)
 }

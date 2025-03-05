@@ -26,6 +26,8 @@ type Client interface {
 	Register(context context.Context, req *api.RegisterReq, reqOpt ...config.RequestOption) (resp *api.RegisterResp, rawResponse *protocol.Response, err error)
 
 	GetUserInfo(context context.Context, req *api.GetUserInfoReq, reqOpt ...config.RequestOption) (resp *api.GetUserInfoResp, rawResponse *protocol.Response, err error)
+
+	AddUserBlacklist(context context.Context, req *api.AddProductToCartReq, reqOpt ...config.RequestOption) (resp *api.AddUserBlacklistResp, rawResponse *protocol.Response, err error)
 }
 
 type UserServiceClient struct {
@@ -155,6 +157,28 @@ func (s *UserServiceClient) GetUserInfo(context context.Context, req *api.GetUse
 	return resp, rawResponse, nil
 }
 
+func (s *UserServiceClient) AddUserBlacklist(context context.Context, req *api.AddProductToCartReq, reqOpt ...config.RequestOption) (resp *api.AddUserBlacklistResp, rawResponse *protocol.Response, err error) {
+	httpResp := &api.AddUserBlacklistResp{}
+	ret, err := s.client.r().
+		setContext(context).
+		setQueryParams(map[string]interface{}{}).
+		setPathParams(map[string]string{}).
+		setHeaders(map[string]string{}).
+		setFormParams(map[string]string{}).
+		setFormFileParams(map[string]string{}).
+		setBodyParam(req).
+		setRequestOption(reqOpt...).
+		setResult(httpResp).
+		execute("POST", "/user/blacklist")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resp = httpResp
+	rawResponse = ret.rawResponse
+	return resp, rawResponse, nil
+}
+
 var defaultClient, _ = NewUserServiceClient("")
 
 func ConfigDefaultClient(ops ...Option) (err error) {
@@ -180,4 +204,8 @@ func Register(context context.Context, req *api.RegisterReq, reqOpt ...config.Re
 
 func GetUserInfo(context context.Context, req *api.GetUserInfoReq, reqOpt ...config.RequestOption) (resp *api.GetUserInfoResp, rawResponse *protocol.Response, err error) {
 	return defaultClient.GetUserInfo(context, req, reqOpt...)
+}
+
+func AddUserBlacklist(context context.Context, req *api.AddProductToCartReq, reqOpt ...config.RequestOption) (resp *api.AddUserBlacklistResp, rawResponse *protocol.Response, err error) {
+	return defaultClient.AddUserBlacklist(context, req, reqOpt...)
 }

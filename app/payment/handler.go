@@ -16,3 +16,10 @@ func (s *PaymentServiceImpl) Charge(ctx context.Context, req *payment.ChargeReq)
 
 	return resp, err
 }
+
+// CancelCharge implements the PaymentServiceImpl interface.
+func (s *PaymentServiceImpl) CancelCharge(ctx context.Context, req *payment.CancelChargeReq) (resp *payment.CancelChargeResp, err error) {
+	resp, err = service.NewCancelChargeService(ctx).Run(req)
+
+	return resp, err
+}

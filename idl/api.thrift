@@ -41,6 +41,14 @@ struct GetUserInfoResp{
     list<string> roles
 }
 
+struct AddUserBlacklistReq{
+    string user_uuid
+}
+
+struct AddUserBlacklistResp{
+    string user_uuid
+}
+
 
 service UserService {
     LoginResp Login(1: LoginReq req) (api.post="/user/login", api.body="json")
@@ -49,6 +57,7 @@ service UserService {
     RegisterResp Register(1: RegisterReq req) (api.post="/user/register", api.body="json")
 
     GetUserInfoResp GetUserInfo(1: GetUserInfoReq req) (api.get="/user")
+    AddUserBlacklistResp AddUserBlacklist(1: AddProductToCartReq req) (api.post="/user/blacklist")
 }
 
 #*********Product*********#
@@ -251,8 +260,18 @@ struct GetUserOrdersResp {
     list<Order> orders;
 }
 
+struct UpdateOrderAddressReq{
+    string order_uuid
+    string address_uuid
+}
+
+struct UpdateOrderAddressResp{
+    bool ok 
+}
+
 service OrderService{
     GetUserOrdersResp GetUserOrders(1: GetUserOrdersReq req) (api.get="/orders")
+    UpdateOrderAddressResp UpdateOrderAddress(1: UpdateOrderAddressReq req)(api.post="/order/address")
 }
 
 #************PAYMENT***********#
@@ -273,8 +292,18 @@ struct ChargeResp {
     string transaction_uuid
 }
 
+struct CancelChargeReq{
+    string user_uuid
+    string transaction_uuid
+}
+
+struct CancelChargeResp{
+    bool ok
+}
+
 service PaymentService{
     ChargeResp Charge(1: ChargeReq req) (api.post="/payment/charge", api.body="json")
+    CancelChargeResp CancelCharge(1: CancelChargeReq req) (api.post="/payment/cancel",api.body="json")
 }
 
 #************EINO***********#
