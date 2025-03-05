@@ -27,7 +27,7 @@ type Client interface {
 
 	GetUserInfo(context context.Context, req *api.GetUserInfoReq, reqOpt ...config.RequestOption) (resp *api.GetUserInfoResp, rawResponse *protocol.Response, err error)
 
-	AddUserBlacklist(context context.Context, req *api.AddProductToCartReq, reqOpt ...config.RequestOption) (resp *api.AddUserBlacklistResp, rawResponse *protocol.Response, err error)
+	AddUserBlacklist(context context.Context, req *api.AddUserBlacklistReq, reqOpt ...config.RequestOption) (resp *api.AddUserBlacklistResp, rawResponse *protocol.Response, err error)
 }
 
 type UserServiceClient struct {
@@ -157,7 +157,7 @@ func (s *UserServiceClient) GetUserInfo(context context.Context, req *api.GetUse
 	return resp, rawResponse, nil
 }
 
-func (s *UserServiceClient) AddUserBlacklist(context context.Context, req *api.AddProductToCartReq, reqOpt ...config.RequestOption) (resp *api.AddUserBlacklistResp, rawResponse *protocol.Response, err error) {
+func (s *UserServiceClient) AddUserBlacklist(context context.Context, req *api.AddUserBlacklistReq, reqOpt ...config.RequestOption) (resp *api.AddUserBlacklistResp, rawResponse *protocol.Response, err error) {
 	httpResp := &api.AddUserBlacklistResp{}
 	ret, err := s.client.r().
 		setContext(context).
@@ -206,6 +206,6 @@ func GetUserInfo(context context.Context, req *api.GetUserInfoReq, reqOpt ...con
 	return defaultClient.GetUserInfo(context, req, reqOpt...)
 }
 
-func AddUserBlacklist(context context.Context, req *api.AddProductToCartReq, reqOpt ...config.RequestOption) (resp *api.AddUserBlacklistResp, rawResponse *protocol.Response, err error) {
+func AddUserBlacklist(context context.Context, req *api.AddUserBlacklistReq, reqOpt ...config.RequestOption) (resp *api.AddUserBlacklistResp, rawResponse *protocol.Response, err error) {
 	return defaultClient.AddUserBlacklist(context, req, reqOpt...)
 }

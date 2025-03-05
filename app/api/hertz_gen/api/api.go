@@ -9374,7 +9374,7 @@ type UserService interface {
 
 	GetUserInfo(ctx context.Context, req *GetUserInfoReq) (r *GetUserInfoResp, err error)
 
-	AddUserBlacklist(ctx context.Context, req *AddProductToCartReq) (r *AddUserBlacklistResp, err error)
+	AddUserBlacklist(ctx context.Context, req *AddUserBlacklistReq) (r *AddUserBlacklistResp, err error)
 }
 
 type UserServiceClient struct {
@@ -9448,7 +9448,7 @@ func (p *UserServiceClient) GetUserInfo(ctx context.Context, req *GetUserInfoReq
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *UserServiceClient) AddUserBlacklist(ctx context.Context, req *AddProductToCartReq) (r *AddUserBlacklistResp, err error) {
+func (p *UserServiceClient) AddUserBlacklist(ctx context.Context, req *AddUserBlacklistReq) (r *AddUserBlacklistResp, err error) {
 	var _args UserServiceAddUserBlacklistArgs
 	_args.Req = req
 	var _result UserServiceAddUserBlacklistResult
@@ -11595,16 +11595,16 @@ func (p *UserServiceGetUserInfoResult) String() string {
 }
 
 type UserServiceAddUserBlacklistArgs struct {
-	Req *AddProductToCartReq `thrift:"req,1"`
+	Req *AddUserBlacklistReq `thrift:"req,1"`
 }
 
 func NewUserServiceAddUserBlacklistArgs() *UserServiceAddUserBlacklistArgs {
 	return &UserServiceAddUserBlacklistArgs{}
 }
 
-var UserServiceAddUserBlacklistArgs_Req_DEFAULT *AddProductToCartReq
+var UserServiceAddUserBlacklistArgs_Req_DEFAULT *AddUserBlacklistReq
 
-func (p *UserServiceAddUserBlacklistArgs) GetReq() (v *AddProductToCartReq) {
+func (p *UserServiceAddUserBlacklistArgs) GetReq() (v *AddUserBlacklistReq) {
 	if !p.IsSetReq() {
 		return UserServiceAddUserBlacklistArgs_Req_DEFAULT
 	}
@@ -11676,7 +11676,7 @@ ReadStructEndError:
 }
 
 func (p *UserServiceAddUserBlacklistArgs) ReadField1(iprot thrift.TProtocol) error {
-	p.Req = NewAddProductToCartReq()
+	p.Req = NewAddUserBlacklistReq()
 	if err := p.Req.Read(iprot); err != nil {
 		return err
 	}

@@ -116,7 +116,7 @@ func GetUserInfo(ctx context.Context, c *app.RequestContext) {
 // @router /user/blacklist [POST]
 func AddUserBlacklist(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req api.AddProductToCartReq
+	var req api.AddUserBlacklistReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		utils.SendErrResponse(ctx, c, consts.StatusOK, err)

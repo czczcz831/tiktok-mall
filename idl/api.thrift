@@ -57,7 +57,7 @@ service UserService {
     RegisterResp Register(1: RegisterReq req) (api.post="/user/register", api.body="json")
 
     GetUserInfoResp GetUserInfo(1: GetUserInfoReq req) (api.get="/user")
-    AddUserBlacklistResp AddUserBlacklist(1: AddProductToCartReq req) (api.post="/user/blacklist")
+    AddUserBlacklistResp AddUserBlacklist(1: AddUserBlacklistReq req) (api.post="/user/blacklist")
 }
 
 #*********Product*********#
