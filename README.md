@@ -2,8 +2,15 @@
 
 ### 项目概述
 
+<div align=center>
+    
 ![](https://oss.czczcz.xyz/blog/202503060038102.png)
-**TikTok Mall** 是一个基于微服务架构的电商平台，提供用户注册登录、商品浏览、购物车管理、订单结算和支付等完整电商功能，采用现代化的技术栈和架构设计，具有高可用性、可扩展性和安全性。
+
+</div>
+
+<p align="center">TikTok Mall 是一个基于微服务架构的电商平台，提供用户注册登录、商品浏览、购物车管理、订单结算和支付等完整电商功能，采用现代化的技术栈和架构设计，具有高可用性、可扩展性和安全性。
+
+</p>
 
 ### 项目服务地址
 
@@ -11,9 +18,9 @@
 
 https://mall.czczcz.xyz
 
-API地址: https://tiktok-mall-api.czczcz.xyz
+API 地址: https://tiktok-mall-api.czczcz.xyz
 
-API文档:
+API 文档:
 
 https://apifox.com/apidoc/shared-0b153f12-af64-4717-9b6c-96c5f504f7d8
 
@@ -26,6 +33,7 @@ https://apifox.com/apidoc/shared-0b153f12-af64-4717-9b6c-96c5f504f7d8
 Demo演示集群配置：三台E52666V3节点,每台32G内存,120G NFS存储
 
 Demo演示集群瓶颈： 单点NFS云存储,'阿里云5MB,家庭线路内网穿透是网络瓶颈
+![image.png](https://oss.czczcz.xyz/blog/202503062142578.png)
 
 本项目设计为支持中等规模的电商平台，系统需要处理商品、用户、订单等数据，预计需要以下资源：
 
@@ -127,46 +135,39 @@ Demo演示集群瓶颈： 单点NFS云存储,'阿里云5MB,家庭线路内网穿
 #### 3.2.1 请求的路程
 
 浏览器->Cloudflare->阿里云Frp->Ingress-Nginx->Kube-Proxy->Hertz
-
 红色部分为链路延迟瓶颈
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=MGM5ZTJjNjNmMGI2ODcwMGE3MjEwNzI0YTViOGI4NTJfV29ENENzMGZ2b2k4VU96Z0hjYTBkNUNMOWZ4bnJpWm5fVG9rZW46QUlwTmJpbjZCb25GWFh4R1lzVWNQUzZGbjdmXzE3NDExOTI4ODM6MTc0MTE5NjQ4M19WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062146019.png)
 
 #### 3.2.2 微服务架构设计及链路
 
 ##### Api(Hertz Gateway)
 
 Api服务负责作为外部请求的入口，是整个架构的核心，负责权限校验，限流，RPC调用各个微服务。
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=OWM5YzEwYzA2ZmUwMmY3MTZkMmVhYmNmMWM1Y2JjYTdfaE1rb3B0M0VYbWFpU05Ud0FOelJMa1RnZ2c2dERMZ1BfVG9rZW46U1VxVWJVRlNubzBLeXl4Q01vZmNXb0JGbnVoXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062147510.png)
 
 ##### Auth(Token签发续期服务)
 
 负责JWT Token签发和RefreshToken续期，采用非对称加密EdDSA算法，Auth服务拥有私钥，API网关通过公钥对请求携带的Token进行校验，这样一方面减少了RPC调用，网关可以快速鉴权，一方面即使网关配置泄露也无法签发Token
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NWIzZmRmNWQ5OTE1NjNkZWNjYTg5Y2M5MDhjNWM2MjhfQjA5NFNwcXVoS0dOeTJJR3NQWUZPcGZsa0o1aklYTjdfVG9rZW46STZNY2JQc3NLbzJjU3Z4UnVBV2NBMm84bnVnXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062147573.png)
 
 ##### Cart(购物车服务)
 
 负责管理用户的购物车，可以添加产品到购物车，清空购物车，获取用户购物车。
 
 RocketMQ消费者： 监听订单事务队列，收到创建订单事件自动清空购物车
+![image.png](https://oss.czczcz.xyz/blog/202503062147157.png)
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=MzUyODI2YWJmOWQyMGVhZWEwZmQwMzExODJhZWRkOTJfOXRCdjQzVzhYRGxkOTRNUThSMTdUeHJEcHhkamozaTFfVG9rZW46WXdtZ2JjbFl3bzhySXF4Z2lROGM5RHBUbmpkXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
-
-  
 
 ##### Checkout(结算服务)
 
 负责结算用户的商品，计算价格，调用Order订单服务创建订单，还负责用户地址管理(增删改查)
+![image.png](https://oss.czczcz.xyz/blog/202503062147806.png)
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=MzhjMTQ2M2RmZTNlNWNjYzc2NTk1YjMyNjFiZGU3MGFfT0ZSRDIxRGhGNW03OEd4QUtkRnBMT1BBS1NUc2NhOE9fVG9rZW46S2I4OGJpUkVmb1lzWTB4Q2lCc2NzMDRobnVoXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
 
 ##### Eino(AI服务)
 
 负责调用大模型AI解决用户问题，利用下单工具，产品信息工具，用户地址和用户订单等工具通过大语言模型帮助用户操作，提升用户体验，外部可以对接Ark,OpenAI,Deepseek等大语言模型
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=YjdkMmJhYmZiNWY5MGY1MzVlZDJiN2E4YTg1ZTMzMGZfVGtjenRoUXFtb1l1Q0lJcXUwN1RSNjdQV2poTFZzSUdfVG9rZW46STlnTGI4WnM0b1VaaUV4S2w2SGNWNjZFbmxoXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062148297.png)
 
 ##### Order(订单服务)
 
@@ -175,8 +176,7 @@ RocketMQ消费者： 监听订单事务队列，收到创建订单事件自动�
 RocketMQ消费者：一个消费者负责监听订单延时队列，超时未支付取消订单，另一个消费者负责监听支付成功事件，支付成功后标记订单为已支付
 
 RocketMQ生产者： 生产者负责在订单事务队列生产创建订单事件
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NmIxYzQwM2IzMzhkYTIyZWZlZWY4Y2RhOWIzYjljODVfc2RraGxYNnFTdTJtNFBMa0w3WUt1YTRQRGhCYVdZM0hfVG9rZW46SDIyb2JWT1pOb1V0V0p4QjVhWGMzVWFHbnhrXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062148063.png)
 
 ##### Payment(支付服务）
 
@@ -185,32 +185,27 @@ RocketMQ生产者： 生产者负责在订单事务队列生产创建订单事�
 RocketMQ消费者： 监听支付延时队列，超时未支付则取消账单
 
 RocketMQ生产者： 支付成功后生产支付成功事件到支付事务队列
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=M2VjODEyMTc2OTFiM2YyNGJmM2FiMGRiOWQ1NWVkNWNfVGhic015SThNMTQ1N0VDampTRjBlcTZLTUxmcUg1VnhfVG9rZW46RE9oY2JZTkFJb2pxQlh4azhkS2NNcWFmbmtlXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062148761.png)
 
 ##### Product(商品和库存服务)
 
 负责管理商品和库存数据，负责商品的增删改查和保障库存一致性，缓存预扣，商品库存增减时更新预扣缓存
 
 RocketMQ消费者：负责监听支付成功事件，在数据库层面扣减库存，并更新缓存
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=MGVmY2ZlNmYwZTFiYTNjZGYyMGEzNzdlN2QzZTg3OWNfT1o0ajNneGlBVFhkc2w1cjF0a2g4WnVxSXlGQmFhckdfVG9rZW46UzVTWmJCcHRib29IdTF4VE1LZ2NOOWNQbkdVXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062148048.png)
 
 ##### User(用户服务)
 
 负责用户的登录和注册，获取用户信息等，采用MD5加密存储密码,Redis记录用户登录状态
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=MGJkMDEyM2ViNzY5ODYxOWZiNGUxZjZhNDM5Y2FjZGNfMFdwanAzdHU3UDlHZFhPcUpYc0RBN0U1bVlIeUVMZVhfVG9rZW46VGVtMmJGRnZZb0VNVVV4ZXQ3NmNNWDJ6bmFkXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
-
+![image.png](https://oss.czczcz.xyz/blog/202503062148804.png)
 #### 3.2.3 表设计+ID生成
 
 采用Snowflake算法生成分布式唯一UUID,UUID有唯一索引加快查询速度
 
 之所以还要有普通自增id作为主键是因为在并发插入下由于机器ID不一致虽然时间是自增的，但依然会造成页分裂，所以采用两个ID结合一定程度用空间换取了查询插入效率
+![image.png](https://oss.czczcz.xyz/blog/202503062149962.png)
+![image.png](https://oss.czczcz.xyz/blog/202503062150065.png)
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NDM5OTlmZDFlMmE1NjZlZDQxMzFhOTQzNTdmNzRlNGFfMXFTQUVsckpQcEFGVjJqRjgwa0VDc29qdDdqOE5TRGVfVG9rZW46VFJ3VmI3MG83b0tybkN4VVJGbmNJZHRMbmRlXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=YmFkYzZkMTNlNGQyNjQwZDBlMzgyOGU5ODk4NTM1MWNfTDdERUtCbXZzVnR6TFdIUkJUWTRWNTBvWTBER2F3VW9fVG9rZW46WUFaYmJtWXFnb2k1UUR4Ukg3Q2NDTWE2bnZnXzE3NDExOTI5ODY6MTc0MTE5NjU4Nl9WNA)
 
 ### 3.3 项目代码和核心功能实现
 #### 3.3.1 项目结构
@@ -325,12 +320,10 @@ deliveryTokenResp, err := authAgent.DeliverTokenByRPC(h.Context, &auth.DeliverTo
         }
 ...
 ```
+![image.png](https://oss.czczcz.xyz/blog/202503062151818.png)
+![image.png](https://oss.czczcz.xyz/blog/202503062151051.png)
+![image.png](https://oss.czczcz.xyz/blog/202503062151319.png)
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=MTdjNDY1ODY1NTg3MDNiNjAxOGYwNDk3NjgxMTMzNGNfN29jbmozOTQwdEl1NzJuQ3ZGRUJNMXJoRkdQY1VvUVBfVG9rZW46SnRVTmJaVFJyb0lRZFV4d0VGUWNuaUh0bm9oXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=ZTkwNjE4M2EyNTlkNTJkOWNlNDBhMTgxOTlkYWQ1MGZfR2hobXI1eTRmcWwwUW5zMk9IUHI2TU9BVHZFUUl4eVVfVG9rZW46UUVRYWJGcWJhb2Rrd2R4WXo0YmNJbEI2bnNiXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=OGM5OTljZDNmMGVhMzM0NGUzMTQ4NzMyNDNhZDY2ODNfTWxlaGhGOWtnTUJhWU8wOVRxQXJzQW9qck52TFlDRkJfVG9rZW46VGJKV2JUbmlpb2I2dXZ4R25UcmN3NmhtbmhaXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
 
 #### 3.3.3 用户鉴权、权限控制、黑名单、登录状态管理
 
@@ -370,12 +363,9 @@ m = g(r.sub, p.sub) && regexMatch(r.obj, p.obj)
 登录状态管理是登录时会在Redis里设置这个token键，TTL为token过期时间，如果用户登出的话则删除这个键,如果没有这个键则登录失败。
 
 e.g :
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=MWE2OGYyYjkwNTA5NDJkODMxYWE5OWM0NTFiNzc1MGNfVDFDMVlsUGxNZUlCMFRjc2Zla0JFN0RZMm50V0dweFNfVG9rZW46WHdPUmJud25Mb2JUb294THZVRGNWM2p4bkJkXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=YzY2ZDllZGFlZjBjNDVjNzk2MjllMmI1YWYxYmMxNDVfd2Z5dWZpbVlnZ2k3S3p3WEJXNTJZd0xMOVhwZnRpRGtfVG9rZW46Q1ZENGJkbUxXb25UU294bnNqQWNxRFRSbkJnXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=MmViNjljY2JlODgzOTY0MjkzM2M0NzFjNzM4OWU3ZmZfUlFBMUxTckV3UHdjVzhxZTh2YmgyVENNdjFXUTh0bVFfVG9rZW46VmxnZWJ4QjEzb2tyTml4aVdRRmNSQUkzbkpnXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062151449.png)
+![image.png](https://oss.czczcz.xyz/blog/202503062151875.png)
+![image.png](https://oss.czczcz.xyz/blog/202503062151070.png)
 
 #### 3.3.4 RocketMQ分布式事务
 
@@ -387,13 +377,12 @@ e.g :
 
 所以在本项目中引入了RocketMQ分布式事务保障项目的数据一致性。
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=N2U3ZDgxNGJiODk5NjRhZDdiNDNkNzM1OGE4OWU4ZWRfSklFSEc3ZU5HRkFjZlJkRGM0cjhqWk9CMXVwMjJUc0lfVG9rZW46V2w0NGJLOHFZb2tlb2h4SEhHNWNRcDM4bjZiXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062152396.png)
 
 生产者回查e.g:
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NTE3ODNjMmY2YzYyMjA5ZGFjYWRhOWIzODdjZTVjY2JfTTloVTc3TVhVd1hCMUZ3WDZHN01OMm9PYnBpTTBvandfVG9rZW46R1FidGJEdExBb2RIVVJ4dndpMWNyR3pUbmdiXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=YTQ2ZGFkYTIzYzA0NGUwMzg1OTE0NjA2YjY0Yjk1YmFfUnNTSE5KSFV6WG1Ya2xmeFFGOXVScGE2NEVLQWdEbDRfVG9rZW46Rk1wamJpQ0Fxb04xTGV4cEoyTmNTZXB5bnhnXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062152898.png)
+![image.png](https://oss.czczcz.xyz/blog/202503062152703.png)
 
 #### 3.3.5 订单，支付 定时取消
 
@@ -401,11 +390,13 @@ RocketMQ除了可以用来做分布式事务外，还可以利用它的延时队
 
 生产者eg:
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NzdkYmZjMjRmNWMzZDY3NjU5YTQyMjRhYzYyMjI0ODFfV29vTG8zRmdBT0dCZHZPa09aT2xhQkNUWUVSNTZyQ2ZfVG9rZW46TkFISmJsWUJHb2NQN1J4YTJ6OWNWYXZSbkliXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062152252.png)
+
 
 消费者eg:
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NThkOWU5NWFhNDE2OWZiY2E2M2VkZDk4NTJhMzEzNjRfSHM3UDJyV2duRXlGQkpIY1M4MzBONWpZRUljUEtyRGJfVG9rZW46QkxkTWJCRjhOb0NSOWF4aEhzYmNRemNWbm9nXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062152435.png)
+
 
 #### 3.3.6 库存缓存预扣+补偿
 
@@ -417,17 +408,21 @@ RocketMQ除了可以用来做分布式事务外，还可以利用它的延时队
 
 库存增减时也会去补偿Redis的库存，保障数据一致。
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=YjE2ZWQzODliMzBhZTdjYzAwN2E0ZjBmYjRhZTRlMjhfUnUydHJJSmFlRG04UXVEU3RsWHk2V1FnQjY2OG1ZNjVfVG9rZW46WG9QWmI5VW1Yb3hJaEJ4bXE1Z2NXZjllbmRnXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062152922.png)
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=N2RjMTlhY2IwNmNiMTJiYzhiZWQ4MDY2M2Q5OWIzNzNfcFJpTG5xNGtpcGgzaTJrQVZ4SE8xOEZka2kxS2VSS3BfVG9rZW46V2tEcmJmcUY0b2dNa0F4UnZnWmNCZ2N3bkpoXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+
+![image.png](https://oss.czczcz.xyz/blog/202503062153732.png)
+
 
 #### 3.3.7 AI大模型
 
 采用Cloudwego Eino框架，将服务划分为两部分，Agent和tools，分别编写逻辑，使用React Agent调用Ark豆包模型进行函数工具调用
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=ODJjMDA1OTJmYjQxNjNjY2UzNzlmZDMzYmQwMjViN2Zfa2oyQ3BSRWI4NjlKYW50MTROOGVjTmxYOW9wY1JxU2VfVG9rZW46VWF4emIySGNtbzJKTE14NlQzSGNlY2hzbjljXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062153022.png)
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=OWY2ZjQ1YjU2YjE1OGE0MzBlZWFhNjg5MGE5OWVmZjVfQjNnbGgzanJjVUZWdGhsc3JyZHlON0psSTNkanZOVFlfVG9rZW46RWtjZWJDdWhXbzd2NUd4emhrdGNlTml6bnZoXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+
+![image.png](https://oss.czczcz.xyz/blog/202503062153542.png)
+
 
 #### 3.3.8 K8s Istio分布式限流和Sentinel本地限流,服务熔断
 
@@ -437,15 +432,11 @@ RocketMQ除了可以用来做分布式事务外，还可以利用它的延时队
 
 服务熔断可实现全闭，半开，全开三种状态，当熔断发生时，会切到全闭，过一段时间切到半开，放一点请求出去，成功的话又回到全开。
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NDA5NmZjMTMwYzUzZmViMzA3ZTM2OTc1MTBkMzE0OTZfbTBSYTVjNDNRYUZ2TXI5YlUzeHNWeGJTYWVDWU12eWRfVG9rZW46SDZTM2JuRTNKbzBwaDV4ZjJ0dGNkNHBOblZiXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062153392.png)
+![image.png](https://oss.czczcz.xyz/blog/202503062153847.png)
 
-  
+![image.png](https://oss.czczcz.xyz/blog/202503062153503.png)
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=YjgyZGRiZWIxY2FkYjBiYWNjYWQ4N2ExNDE3M2NmYTdfOTZENE14TkF5N0NyU1RxQlJ0MXFsVjFHZFh4OTdLaENfVG9rZW46SWpXUGJSZTZjbzBnRnJ4V21DRGNtU3RzblBiXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
-
-  
-
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=ZDk0MjEzZjAxNzBkMjUzOWNhMmM3MGZhODBlZWY1ODVfOU1SbFpqRjUxbVBSTEFYVGg3Q1c2RElYQXhSZDFFOEVfVG9rZW46RWNJZGJRS2Fqb3BKSEd4NW1JMGMwWklMbmpkXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
 
 #### 3.3.9 可观测性
 
@@ -453,13 +444,16 @@ RocketMQ除了可以用来做分布式事务外，还可以利用它的延时队
 
 Grafana可以查看各服务的实例数，Hertz Kitex P99延迟,AVG延迟，吞吐量
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=ZjFlNDY4MzI1M2IzNGNiN2I3OWQ4ZDU1OTMwNWZhODNfR2FzTDQwNVJCbjBuWHB6REJrMVJudkkxNjdCbzRod1BfVG9rZW46RFFHWWJoN1FNb2UzNzR4UlJlZWM0ckt4bmdiXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062154301.png)
+
 
 ELK日志采集
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NWQ3ZDA4YzQwNWM4YjA3MmEzMTk2NzIyOGI3ZTVlNmRfOVczaThycktZdEtVYTZIRFFyOFpNMnlHRFR0eU9WN2lfVG9rZW46QjZpNmJJR05ZbzRLME54Y0tXdmN4NlV6bjJmXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062154105.png)
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NGQzOWZlYThkOTAyMWVhNzFlNDVmZjY4NDcwZmJmZWRfSXFCam5ob1R3U2ZQdUJudmV0THZVS2h0U3NCMHAxeTJfVG9rZW46QkM5OGI3Z2VDb0lKanF4YnlGcmNMTXR6bnhlXzE3NDExOTMwMDI6MTc0MTE5NjYwMl9WNA)
+
+![image.png](https://oss.czczcz.xyz/blog/202503062154061.png)
+
 
 
 #### 3.3.10 容器化,CI/CD，K8s部署
@@ -470,7 +464,9 @@ ELK日志采集
 
 本项目配置了Helm Chart，在values.yaml里填上你的Consul参数和镜像地址则可以在你的k8s集群上自动部署，此外还配置了Prometheus注解，如果你的项目有Prometheus-Operator的话可自动识别抓取Metrics
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NWRlYzlhNWExMWM1YzA3ZjY4MjBmZjE1ZTUwODk0MzdfakdaOHVXZzg5cDR0ZkFrTVNGNWdsVUtpV0hjQ2ZiWm9fVG9rZW46R0VrdWJKQ1B3b0JaU0N4T0M3U2NYbHhkbkNoXzE3NDExOTMwNTk6MTc0MTE5NjY1OV9WNA)
+![image.png](https://oss.czczcz.xyz/blog/202503062154327.png)
 
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=NDU4NmFmOTc5YTgxODNmODFmMjAxNWY4OTQ2YTM0MThfWFJDTGFpZU5EUGxqWDFWU2FKb2FXNjdrb0lONkFicTJfVG9rZW46SVZwWGJHQjc4b2xnTkN4V0FoSGN1MWhubmlnXzE3NDExOTMwNTk6MTc0MTE5NjY1OV9WNA)
-![](https://gagjcxhxrb.feishu.cn/space/api/box/stream/download/asynccode/?code=YWVmNTA4NzI5MzIzODYxMTQ2MGYxYzE0NjJhMjU3YThfSUhodlZadnZFUjZ0M0JRS3h6MEV0TGpldzhOSlJjWnlfVG9rZW46SmJSMmJMSW81b0FWa1R4UG52RGN1cHR0blFoXzE3NDExOTMwNTk6MTc0MTE5NjY1OV9WNA)
+
+![image.png](https://oss.czczcz.xyz/blog/202503062154163.png)
+
+![image.png](https://oss.czczcz.xyz/blog/202503062154104.png)

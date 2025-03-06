@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { aiChat } from '../api/aiApi';
 import '../styles/AIAssistant.css';
 
@@ -8,6 +9,7 @@ interface Message {
 }
 
 const AIAssistant: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>('');
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
@@ -21,8 +23,8 @@ const AIAssistant: React.FC = () => {
     setIsOpen(!isOpen);
     setShowEntrance(false);
     
-    // 聊天窗口打开时，自动聚焦输入框
-    if (!isOpen) {
+    // 聊天窗口打开时且用户已登录，自动聚焦输入框
+    if (!isOpen && isAuthenticated) {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 300);
@@ -110,7 +112,7 @@ const AIAssistant: React.FC = () => {
     <div className="ai-assistant">
       {/* 助手图标按钮 */}
       <button
-        className={`ai-assistant-icon ${showEntrance ? 'ai-assistant-entrance' : ''}`}
+        className={`ai-assistant-icon ${showEntrance ? 'ai-assistant-entrance' : ''} ${!isAuthenticated ? 'ai-assistant-disabled' : ''}`}
         onClick={toggleChat}
         aria-label="AI助手"
       >
@@ -121,14 +123,15 @@ const AIAssistant: React.FC = () => {
       
       {/* 聊天窗口 */}
       {isOpen && (
-        <div className="ai-chat-container">
+        <div className={`ai-chat-container ${!isAuthenticated ? 'ai-chat-disabled' : ''}`}>
           <div className="ai-chat-header">
-            <h3>智能AI助手</h3>
+            <h3 className={!isAuthenticated ? 'offline-status' : ''}>智能AI助手</h3>
             <div>
               <button
                 className="ai-chat-reset"
-                onClick={resetChat}
+                onClick={isAuthenticated ? resetChat : undefined}
                 aria-label="重置对话"
+                disabled={!isAuthenticated}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18">
                   <path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
@@ -148,7 +151,17 @@ const AIAssistant: React.FC = () => {
           
           {/* 聊天记录 */}
           <div className="ai-chat-messages" ref={chatContainerRef}>
-            {chatHistory.length === 0 && (
+            {!isAuthenticated ? (
+              <div className="ai-chat-welcome ai-login-required">
+                <div className="ai-welcome-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
+                    <path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
+                  </svg>
+                </div>
+                <h4>需要登录才能使用AI助手</h4>
+                <p>请<a href="/login">登录</a>或<a href="/register">注册</a>以使用智能助手服务！</p>
+              </div>
+            ) : chatHistory.length === 0 ? (
               <div className="ai-chat-welcome">
                 <div className="ai-welcome-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
@@ -158,7 +171,7 @@ const AIAssistant: React.FC = () => {
                 <h4>您好！我是您的智能助手</h4>
                 <p>有任何问题请随时向我咨询，我将竭诚为您服务！</p>
               </div>
-            )}
+            ) : null}
             
             {chatHistory.map((message, index) => (
               <div
@@ -198,18 +211,18 @@ const AIAssistant: React.FC = () => {
           </div>
           
           {/* 输入框 */}
-          <div className="ai-chat-input">
+          <div className={`ai-chat-input ${!isAuthenticated ? 'ai-input-disabled' : ''}`}>
             <input
               ref={inputRef}
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="请输入您的问题..."
-              disabled={isLoading}
+              placeholder={isAuthenticated ? "请输入您的问题..." : "请登录后使用..."}
+              disabled={isLoading || !isAuthenticated}
             />
             <button
-              onClick={sendMessage}
+              onClick={isAuthenticated ? sendMessage : undefined}
               disabled={inputMessage.trim() === '' || isLoading}
               aria-label="发送"
               className={inputMessage.trim() !== '' ? 'active-send' : ''}

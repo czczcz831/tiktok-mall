@@ -219,7 +219,7 @@ const CheckoutPage: React.FC = () => {
       // 这里不立即清空购物车，而是在用户点击按钮离开支付成功页面时清空
     } catch (error) {
       console.error('Payment failed:', error);
-      setError('支付失败');
+      setError('支付失败(Mock随机失败，不是BUG)');
     }
   };
 

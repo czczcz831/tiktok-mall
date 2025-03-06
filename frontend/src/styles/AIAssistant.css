@@ -25,6 +25,13 @@
   overflow: hidden;
 }
 
+/* 禁用状态的助手图标 */
+.ai-assistant-disabled {
+  background: linear-gradient(135deg, #b0b0b0, #d0d0d0);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
 .ai-assistant-icon::before {
   content: '';
   position: absolute;
@@ -142,6 +149,12 @@
   animation: pulse 2s infinite;
 }
 
+/* 离线状态指示器 */
+.offline-status::before {
+  background-color: #f44336;
+  box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.3);
+}
+
 .ai-chat-header button {
   background: rgba(255, 255, 255, 0.15);
   border: none;
@@ -162,6 +175,13 @@
   transform: translateY(-2px);
 }
 
+.ai-chat-header button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: none;
+}
+
 .ai-chat-header button:active {
   transform: translateY(0);
 }
@@ -169,6 +189,44 @@
 .ai-chat-header div {
   display: flex;
   align-items: center;
+}
+
+/* 禁用状态的聊天容器 */
+.ai-chat-disabled {
+  position: relative;
+}
+
+/* 禁用状态的输入框 */
+.ai-input-disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* 登录提示样式 */
+.ai-login-required {
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.ai-login-required h4 {
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.ai-login-required p {
+  color: #666;
+}
+
+.ai-login-required a {
+  color: #3a7bd5;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.ai-login-required a:hover {
+  color: #00d2ff;
+  text-decoration: underline;
 }
 
 /* 聊天消息区域 */

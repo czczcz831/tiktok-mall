@@ -241,7 +241,7 @@ const OrderListPage: React.FC = () => {
         setPaymentSuccess(true);
         // 不立即关闭支付窗口，等用户在成功页面确认后再关闭
       } else {
-        setPaymentError('支付失败: ' + response.msg);
+        setPaymentError('支付失败(Mock随机失败，不是BUG): ' + response.msg);
       }
     } catch (error) {
       console.error('Payment failed:', error);
