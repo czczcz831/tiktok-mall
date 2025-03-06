@@ -1,7 +1,6 @@
 ## 一、项目介绍
 
 ### 项目概述
-
 <div align=center>
     
 ![](https://oss.czczcz.xyz/blog/202503060038102.png)
@@ -9,14 +8,11 @@
 </div>
 
 <p align="center">TikTok Mall 是一个基于微服务架构的电商平台，提供用户注册登录、商品浏览、购物车管理、订单结算和支付等完整电商功能，采用现代化的技术栈和架构设计，具有高可用性、可扩展性和安全性。
-
 </p>
 
 ### 项目服务地址
 
 演示地址: https://mall.czczcz.xyz
-
-https://mall.czczcz.xyz
 
 API 地址: https://tiktok-mall-api.czczcz.xyz
 
@@ -470,3 +466,4 @@ ELK日志采集
 ![image.png](https://oss.czczcz.xyz/blog/202503062154163.png)
 
 ![image.png](https://oss.czczcz.xyz/blog/202503062154104.png)
+
