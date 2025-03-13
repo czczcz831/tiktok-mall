@@ -10,6 +10,8 @@
 <p align="center">TikTok Mall 是一个基于微服务架构的电商平台，提供用户注册登录、商品浏览、购物车管理、订单结算和支付等完整电商功能，采用现代化的技术栈和架构设计，具有高可用性、可扩展性和安全性。
 </p>
 
+项目飞书文档：https://gagjcxhxrb.feishu.cn/docx/IU6BdqBERoPYSCxycb1cBqDQnLc
+
 ### 项目服务地址
 
 演示地址: https://mall.czczcz.xyz
